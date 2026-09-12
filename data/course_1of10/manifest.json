@@ -1,0 +1,69 @@
+{
+  "created_utc": "2026-09-12T18:47:54.071751+00:00",
+  "seed": 20260913,
+  "encoding": "JPEG_RGB_28x28_quality100_subsampling0_pad2048_v1",
+  "pad_length": 2048,
+  "clean_dataset": {
+    "train": 5000,
+    "validation": 1000,
+    "test": 1000,
+    "per_class": {
+      "train": 500,
+      "validation": 100,
+      "test": 100
+    },
+    "source": "MNIST official 60000 training and 10000 test archives",
+    "training_views": "original, rotate -10/+10 degrees, horizontal shift -2/+2 pixels"
+  },
+  "corrupted_test_dataset": {
+    "source_samples": 1000,
+    "scenarios": {
+      "Medium-Flip": {
+        "parameters": {
+          "segment_size": 64,
+          "segment_probability": 0.55,
+          "flip_probability": 1.0,
+          "byte_probability": 0.55,
+          "expected_corruption_ratio": 0.30250000000000005
+        },
+        "mean_changed_fraction": 0.3020808099684043,
+        "decode_success_count": 2,
+        "decode_rate": 0.002
+      },
+      "Medium-Loss": {
+        "parameters": {
+          "segment_size": 64,
+          "segment_probability": 0.55,
+          "flip_probability": 0.0,
+          "byte_probability": 0.55,
+          "expected_corruption_ratio": 0.30250000000000005
+        },
+        "mean_changed_fraction": 0.3025538207038514,
+        "decode_success_count": 4,
+        "decode_rate": 0.004
+      },
+      "Medium-Mixed": {
+        "parameters": {
+          "segment_size": 64,
+          "segment_probability": 0.55,
+          "flip_probability": 0.5,
+          "byte_probability": 0.55,
+          "expected_corruption_ratio": 0.30250000000000005
+        },
+        "mean_changed_fraction": 0.3019152179086468,
+        "decode_success_count": 2,
+        "decode_rate": 0.002
+      }
+    }
+  },
+  "files": {
+    "mnist_clean_balanced.npz": {
+      "sha256": "526a1d75f69276de5146a918cdfc3b5208f881ca280b290a88d9a8271e97aeaa",
+      "bytes": 27982939
+    },
+    "mnist_test_corrupted_medium.npz": {
+      "sha256": "38b4e1e797ee1888139253a87c771958adfd8745209e9f6fd061bef21f4399ef",
+      "bytes": 3047128
+    }
+  }
+}

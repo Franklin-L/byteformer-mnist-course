@@ -1,0 +1,36 @@
+{
+  "created_utc": "2026-09-12T18:46:02.718703+00:00",
+  "checkpoint": "outputs/subset_consistency_augviews/best.pt",
+  "checkpoint_sha256": "cec33cc4188f2493b4251ea67c3c0a6f8ccb2af8e754a59875e9efc79f34ced4",
+  "clean_data_sha256": "526a1d75f69276de5146a918cdfc3b5208f881ca280b290a88d9a8271e97aeaa",
+  "corrupt_data_sha256": "38b4e1e797ee1888139253a87c771958adfd8745209e9f6fd061bef21f4399ef",
+  "best_epoch": 14,
+  "training_method": "consistency",
+  "results": {
+    "Clean": {
+      "loss": 0.18926748728752135,
+      "accuracy": 0.955,
+      "correct": 955,
+      "samples": 1000
+    },
+    "Medium-Flip": {
+      "loss": 0.47621787345409394,
+      "accuracy": 0.854,
+      "correct": 854,
+      "samples": 1000
+    },
+    "Medium-Loss": {
+      "loss": 0.857658450126648,
+      "accuracy": 0.707,
+      "correct": 707,
+      "samples": 1000
+    },
+    "Medium-Mixed": {
+      "loss": 0.6031007356643677,
+      "accuracy": 0.796,
+      "correct": 796,
+      "samples": 1000
+    }
+  },
+  "evaluation_seconds": 1.4546537020069081
+}

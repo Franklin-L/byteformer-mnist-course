@@ -1,0 +1,102 @@
+# 背景材料：从多媒体通信到字节域语义理解
+
+## 1. 多媒体通信中的信源与信道
+
+图像和视频首先由相机、手机或其他采集设备产生。原始像素数据量很大，通常需要经过 JPEG、H.264/AVC 等编码器压缩，再通过无线网络、互联网或存储介质传输。接收端收到码流后，先由解码器恢复像素，再由分类、检测、动作识别等视觉模型分析内容。
+
+```text
+图像/视频信源 → 压缩编码 → 二进制码流 → 信道或存储介质
+              → 受损码流 → 解码 → 像素域视觉模型 → 语义结果
+```
+
+压缩编码消除了大量冗余，因此码流中的字节并不是彼此独立的。少量错误可能破坏文件标记、码表、预测参考或熵编码同步，使错误在解码过程中扩大。结果可能是局部花屏、大片内容错位，也可能是文件完全无法解码。
+
+常见错误包括：
+
+- bit flip：一个或多个二进制位发生翻转，码流长度不变；
+- byte loss：字节丢失，后续内容的位置随之移动；
+- packet loss：一段连续数据包丢失；
+- burst error：错误集中出现在一段连续时间或连续地址中。
+
+## 2. Gilbert–Elliott 突发错误信道
+
+Gilbert–Elliott 模型用两个状态描述具有突发性的信道：
+
+- `G`（Good）：信道状态较好，错误率低；
+- `B`（Bad）：信道状态较差，错误率高。
+
+离散时间模型中，设 `p=P(G→B)`，`r=P(B→G)`。模型每一步根据转移概率在两个状态之间变化，并按当前状态的错误率产生传输错误。
+
+```text
+       p
+  G ───────→ B
+  ↑          │
+  └──────────┘
+       r
+```
+
+长期处于坏状态的概率为 `p/(p+r)`；平均坏状态持续长度约为 `1/r`，平均好状态持续长度约为 `1/p`。当 `r` 较小时，一旦进入坏状态就容易连续保持多步，因此能够表示通信和存储中的突发错误。若采用连续时间版本，则相应参数应解释为状态转移率。
+
+本课程的扩展实验不直接拟合 Gilbert–Elliott 参数，而是用分段选择和段内损坏模拟类似的成簇错误。这样既保留突发性，也便于学生控制损坏强度。
+
+## 3. JPEG 图像码流结构
+
+基线实验把 MNIST 灰度图转为 RGB，再编码为 JPEG。一个典型的基线 JPEG 文件由一系列 marker segment 和熵编码数据组成：
+
+| 部分 | 常见标记 | 作用 | 受损后的可能结果 |
+| --- | --- | --- | --- |
+| 文件开始 | `SOI` (`FFD8`) | 标记 JPEG 开始 | 文件无法被识别 |
+| 应用信息 | `APP0/APPn` | JFIF、元数据等 | 元数据异常，部分解码器拒绝 |
+| 量化表 | `DQT` | 保存量化参数 | 图像块数值严重错误或解码失败 |
+| 帧头 | `SOF` | 宽高、分量、采样方式 | 尺寸或分量解析错误 |
+| Huffman 表 | `DHT` | 熵解码所需码表 | 后续扫描数据无法正确解码 |
+| 扫描头 | `SOS` | 指定扫描分量并开始熵编码数据 | 无法定位图像主体数据 |
+| 熵编码扫描数据 | scan data | 保存压缩后的主要图像内容 | 花屏、错块、错误传播或失步 |
+| 文件结束 | `EOI` (`FFD9`) | 标记 JPEG 结束 | 文件截断或严格解码失败 |
+
+JPEG 使用变长熵编码。码流中的一个错误可能改变后续比特的分组方式，直到重新同步或扫描结束。byte loss 还会改变后续字节位置，通常比等数量的孤立像素噪声更难处理。
+
+图片语义理解部分可结合以下工作讲解：
+
+- **CBSU-ALLM**：*Corrupted bitstream semantic understanding by adaptive-modal large language models*，Pattern Recognition，DOI [10.1016/j.patcog.2026.114151](https://doi.org/10.1016/j.patcog.2026.114151)。该工作面向受损图像码流的语义理解。
+- **Cibic**：*Pixel-free foundation model for robust corrupted image bitstream captioning*，DOI [10.1016/j.patcog.2026.114238](https://doi.org/10.1016/j.patcog.2026.114238)。该工作从受损 JPEG 字节直接生成描述，不依赖成功解码。
+
+## 4. H.264/AVC 视频码流结构
+
+H.264 Annex B 码流通常由带起始码的 NAL 单元组成。起始码常见为 `000001` 或 `00000001`，其后是 NAL header 和 payload。
+
+| 组成 | 作用 | 受损后的可能结果 |
+| --- | --- | --- |
+| SPS | 序列级参数，如分辨率、编码工具和参考帧配置 | 后续多帧无法建立正确解码环境 |
+| PPS | 图像级参数，如熵编码和量化相关配置 | 使用该 PPS 的图像无法正确解码 |
+| IDR / I slice | 可独立建立画面内容和新的参考起点 | 当前帧严重损坏，并影响后续预测帧 |
+| P slice | 参考过去帧进行运动补偿 | 错误随参考关系向后传播 |
+| B slice | 可参考前后帧 | 当前帧重建错误，依赖关系更复杂 |
+| SEI 等辅助 NAL | 时间、显示或其他补充信息 | 对应辅助信息丢失或异常 |
+
+视频压缩利用帧内和帧间相关性。同一 GOP 中，P/B 帧依赖参考帧；关键 NAL 单元或参考帧受损后，影响可能持续多个画面。与单张 JPEG 相比，视频码流还包含明显的时间依赖和跨帧错误传播。
+
+视频部分可结合以下材料：
+
+- **BSCV**：*Bitstream-Corrupted Video Recovery: A Novel Benchmark Dataset and Method*，[论文](https://arxiv.org/abs/2309.13890)与[数据生成代码](https://github.com/LIUTIGHE/BSCV-Dataset)。其损坏过程在编码视频的码流单元中删除连续片段，用于模拟码流损坏视频。
+- **VUB**：*Learn to Understand Video from Bitstream Modeling and Distillation*，本地稿件位于 `/home/Li_fangcheng/video_understand/VUB/PRCV2026_bitstream.pdf`，研究从视频原始码流直接完成内容理解。
+
+## 5. 为什么需要字节域语义理解
+
+传统视觉流程以成功解码为前提：解码器先把码流恢复为像素，视觉模型再处理像素。当文件头、码表、熵编码同步或视频参考结构受损时，这条流程会在视觉模型之前中断。即使解码器勉强输出图像，花屏和错误传播也会使像素分布偏离正常训练数据。
+
+字节域方法直接把文件字节作为模型输入：
+
+```text
+受损图像/视频码流 → 字节嵌入与序列模型 → 分类、动作识别或文本描述
+```
+
+它不要求先得到完整像素，可在标准解码失败时继续尝试提取语义，也能把文件格式和局部字节模式纳入学习。本课程先完成最简单的干净 MNIST JPEG 码流分类，再用 bit flip 与 byte loss 测试传统干净训练模型的鲁棒性，最后加入损坏增强和一致性约束。
+
+## 6. 备课依据
+
+- JPEG 标准：ITU-T T.81，*Digital compression and coding of continuous-tone still images*。
+- H.264/AVC 标准：ITU-T H.264，*Advanced video coding for generic audiovisual services*。
+- Gilbert, 1960；Elliott, 1963：突发噪声信道的两状态建模。
+- ByteAction 本地稿件：`/home/Li_fangcheng/byte_HOI/paper_response/ByteAction/ByteAction.pdf`。
+- VUB 本地稿件：`/home/Li_fangcheng/video_understand/VUB/PRCV2026_bitstream.pdf`。

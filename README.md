@@ -2,6 +2,8 @@
 
 本实验基于 ByteFormer 预训练模型，在 MNIST 数据集上完成码流图像分类。实验内容包括环境配置、模型微调、参数对比和结果分析。
 
+课程后续将加入受损码流分类。备课阶段已经整理多媒体通信、Gilbert–Elliott 信道、JPEG/H.264 码流结构、字节模型和 1/10 MNIST 受损测试方案，见 [research/README.md](research/README.md)。这一部分当前作为实验与课件素材保存，尚未并入课程 PPT。
+
 | 任课人员 | 姓名 | 邮箱 |
 | --- | --- | --- |
 | 教师 | 吴科君 | kjwu@hust.edu.cn |
