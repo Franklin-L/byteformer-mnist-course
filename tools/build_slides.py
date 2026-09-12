@@ -79,7 +79,6 @@ class Deck:
         rect(s,.65,1.5,12.02,.023,'BACBD7')
         if subtitle: text(s,.66,1.66,12,.55,subtitle,17,GRAY)
         rect(s,.28,6.97,.32,.32,'B8D7EA'); rect(s,.68,6.97,.32,.32,'C5C3D3')
-        text(s,1.17,7.02,10,.25,'Kaggle 免费 GPU 优先 · AutoDL 备用 · 记录自己的实验结果',10,GRAY)
         text(s,12.1,7.0,.55,.3,str(len(self.prs.slides)),11,GRAY,align=PP_ALIGN.RIGHT)
         note(s,notes)
         return s
@@ -160,8 +159,6 @@ def main():
     m=metrics('course_baseline');f=metrics('course_full_test','evaluation.json')
     if not args.draft and (not m or not f or f['test']['accuracy']<.95):
         raise RuntimeError('Final deck requires verified formal experiments and full-test accuracy >=95%.')
-    cfg=m['config'] if m else {'epochs':8,'train_samples':50000,'val_samples':1000,'batch_size':32}
-    epochs=cfg['epochs'];compare=epochs+2
     val=f"{100*m['best_validation_accuracy']:.2f}%" if m else '待正式记录'
     full=f"{100*f['test']['accuracy']:.2f}%" if f else '待完整评估'
     best=m['best_epoch'] if m else 5
@@ -177,7 +174,7 @@ def main():
     link(s,2.85,6.43,10,REPO,REPO,16)
     note(s,'沿用教师样例的校园、校徽与白蓝风格，不沿用旧老师邮箱、截止日期或其他旧课程信息。本课PPT压缩为15页；逐格操作细节见course_kaggle.ipynb和README。')
     # 2. Objective and route.
-    s=d.bullets('01 任务要求与完成路线',[('完成一次真实微调','加载官方预训练ByteFormer，识别MNIST手写数字0—9；教师正式测试97.07%。'),('亲手完成三个操作','运行基线 → 把训练轮数8改为10 → 查看并解释一个错例。'),('交付自己的实验记录','保留指标、曲线、错例和Word报告，不能用教师结果代替自己的运行。')],notes='先展示最终任务，再介绍学习路线：准备环境和资源、训练、评估/预测、单参数练习、提交。评分见第14页。不会要求学生从零编写神经网络。')
+    s=d.bullets('01 任务要求与完成路线',[('完成一次真实微调','加载官方预训练ByteFormer，识别MNIST手写数字0—9；教师正式测试97.07%。'),('亲手完成三个操作','自行设置轮数并微调 → 观察验证曲线 → 查看并解释一个错例。'),('交付自己的实验记录','保留指标、曲线、错例和Word报告，不能用教师结果代替自己的运行。')],notes='先展示最终任务，再介绍学习路线：准备环境和资源、训练、评估/预测、单参数练习、提交。评分见第14页。不会要求学生从零编写神经网络。')
     # 3. ByteFormer and fine tuning, merged.
     s=d.slide('02 实验原理：文件字节输入 + 预训练微调')
     labels=['手写数字图','JPEG 文件','字节序列','ByteFormer','数字0—9']
@@ -209,7 +206,7 @@ def main():
     rect(s,7.3,2.12,5.0,2.07,LIGHT,rounded=True)
     text(s,7.55,2.37,4.5,1.45,'成功标志\nGPU available: True\n随后运行“获取课程”单元格。',21,BLUE,True)
     text(s,7.52,4.4,4.65,1.83,'命令规则\nKaggle单元格：!python …\n切换目录：%cd …\nAutoDL终端：python …',20)
-    text(s,.85,6.42,11.5,.4,'首次不要直接Run All：练习单元格需要亲手把EPOCHS从8改为10。',17,RED)
+    text(s,.85,6.42,11.5,.4,'按顺序逐格运行：训练单元格会提示输入自己选择的轮数。',17,RED)
     note(s,'下载原始ipynb文件，不要将GitHub网页另存为ipynb。GPU检查在独立子进程中运行，避免安装NumPy依赖前污染内核。运行一格后等它完成，再继续下一格。工作目录必须可写：/kaggle/working/byteformer-mnist-course，而不是只读/kaggle/input。界面名称变化时参考官方Notebook文档。')
     # 7. Download/prep/files combined.
     s=d.slide('06 获取代码、数据与预训练权重','Kaggle笔记本已写好这些命令，按顺序运行即可。')
@@ -220,23 +217,23 @@ def main():
     note(s,'Notebook实际使用绝对目标路径并检测已有目录，重复运行不会删除结果。默认Kaggle工作目录为/kaggle/working。requirements只安装轻量依赖、限制NumPy<2，不重装平台PyTorch/CUDA。数据4个MD5、权重SHA256已实测；资源缺失可重新运行prepare。网络受限可使用教师含数据和权重的课堂资源包，仍需已有PyTorch环境。')
     # 8. Training parameters + command.
     s=d.slide('07 正式训练：看懂参数，运行一条命令')
-    settings=[('训练样本','50,000'),('验证 / 测试','1,000 / 10,000'),('训练轮数',str(epochs)),('batch size','32'),('学习率','主干1e-4；分类头10倍')]
+    settings=[('训练样本','50,000'),('验证 / 测试','1,000 / 10,000'),('训练轮数','自行设置'),('batch size','32'),('学习率','主干1e-4；分类头10倍')]
     for i,(a,b) in enumerate(settings):
         y=2.03+i*.69;rect(s,.8,y,5.52,.59,LIGHT);text(s,.94,y+.1,2.18,.4,a,19,BLUE,True);text(s,3.15,y+.1,3.04,.43,b,18)
-    codebox(s,6.77,2.09,5.72,1.05,'!python train.py',22)
+    codebox(s,6.77,2.09,5.72,1.35,'EPOCHS = int(input("epochs: "))\n!python train.py --epochs {EPOCHS}',17)
     text(s,6.91,3.56,5.38,2.22,'出现[TRAIN]和每轮[EPOCH]，\n最后看到[DONE]。\n\n输出保存到outputs/baseline/。\n训练中不要关闭运行会话。',21)
-    text(s,.9,6.12,11.45,.55,'后期学习率自动衰减：第4、6轮结束后乘0.2。学生无需修改底层训练代码。',17,GRAY)
-    note(s,'正式默认epochs8/train50000/val1000/test10000/batch32/lr1e-4/milestones4,6/gamma0.2/seed42。原正式实测训练末先测试1000，之后独立全10000；发布默认把最终测试整合成10000，共用同一score代码。输出目录已有best.pt时会报错保护结果；重跑换output且对应修改后续checkpoint。模型从官方权重全参数微调，AdamW weight_decay0.01，分类头10倍学习率。')
+    text(s,.9,6.12,11.45,.55,'轮数根据训练与验证表现自行调整；学习率策略可配置，测试集只作最终评估。',17,GRAY)
+    note(s,'epochs由学生输入；其余示例配置为train50000/val1000/test10000/batch32/lr1e-4/milestones4,6/gamma0.2/seed42。原正式实测训练末先测试1000，之后独立全10000；发布默认把最终测试整合成10000，共用同一score代码。输出目录已有best.pt时会报错保护结果；重跑换output且对应修改后续checkpoint。模型从官方权重全参数微调，AdamW weight_decay0.01，分类头10倍学习率。')
     # 9. Real numbers and real curves.
     s=d.slide('08 正式实测结果：先用验证选模型，再做测试')
-    values=[('最佳验证准确率',val),('完整测试准确率',full),('最佳模型 / 计划轮数',f'第{best}轮 / {epochs}轮')]
+    values=[('最佳验证准确率',val),('完整测试准确率',full),('模型选择依据','验证集表现')]
     for i,(a,b) in enumerate(values):
         x=.84+i*4.18;rect(s,x,1.97,3.9,1.0,LIGHT,rounded=True);text(s,x+.13,2.08,3.64,.32,a,16,GRAY,align=PP_ALIGN.CENTER);text(s,x+.13,2.43,3.64,.46,b,25,BLUE,True,PP_ALIGN.CENTER)
     p=evidence('course_baseline','curves.png')
     if p:picture(s,p,.82,3.2,11.7,3.18)
     else:text(s,1,4,11,1,'等待正式训练曲线',24,GRAY,align=PP_ALIGN.CENTER)
-    text(s,.91,6.53,11.45,.32,f'本机RTX4090：8轮约{elapsed}，不含安装下载及末尾出图。云平台耗时以实际运行为准。',14,GRAY)
-    note(s,'结果来自examples/course_baseline与course_full_test。完整10000测试97.07%(9707/10000)，由验证97.30%选择第5轮模型，8轮计划预先确定。曲线蓝色训练、橙色验证。loss通常希望下降，accuracy通常希望上升；训练与验证差距反映泛化。完整测试不用于选最佳轮次。')
+    text(s,.91,6.53,11.45,.32,f'本次教师实测约{elapsed}，不含安装下载及末尾出图。云平台耗时以实际运行为准。',14,GRAY)
+    note(s,'结果来自examples/course_baseline与course_full_test。完整10000测试97.07%(9707/10000)，由验证97.30%选择第5轮模型；轮数是该次实测记录，不是课程要求。曲线蓝色训练、橙色验证。loss通常希望下降，accuracy通常希望上升；训练与验证差距反映泛化。完整测试不用于选最佳轮次。')
     # 10. Evaluation, inference, and mistakes on one page.
     s=d.slide('09 评估、单图预测与错例检查')
     codebox(s,.8,2.0,11.75,1.31,'!python evaluate.py --checkpoint outputs/baseline/best.pt\n!python predict.py --checkpoint outputs/baseline/best.pt --index 0',17)
@@ -246,17 +243,17 @@ def main():
     text(s,.9,6.24,6.5,.47,'Notebook另提供完整预测图和混淆矩阵，供查找与分析错例。',16,GRAY)
     note(s,'预测图为测试顺序前12张加最多4个实际错例，不能用图中正确比例当整体准确率。index是原始测试索引，和随机排列后的行号不同；Notebook已自动映射。概率是模型softmax分数，不等于已校准可信度。自制图片可用--image assets/example_digit.png，黑底白字、单个居中数字。评估不改训练metrics.json。')
     # 11. Only one parameter plus a compact worksheet.
-    s=d.slide('10 学生实操：只把训练轮数 8 改为 10')
-    codebox(s,.81,2.03,11.71,1.27,f'EPOCHS = {compare}  # 亲手把原来的 {epochs} 改为 {compare}\n!python train.py --epochs {{EPOCHS}} --output outputs/epochs{compare}',18)
-    text(s,.88,3.67,5.75,2.54,'保持样本数、随机种子、batch和学习率策略不变。\n两次都从同一官方预训练权重开始。\n保留baseline，另存epochs10。',21)
+    s=d.slide('10 学生实操：自行设置，观察验证结果')
+    codebox(s,.81,2.03,11.71,1.27,'COMPARISON_EPOCHS = int(input("对比轮数："))\n!python train.py --epochs {COMPARISON_EPOCHS} --output outputs/comparison',17)
+    text(s,.88,3.67,5.75,2.54,'保持样本数、随机种子、batch和学习率策略不变。\n两次都从同一官方预训练权重开始。\n保留baseline，另存comparison。',21)
     rect(s,7.04,3.72,5.16,2.48,LIGHT,rounded=True)
-    text(s,7.25,3.94,4.72,2.04,'用自己的结果回答\n· 验证准确率是否提高？\n· 训练损失怎样变化？\n· 增加轮数的收益与代价？\n· 为什么还需要验证集？',18)
-    text(s,.9,6.37,11.35,.4,'不预设10轮一定更好。教师已验证8轮正式基线；10轮是学生亲手运行并填写的练习。',16,GRAY)
-    note(s,'这是学生实际操作，不提供虚构10轮教师参考成绩。使用验证结果作比较，测试成绩只作最终记录。epochs10会从官方预训练权重重新初始化，不是在baseline/best.pt上续训。Notebook首次保留EPOCHS=8并提示学生修改。若显存不足改batch，两组保持一致并在报告记录。')
+    text(s,7.25,3.94,4.72,2.04,'用自己的结果回答\n· 验证准确率是否提高？\n· 训练损失怎样变化？\n· 改变设置的收益与代价？\n· 为什么还需要验证集？',18)
+    text(s,.9,6.37,11.35,.4,'不固定训练轮数，也不预设训练越久越好。记录自己的设置，并用验证结果解释选择。',16,GRAY)
+    note(s,'学生自行设置两次实验轮数，不指定固定数值。根据训练与验证曲线比较；测试成绩只作最终记录。对比从同一官方预训练权重开始，不是在baseline上续训。保持其他参数相同并保留独立输出。更多轮数未必更好；需记录自己的实际设置与依据。')
     # 12. Entire AutoDL route on one page.
     s=d.slide('11 AutoDL 备用路线：开机 → 运行 → 下载 → 关机')
     text(s,.86,1.96,11.65,.68,'租用1张GPU并选择PyTorch镜像 → 打开JupyterLab → Terminal；以下命令前不加 !。',20)
-    codebox(s,.82,2.91,11.71,2.34,f'cd /root/autodl-tmp\ngit clone {REPO}.git\ncd byteformer-mnist-course\npython -m pip install -r requirements.txt\npython prepare.py\npython train.py',17)
+    codebox(s,.82,2.79,11.71,2.48,f'cd /root/autodl-tmp\ngit clone {REPO}.git\ncd byteformer-mnist-course\npython -m pip install -r requirements.txt\npython prepare.py\nread -p "epochs: " EPOCHS\npython train.py --epochs "$EPOCHS"',16)
     text(s,.91,5.56,11.43,.89,'运行后下载outputs中的指标和图；如需继续预测，保存best.pt。\n结束后回控制台关机：关闭浏览器不等于关机。价格以页面当前报价为准。',19)
     link(s,.9,6.57,11.3,'AutoDL官方快速开始（实例、JupyterLab、Terminal）','https://www.autodl.com/docs/quick_start/',14)
     note(s,'按AutoDL控制台选择空闲GPU、计费方式和PyTorch镜像，无需多卡。GPU检查命令python -c "import torch; print(torch.cuda.is_available())"。GitHub慢可用仓库ZIP上传解压进入正确目录。下载打包详细命令见README。关机与数据保留按当前官方规则，不承诺永久保存。')
