@@ -171,7 +171,7 @@ CPU 同学请按教师安排使用 GPU 完成这部分；如课堂只允许 CPU 
 
 预测示例图展示前 12 个测试样本，并额外加入最多 4 个实际错例；这些额外错例是为了讲解错误而选择的，不能用图中正确比例当作整体准确率。笔记本还会从 `test_predictions.npz` 读出错例的官方测试索引，供你再次预测并保存证据。打开预测图或混淆矩阵，寻找一个被识别错的数字。如果本次测试没有错例，报告真实情况，并分析一个自制图片的错误或一个容易混淆的样本，明确说明它的来源。
 
-在 [Word 报告模板](docs/学生实验报告模板.docx)（也提供 [Markdown 版](docs/student_report_template.md)） 中完成记录，提交以下材料：
+在 [Word 报告模板](docs/学生实验报告模板.docx)（也提供 [Markdown 版](docs/student_report_template.md)）中完成记录，提交以下材料：
 
 1. 完整实验报告。
 2. 基线和 5 轮实验各自的 `metrics.json`、`history.csv` 和 `curves.png`。
@@ -193,7 +193,7 @@ CPU 同学请按教师安排使用 GPU 完成这部分；如课堂只允许 CPU 
 | `GPU available: False` | Kaggle 设置中开启 GPU；无可用额度时切换 AutoDL，或先使用 CPU 快速路线。 |
 | 下载超时或校验失败 | 检查网络后重新执行 `python prepare.py`；持续失败时使用教师预下载的材料。不要忽略校验错误。 |
 | `CUDA out of memory` | 把 `--batch-size 32` 改为 `--batch-size 16`，必要时改为 `8`；在报告中记录变更，两组实验保持相同批次大小。 |
-| 训练很慢 | 检查是否在 CPU 上运行；先验证 CPU 快速路线，完整实验使用教师 GPU。 |
+| 训练很慢 | 检查是否在 CPU 上运行；先验证 CPU 快速路线，完整实验使用 Kaggle 或 AutoDL GPU。 |
 | 找不到 `best.pt` | 检查训练是否正常完成，以及 `--checkpoint` 是否与训练时的 `--output` 对应。 |
 | 准确率比同学低 | 先对比样本数、轮数、种子和输入设置。保留真实结果，再解释差异；不要通过反复测试来选择参数。 |
 | `already contains a run` | 已有结果受保护。改用新 `--output` 目录，并同步修改评估/预测的 checkpoint 路径。 |
