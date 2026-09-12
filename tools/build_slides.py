@@ -143,8 +143,9 @@ def main():
     picture(s,ASSETS/'hust_seal.png',.7,3.2,1.8,1.8)
     text(s,2.8,3.03,9.7,1.13,'ByteFormer 微调 MNIST',36,BLUE,True)
     text(s,2.82,4.28,9.5,.75,'零基础图像分类实验课',30,INK)
-    text(s,2.83,5.3,9.6,.8,'按步骤运行 · 查看真实结果 · 亲手修改一个参数',20,GRAY)
-    link(s,2.85,6.43,10,REPO,REPO,16)
+    text(s,2.83,5.23,9.6,.48,'授课教师：吴科君',23,INK)
+    text(s,2.83,5.91,9.6,.43,'按步骤运行 · 查看真实结果 · 亲手修改一个参数',20,GRAY)
+    link(s,2.85,6.59,10,REPO,REPO,16)
     # 2. Objective and route.
     s=d.bullets('01 任务要求与完成路线',[('完成一次真实微调','加载官方预训练ByteFormer，完成MNIST手写数字0—9分类。'),('亲手完成三个操作','自行设置参数并微调 → 观察验证曲线 → 查看并解释一个错例。'),('交付自己的实验记录','保留自己的指标、曲线、错例和Word报告，说明参数选择与结果。')])
     # 3. ByteFormer and fine tuning, merged.
