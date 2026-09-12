@@ -1,0 +1,22 @@
+{
+  "created_utc": "2026-09-12T05:32:21.306409+00:00",
+  "checkpoint": "outputs/course_baseline/best.pt",
+  "checkpoint_sha256": "3f042b46f90b004d9b44bb6fdaf3d43f6ef63a1ec05203063e6398fa76a07171",
+  "best_epoch": 5,
+  "best_validation_accuracy": 0.973,
+  "dataset": "official MNIST test split; no training/validation images",
+  "selection": "seed+1 permutation prefix; identical rule to train.py",
+  "seed": 42,
+  "encoding": "JPEG_RGB_28x28_quality100_subsampling0_pad2048_v1",
+  "corrected_masks": true,
+  "test": {
+    "loss": 0.16342405644133978,
+    "accuracy": 0.9707,
+    "correct": 9707,
+    "samples": 10000
+  },
+  "evaluation_seconds": 5.9266305299825035,
+  "device": "cuda",
+  "batch_size": 32,
+  "predictions_sha256": "6eb49a796bda44d48e20fa03d13a2ec01d3883ffc200915f949acc89b3fdc849"
+}

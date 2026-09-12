@@ -2,7 +2,7 @@
 
 用一个已经学过图像知识的 **ByteFormer** 模型，识别手写数字 `0–9`。你将完成下载材料、运行训练、查看结果、修改一个参数和分析一个错例。无需从零编写神经网络。
 
-课程仓库：[Franklin-L/byteformer-mnist-course](https://github.com/Franklin-L/byteformer-mnist-course)。推荐使用 **Kaggle 免费 GPU + 本仓库笔记本**，无需在自己的电脑上配置深度学习环境。
+15 页课程课件：[PowerPoint](docs/ByteFormer_MNIST_零基础实验课.pptx) / [PDF](docs/ByteFormer_MNIST_零基础实验课.pdf)。课程仓库：[Franklin-L/byteformer-mnist-course](https://github.com/Franklin-L/byteformer-mnist-course)。推荐使用 **Kaggle 免费 GPU + 本仓库笔记本**，无需在自己的电脑上配置深度学习环境。
 
 本课程使用 Apple 官方发布的 ImageNet 预训练 ByteFormer Tiny 权重，替换为 10 类分类头，再对 MNIST 进行**全参数微调**。我们提供适合教学的精简 PyTorch 实现，保留 12 层 Transformer 和预训练参数结构。实现对官方代码中的 padding mask 处理问题做了修正，具体差异见代码和教师复现记录。
 
@@ -12,7 +12,7 @@
 | --- | --- |
 | 下载数据与预训练权重，完成一次基线训练 | 下载成功记录、训练日志和 `metrics.json` |
 | 读懂训练损失与验证准确率曲线 | `curves.png`，用自己的话解释两个指标 |
-| 只把训练轮数从 3 改为 5，再运行一次 | 两个独立输出目录与验证集结果比较 |
+| 只把训练轮数从 8 改为 10，再运行一次 | 两个独立输出目录与验证集结果比较 |
 | 查看一个识别错误的数字并提出解释 | 数字图像、真实标签、预测标签与简短分析 |
 | 提交实验报告 | 使用 [Word 报告模板](docs/学生实验报告模板.docx)（也提供 [Markdown 版](docs/student_report_template.md)） |
 
@@ -74,22 +74,28 @@ python prepare.py
 在已开启 GPU 的环境中运行（Kaggle 单元格加 `!`）：
 
 ```bash
-python train.py --epochs 3 --train-samples 6000 --val-samples 1000 --test-samples 1000 --batch-size 32 --lr 0.0001 --output outputs/baseline
+python train.py --epochs 8 --train-samples 50000 --val-samples 1000 --test-samples 10000 --batch-size 32 --lr 0.0001 --lr-milestones 4 6 --lr-gamma 0.2 --output outputs/baseline
 ```
 
 上述参数也是默认设置，因此直接运行 `python train.py` 也可完成基线。第一次建议使用完整命令，让参数含义更清楚。
 
 | 参数 | 本次设置 | 含义 |
 | --- | --- | --- |
-| `--epochs` | `3` | 训练 3 轮 |
-| `--train-samples` | `6000` | 使用 6,000 个训练样本 |
+| `--epochs` | `8` | 训练 8 轮 |
+| `--train-samples` | `50000` | 使用 50,000 个训练样本 |
 | `--val-samples` | `1000` | 使用 1,000 个验证样本 |
-| `--test-samples` | `1000` | 最后使用 1,000 个测试样本 |
+| `--test-samples` | `10000` | 最后评估全部 10,000 个官方测试样本 |
 | `--batch-size` | `32` | 每批 32 个样本 |
 | `--lr` | `0.0001` | 主干学习率；新分类头使用其 10 倍，即 `0.001` |
+| `--lr-milestones` | `4 6` | 第 4、6 轮结束后降低学习率 |
+| `--lr-gamma` | `0.2` | 每次降低时乘以 0.2 |
 | `--output` | `outputs/baseline` | 本次结果保存目录 |
 
-本课程为缩短课堂运行时间，使用 MNIST 的固定子集，**并非完整 60,000 张训练图和 10,000 张测试图的标准基准实验**。默认随机种子为 `42`。官方训练部分先固定分为 50,000 张训练池和 10,000 张验证池，再分别取 6,000 和 1,000 张，彼此不重叠；测试部分用种子 `43` 打乱后取 1,000 张。
+正式课程使用 **50,000 张训练图 + 1,000 张验证图 + 10,000 张测试图**。默认随机种子为 `42`：官方 60,000 张训练图先固定分为 50,000 张训练池和 10,000 张验证池，本实验使用整个训练池，以及验证池的前 1,000 张；**验证池其余 9,000 张保留未用**。训练与验证没有重叠。官方 10,000 张测试图单独保留，在训练完成后全部评估；测试数据不用于更新参数或挑选最佳模型。
+
+不要把“验证池有 10,000 张”写成“本实验使用 10,000 张验证图”。我们实际验证样本数是 **1,000**，也没有使用官方全部 60,000 张训练图更新参数。
+
+学习率会自动降低：第 1–4 轮主干为 `0.0001`，第 5–6 轮为 `0.00002`，第 7 轮起为 `0.000004`；分类头始终使用主干的 10 倍。可以理解为先学习，再用较小步幅调整，学生无需手工干预。
 
 - **训练集：** 用来更新模型参数。
 - **验证集：** 每轮结束后检查，用来选出最佳模型。
@@ -109,7 +115,7 @@ outputs/baseline/
 └── confusion_matrix.png    # 各数字之间的混淆情况
 ```
 
-准确率不需要达到某个预先指定的数字才算完成。请保留自己的真实结果，不要把教师演示结果或截图中的数值抄成自己的实验数据。
+正式课程的参考目标是全部 10,000 张官方测试图准确率达到 **95% 以上**。请保留自己的真实结果；若低于目标，先检查样本数、训练轮数、学习率衰减和权重来源，再向教师说明。不要把教师演示结果或截图中的数值抄成自己的实验数据。
 
 ### CPU 快速路线
 
@@ -151,19 +157,19 @@ python predict.py --checkpoint outputs/baseline/best.pt --image assets/example_d
 
 为了接近 MNIST 的输入形式，请使用**黑底白字、一个居中的手写数字**。手机拍照中的背景、光照、方向和书写风格可能与 MNIST 差别较大，出现错误并不意味着训练脚本运行失败。自制图片是额外体验，不替代规定的测试集评估。
 
-## 6. 只改一个参数：3 轮变为 5 轮
+## 6. 只改一个参数：8 轮变为 10 轮
 
-保持其他参数相同，把 `--epochs 3` 改为 `--epochs 5`，并使用新输出目录：
+保持其他参数相同，把 `--epochs 8` 改为 `--epochs 10`，并使用新输出目录：
 
 ```bash
-python train.py --epochs 5 --train-samples 6000 --val-samples 1000 --test-samples 1000 --batch-size 32 --lr 0.0001 --output outputs/epochs5
+python train.py --epochs 10 --train-samples 50000 --val-samples 1000 --test-samples 10000 --batch-size 32 --lr 0.0001 --lr-milestones 4 6 --lr-gamma 0.2 --output outputs/epochs10
 ```
 
 如果输出目录已有实验结果，脚本会报错以保护结果；需要重新运行时，请改用新目录，例如 `outputs/baseline_retry`，并让评估与预测的 checkpoint 路径对应新目录。
 
-这次实验应再次从官方预训练参数出发。它不是在 `baseline/best.pt` 上接着训练。保留默认随机种子和相同的数据设置，使对比更公平。
+这次实验应再次从官方预训练参数出发。它不是在 `baseline/best.pt` 上接着训练。保留默认随机种子 `42`、相同的数据与学习率衰减设置，使对比更公平。两组都在第 4、6 轮后乘以 0.2，不要同时修改这些参数。
 
-用两次实验的 `history.csv` 比较**验证准确率**和训练损失，记录最佳验证轮次。不要预设“5 轮一定更好”。如果没有改善，说明观察到的事实，并讨论可能原因。两组训练轮数应在查看测试结果之前约定；测试结果用于最终报告，不用于继续试参。
+用两次实验的 `history.csv` 比较**验证准确率**和训练损失，记录最佳验证轮次。不要预设“10 轮一定更好”。如果没有改善，说明观察到的事实，并讨论可能原因。两组训练轮数应在查看测试结果之前约定；测试结果用于最终报告，不用于继续试参。
 
 CPU 同学请按教师安排使用 GPU 完成这部分；如课堂只允许 CPU 冒烟验证，应在报告中注明“完整对比实验未完成”，不要填写虚构结果。
 
@@ -174,7 +180,7 @@ CPU 同学请按教师安排使用 GPU 完成这部分；如课堂只允许 CPU 
 在 [Word 报告模板](docs/学生实验报告模板.docx)（也提供 [Markdown 版](docs/student_report_template.md)）中完成记录，提交以下材料：
 
 1. 完整实验报告。
-2. 基线和 5 轮实验各自的 `metrics.json`、`history.csv` 和 `curves.png`。
+2. 基线和 10 轮实验各自的 `metrics.json`、`history.csv` 和 `curves.png`。
 3. 基线的 `predictions.png`、`confusion_matrix.png`，以及错例图或终端记录。
 4. 简短说明：自己运行了哪些命令、修改了什么、遇到什么问题。
 
@@ -223,10 +229,10 @@ cd byteformer-mnist-course
 python -m pip install -r requirements.txt
 python -c "import torch; print(torch.__version__); print('GPU available:', torch.cuda.is_available())"
 python prepare.py
-python train.py --epochs 3 --train-samples 6000 --val-samples 1000 --test-samples 1000 --batch-size 32 --lr 0.0001 --output outputs/baseline
+python train.py --epochs 8 --train-samples 50000 --val-samples 1000 --test-samples 10000 --batch-size 32 --lr 0.0001 --lr-milestones 4 6 --lr-gamma 0.2 --output outputs/baseline
 ```
 
-4. 按第 5–7 步继续评估、预测和 5 轮对比。JupyterLab 左侧文件浏览器可以打开生成的图片。
+4. 按第 5–7 步继续评估、预测和 10 轮对比。JupyterLab 左侧文件浏览器可以打开生成的图片。
 5. 下载作业结果：运行下面的打包命令，然后在左侧文件浏览器中找到课程目录里的 `student_results.zip`，右键下载。打包不包含大型 checkpoint。
 
 ```bash
@@ -251,15 +257,17 @@ python prepare.py
 
 ## 教师实测参考：不要抄作自己的结果
 
-同一课程代码、种子 42、训练/验证/测试样本数 6,000/1,000/1,000，实际结果如下。用时为脚本记录的本次运行耗时，不含依赖安装和网络下载，也不是 Kaggle 或 AutoDL 的速度承诺。
+正式课程已达到 95% 以上的参考目标：在全部 **10,000 张官方测试图上，准确率为 97.07%（9,707/10,000）**。训练使用 50,000 张，实际验证使用 1,000 张。
 
-| 方案 | 最佳验证准确率 | 最终 1,000 张测试准确率 | 实测用时 |
+| 正式方案 | 最佳验证准确率 | 完整 10,000 张测试准确率 | 验证选出的最佳轮次 |
 | --- | --- | --- | --- |
-| 3 轮基线 | 88.5% | 88.6% | 39.48 秒 |
-| 5 轮对比 | 90.4% | 89.5% | 57.70 秒 |
-| CPU 流程验证：1 轮，1,000/200/200 | 不与完整实验直接比较 | 20.5% | 65.70 秒 |
+| 50,000 张训练、8 轮、第 4/6 轮后学习率乘 0.2 | 97.30% | 97.07% | 第 5 轮 |
 
-3 轮模型在独立评估全部 10,000 张官方测试图时为 **88.72%（8,872/10,000）**。这个分母与课堂 1,000 张测试不同，不能混用。实测软件环境为 Python 3.9.25、PyTorch 2.3.0+cu121、NumPy 1.26.4、Pillow 11.3.0、matplotlib 3.9.4、requests 2.32.5；GPU 为 NVIDIA GeForce RTX 4090；CPU 型号见 CPU 运行记录。环境差异可能影响复现结果。
+教师首次 8 轮运行用时 **712.90 秒（约 11.88 分钟）**，该次原始配置末尾测试了 1,000 张；锁定模型后，另行完整评估 10,000 张用时 **5.93 秒**。学生命令已直接设置 `--test-samples 10000`，一次完成完整测试。不要把教师原始 `metrics.json` 中的 1,000 张结果当作完整测试成绩。
+
+训练与验证记录见 [`examples/course_baseline/`](examples/course_baseline/)，正式完整测试证据见 [`examples/course_full_test/evaluation.json`](examples/course_full_test/evaluation.json)。8→10 轮是学生实操，没有填入未执行的教师 10 轮成绩。旧的 6,000 张、3 轮实验只保留在历史记录中。
+
+软件参考环境为 Python 3.9.25、PyTorch 2.3.0+cu121、NumPy 1.26.4、Pillow 11.3.0、matplotlib 3.9.4、requests 2.32.5，GPU 为 NVIDIA GeForce RTX 4090。记录中的用时不含依赖安装和网络下载，不是 Kaggle 或 AutoDL 的速度承诺。环境差异可能影响复现结果。
 
 `requirements.txt` 用于已有 PyTorch 的 Kaggle/AutoDL 环境；`requirements-reproduce.txt` 记录教师实测依赖，仅供需要复现该软件组合的教师参考，**学生不需要在 Kaggle 中安装后者**。
 
@@ -269,4 +277,4 @@ python prepare.py
 - 原始方法与预训练模型：Apple 的 [CoreNet 项目](https://github.com/apple/corenet)；权重来源、文件校验与实现差异以课程脚本和复现记录为准。
 - MNIST 原始压缩文件随课程提供；来源、校验与许可说明见仓库材料。
 
-本课程是教学适配，并非 Apple 官方课程。精简实现、MNIST 输入转换、小样本实验和 padding mask 修正可能使结果与官方完整 ImageNet 配置不同，不能据此声称复现了论文中的 ImageNet 性能。
+本课程是教学适配，并非 Apple 官方课程。精简实现、MNIST 输入转换、训练/验证划分和 padding mask 修正可能使结果与官方完整 ImageNet 配置不同，不能据此声称复现了论文中的 ImageNet 性能。

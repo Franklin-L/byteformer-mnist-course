@@ -17,7 +17,7 @@ def main():
     parser.add_argument('--output', type=Path, default=ROOT.parent / 'ByteFormer_MNIST_课堂资源包_含数据与权重.zip')
     args = parser.parse_args()
     files = subprocess.check_output(['git', 'ls-files', '-z'], cwd=ROOT).decode().split('\0')
-    required = [ROOT / 'checkpoints/imagenet_jpeg_q100_k8_w128.pt', ROOT / 'outputs/baseline/best.pt']
+    required = [ROOT / 'checkpoints/imagenet_jpeg_q100_k8_w128.pt', ROOT / 'outputs/course_baseline/best.pt']
     for p in required:
         if not p.is_file(): raise FileNotFoundError(f'Missing {p}; run preparation and the baseline first.')
     args.output.parent.mkdir(parents=True, exist_ok=True)
@@ -25,14 +25,15 @@ def main():
     with zipfile.ZipFile(args.output, 'w', compression=zipfile.ZIP_DEFLATED, compresslevel=5) as archive:
         for name in files:
             if name and (ROOT / name).is_file(): archive.write(ROOT / name, prefix + name)
+        archive.writestr(prefix + 'COURSE_VERSION.txt', subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT).decode())
         archive.write(required[0], prefix + 'checkpoints/' + required[0].name)
         archive.write(required[1], prefix + 'teacher_checkpoint/best.pt')
         archive.writestr(prefix + 'teacher_checkpoint/README.txt',
-            '教师参考模型：3轮，6000训练/1000验证，官方10000测试准确率88.72%。\n'
+            '教师参考模型：计划8轮、验证选中第5轮，50000训练/1000验证，官方10000测试准确率97.07%。\n'
             '仅用于演示或恢复；学生应自己运行train.py完成微调。\n'
             '已有Python/PyTorch环境后，在课程根目录执行：\n'
             'python prepare.py\n'
-            'python evaluate.py --checkpoint teacher_checkpoint/best.pt --output outputs/teacher_reference\n'
+            'python evaluate.py --checkpoint teacher_checkpoint/best.pt --test-samples 10000 --output outputs/teacher_reference\n'
             '此资源包含数据和权重，不含Python安装包。安装依赖仍可能需要网络。\n')
     print(f'{args.output} ({args.output.stat().st_size / 1024**2:.1f} MiB)')
 

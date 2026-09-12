@@ -1,0 +1,13 @@
+{
+  "date": "2026-09-12",
+  "source_commit": "5958a40",
+  "method": "Fresh independent Git clone; original ByteHOI paths were not used",
+  "environment": "Existing validated Python 3.9.25 / PyTorch 2.3.0+cu121 environment",
+  "data": "Four MNIST archives included in clone, all MD5 checks passed",
+  "pretrained_weights": "Downloaded from Apple in the new checkout; SHA256 matched",
+  "training": "CPU, 1 epoch, 64 train / 32 validation / 32 test, batch 16; exited successfully",
+  "outputs": "best.pt, metrics.json, history.csv, curves.png, predictions.png, confusion_matrix.png",
+  "prediction": "Reloaded newly trained checkpoint and completed single-image prediction",
+  "scope": "Portability smoke test only; its accuracy is not a course benchmark",
+  "cloud_platforms_logged_in_and_executed": false
+}

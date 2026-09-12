@@ -1,0 +1,22 @@
+{
+  "created_utc": "2026-09-12T05:21:59.972385+00:00",
+  "formal_training": {
+    "train_samples": 50000,
+    "val_samples": 1000,
+    "test_samples": 1000,
+    "epochs": 8,
+    "batch_size": 32,
+    "lr": 0.0001,
+    "head_lr_multiplier": 10,
+    "lr_milestones": [
+      4,
+      6
+    ],
+    "lr_gamma": 0.2,
+    "seed": 42
+  },
+  "checkpoint_selection": "highest validation accuracy; official test not used for checkpoint or scheduler selection",
+  "full_test_trigger": "best validation accuracy >= 0.96 after completing the planned run",
+  "full_test_samples": 10000,
+  "note": "Earlier pilot runs exist. This record describes the formal course run and its validation-based selection rule."
+}

@@ -1,0 +1,37 @@
+{
+  "target_accuracy": 0.95,
+  "measured_full_test": {
+    "loss": 0.16342405644133978,
+    "accuracy": 0.9707,
+    "correct": 9707,
+    "samples": 10000
+  },
+  "published_defaults": {
+    "epochs": 8,
+    "train_samples": 50000,
+    "val_samples": 1000,
+    "test_samples": 10000,
+    "batch_size": 32,
+    "lr": 0.0001,
+    "lr_milestones": [
+      4,
+      6
+    ],
+    "lr_gamma": 0.2,
+    "output": "outputs/baseline"
+  },
+  "actual_training_test_samples": 1000,
+  "separate_full_test_samples": 10000,
+  "best_epoch": 5,
+  "best_validation_accuracy": 0.973,
+  "actual_training_seconds": 712.9019388279994,
+  "full_evaluation_seconds": 5.9266305299825035,
+  "historical_metrics_preserved": true,
+  "teacher_epochs10_run": "not performed; student exercise only",
+  "full_test_integrity": {
+    "all_10000_original_indices_once": true,
+    "labels_match_original_archive": true,
+    "first_1000_predictions_match_training_test": true,
+    "confusion_matrix_matches_report": true
+  }
+}

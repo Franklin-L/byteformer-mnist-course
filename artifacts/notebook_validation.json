@@ -1,0 +1,33 @@
+{
+  "notebook": "course_kaggle.ipynb",
+  "total_cells": 26,
+  "code_cells": 12,
+  "compiled_cells": [
+    2,
+    4,
+    6,
+    8,
+    10,
+    12,
+    14,
+    16,
+    18,
+    20,
+    22,
+    24
+  ],
+  "validation": "actual IPython input_transformer_manager.transform_cell + Python compile",
+  "prefilled_outputs": false,
+  "gpu_check_in_subprocess": true,
+  "requirements_preserve_torch": true,
+  "numpy_requirement": "numpy>=1.26,<2",
+  "static_path_review": {
+    "clone_directory": "/kaggle/working/byteformer-mnist-course",
+    "directory_switch": "%cd",
+    "data_cache_writable": true,
+    "results_zip": "/kaggle/working/byteformer_mnist_results.zip",
+    "file_link": "../byteformer_mnist_results.zip",
+    "checkpoint_local_absolute_paths_required": false
+  },
+  "cloud_execution": "Not performed; notebook syntax and paths reviewed locally"
+}

@@ -1,0 +1,130 @@
+{
+  "created_utc": "2026-09-12T05:31:25.685214+00:00",
+  "config": {
+    "epochs": 8,
+    "train_samples": 50000,
+    "val_samples": 1000,
+    "test_samples": 1000,
+    "batch_size": 32,
+    "lr": 0.0001,
+    "lr_milestones": [
+      4,
+      6
+    ],
+    "lr_gamma": 0.2,
+    "seed": 42,
+    "device": "cuda",
+    "threads": 4,
+    "output": "outputs/course_baseline",
+    "weights": "/home/Li_fangcheng/teacher_assistant/byteformer_experiment/byteformer-mnist-course/checkpoints/imagenet_jpeg_q100_k8_w128.pt",
+    "encoding": "JPEG_RGB_28x28_quality100_subsampling0_pad2048_v1",
+    "corrected_masks": true,
+    "head_lr_multiplier": 10
+  },
+  "initial_validation": {
+    "loss": 2.9310309143066404,
+    "accuracy": 0.086,
+    "correct": 86,
+    "samples": 1000
+  },
+  "best_epoch": 5,
+  "best_validation_accuracy": 0.973,
+  "test": {
+    "loss": 0.1690515793402883,
+    "accuracy": 0.97,
+    "correct": 970,
+    "samples": 1000
+  },
+  "elapsed_seconds": 712.9019388279994,
+  "history": [
+    {
+      "epoch": 1,
+      "train_loss": 0.40426699874162675,
+      "train_accuracy": 0.87034,
+      "val_loss": 0.22226142728328704,
+      "val_accuracy": 0.932,
+      "lr": 0.0001,
+      "head_lr": 0.001,
+      "seconds": 81.83893194599659
+    },
+    {
+      "epoch": 2,
+      "train_loss": 0.17756522622555496,
+      "train_accuracy": 0.94852,
+      "val_loss": 0.26673039339482785,
+      "val_accuracy": 0.93,
+      "lr": 0.0001,
+      "head_lr": 0.001,
+      "seconds": 93.43295914601185
+    },
+    {
+      "epoch": 3,
+      "train_loss": 0.1324340187348239,
+      "train_accuracy": 0.9633,
+      "val_loss": 0.2475876281708479,
+      "val_accuracy": 0.935,
+      "lr": 0.0001,
+      "head_lr": 0.001,
+      "seconds": 89.5175009490049
+    },
+    {
+      "epoch": 4,
+      "train_loss": 0.10611274410018698,
+      "train_accuracy": 0.97198,
+      "val_loss": 0.2328259550333023,
+      "val_accuracy": 0.952,
+      "lr": 0.0001,
+      "head_lr": 0.001,
+      "seconds": 82.01002062298357
+    },
+    {
+      "epoch": 5,
+      "train_loss": 0.029933756195370805,
+      "train_accuracy": 0.99254,
+      "val_loss": 0.1690165683068335,
+      "val_accuracy": 0.973,
+      "lr": 2e-05,
+      "head_lr": 0.0002,
+      "seconds": 84.50343993699062
+    },
+    {
+      "epoch": 6,
+      "train_loss": 0.008321921920965251,
+      "train_accuracy": 0.99802,
+      "val_loss": 0.22689231560725603,
+      "val_accuracy": 0.967,
+      "lr": 2e-05,
+      "head_lr": 0.0002,
+      "seconds": 86.91769139099051
+    },
+    {
+      "epoch": 7,
+      "train_loss": 0.0032087132537850995,
+      "train_accuracy": 0.99946,
+      "val_loss": 0.1952651492656296,
+      "val_accuracy": 0.97,
+      "lr": 4.000000000000001e-06,
+      "head_lr": 4e-05,
+      "seconds": 90.0917864239891
+    },
+    {
+      "epoch": 8,
+      "train_loss": 0.0012127120148066025,
+      "train_accuracy": 0.9997,
+      "val_loss": 0.20727722089165762,
+      "val_accuracy": 0.971,
+      "lr": 4.000000000000001e-06,
+      "head_lr": 4e-05,
+      "seconds": 88.97244227302144
+    }
+  ],
+  "environment": {
+    "python": "3.9.25",
+    "torch": "2.3.0+cu121",
+    "device": "cuda",
+    "hardware": "NVIDIA GeForce RTX 4090",
+    "numpy": "1.26.4"
+  },
+  "pretrained_sha256": "13646ae929d20f3fb48f0a25e0a945dd59ad070746dbf651c6b2a64856867d82",
+  "split_sha256": "2d6241075fe7ec05a09e09bd719ef519920b6ca884d4038fa6838d41531cbdc2"
+}

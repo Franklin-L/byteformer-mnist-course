@@ -82,12 +82,16 @@ def write_plots(out, history, dataset, preds, labels):
 
 def parser():
     p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument('--epochs', type=int, default=3)
-    p.add_argument('--train-samples', type=int, default=6000)
+    p.add_argument('--epochs', type=int, default=8)
+    p.add_argument('--train-samples', type=int, default=50000)
     p.add_argument('--val-samples', type=int, default=1000)
-    p.add_argument('--test-samples', type=int, default=1000)
+    p.add_argument('--test-samples', type=int, default=10000)
     p.add_argument('--batch-size', type=int, default=32)
     p.add_argument('--lr', type=float, default=0.0001)
+    p.add_argument('--lr-milestones', type=int, nargs='*', default=[4, 6],
+                   help='Completed epochs after which learning rates decay; empty disables decay')
+    p.add_argument('--lr-gamma', type=float, default=0.2,
+                   help='Multiply both backbone and head learning rates at each milestone')
     p.add_argument('--seed', type=int, default=42)
     p.add_argument('--device', default='auto')
     p.add_argument('--threads', type=int, default=4)
@@ -100,6 +104,10 @@ def main():
     args = parser().parse_args()
     if min(args.epochs, args.batch_size, args.threads) < 1 or args.lr <= 0:
         raise ValueError('epochs, batch-size, threads and lr must be positive')
+    if args.lr_milestones != sorted(set(args.lr_milestones)) or any(e < 1 for e in args.lr_milestones):
+        raise ValueError('lr-milestones must be unique, increasing positive epoch numbers')
+    if not 0 < args.lr_gamma <= 1:
+        raise ValueError('lr-gamma must be greater than 0 and at most 1')
     out = args.output
     out.mkdir(parents=True, exist_ok=True)
     if (out / 'metrics.json').exists() or (out / 'best.pt').exists():
@@ -125,6 +133,8 @@ def main():
     # Separate head rate helps the randomly initialized classifier start learning.
     backbone = [p for name, p in model.named_parameters() if not name.startswith('classifier.')]
     optimizer = torch.optim.AdamW([{'params': backbone, 'lr': args.lr}, {'params': model.classifier.parameters(), 'lr': args.lr * 10}], weight_decay=0.01)
+    scheduler = torch.optim.lr_scheduler.MultiStepLR(
+        optimizer, milestones=args.lr_milestones, gamma=args.lr_gamma)
     initial, _, _ = score(model, val_loader, device)
     print(f'[BEFORE] validation accuracy={initial["accuracy"]*100:.2f}% (new untrained 10-class head)', flush=True)
     config = {k: str(v) if isinstance(v, Path) else v for k,v in vars(args).items()}
@@ -145,7 +155,7 @@ def main():
             if step == 1 or step % 50 == 0:
                 print(f'[TRAIN] epoch {epoch}/{args.epochs} step {step}/{len(train_loader)} loss={loss.item():.4f}', flush=True)
         val, _, _ = score(model, val_loader, device)
-        row = {'epoch': epoch, 'train_loss': loss_sum/count, 'train_accuracy': correct/count, 'val_loss': val['loss'], 'val_accuracy': val['accuracy'], 'seconds': time.perf_counter()-epoch_start}
+        row = {'epoch': epoch, 'train_loss': loss_sum/count, 'train_accuracy': correct/count, 'val_loss': val['loss'], 'val_accuracy': val['accuracy'], 'lr': optimizer.param_groups[0]['lr'], 'head_lr': optimizer.param_groups[1]['lr'], 'seconds': time.perf_counter()-epoch_start}
         history.append(row)
         with (out/'history.csv').open('w', newline='') as f:
             writer=csv.DictWriter(f, fieldnames=list(row), lineterminator='\n'); writer.writeheader(); writer.writerows(history)
@@ -153,7 +163,8 @@ def main():
             best_acc, best_epoch = val['accuracy'], epoch
             cpu_state = {k: v.detach().cpu() for k, v in model.state_dict().items()}
             torch.save({'model': cpu_state, 'config': config, 'best_epoch': best_epoch, 'best_val_accuracy': best_acc}, out/'best.pt')
-        print(f'[EPOCH {epoch}] train_acc={100*row["train_accuracy"]:.2f}% val_acc={100*val["accuracy"]:.2f}% time={row["seconds"]:.1f}s', flush=True)
+        scheduler.step()
+        print(f'[EPOCH {epoch}] train_acc={100*row["train_accuracy"]:.2f}% val_acc={100*val["accuracy"]:.2f}% lr={row["lr"]:.2g} time={row["seconds"]:.1f}s', flush=True)
     checkpoint = torch.load(out/'best.pt', map_location='cpu', weights_only=True)
     model.load_state_dict(checkpoint['model'], strict=True)
     test_ds = ByteMNIST(te_idx, train=False)

@@ -1,0 +1,5 @@
+[DATA] official test: 10000 images; JPEG bytes 873..1724
+/home/Li_fangcheng/.conda/envs/byteformer/lib/python3.9/site-packages/torch/nn/modules/conv.py:306: UserWarning: Plan failed with a cudnnException: CUDNN_BACKEND_EXECUTION_PLAN_DESCRIPTOR: cudnnFinalize Descriptor Failed cudnn_status: CUDNN_STATUS_NOT_SUPPORTED (Triggered internally at ../aten/src/ATen/native/cudnn/Conv_v8.cpp:919.)
+  return F.conv1d(input, weight, bias, self.stride,
+[EVALUATION] accuracy=97.07% (9707/10000); loss=0.1634; time=5.9s
+[SAVED] /home/Li_fangcheng/teacher_assistant/byteformer_experiment/byteformer-mnist-course/outputs/course_full_test / evaluation.json, evaluation_predictions.npz, predictions.png, confusion_matrix.png
