@@ -2,7 +2,7 @@
 
 ## 课程定位
 
-面向没有深度学习实践基础的学生。目标是让学生亲手完成一次真实预训练模型的微调，知道训练、验证和测试如何分工，能读懂最基本的学习曲线，并完成一次只改变训练轮数的对比。
+面向没有深度学习实践基础的学生。目标是让学生亲手完成一次真实预训练模型的微调，知道训练、验证和测试如何分工，能读懂最基本的学习曲线，并完成一次自选训练参数的对比。
 
 教学主线为 Kaggle 免费 GPU；AutoDL 租 GPU 作为备用，CPU 路线仅用于流程验证。Kaggle/AutoDL 的入口与下载步骤见 README。请在授课前用学生实际使用的账号、网络和设备完整运行一遍，记录真实耗时。不要把教师机器上的速度承诺为学生环境的固定速度。
 
@@ -22,12 +22,13 @@
 
 ### 基线命令
 
-不固定学生的训练轮数。Notebook 使用 `input()` 接收学生输入；以下为 AutoDL/Linux 终端命令：
+训练轮数和 batch size 均由学生自行设置，不固定数值。Notebook 使用 `input()` 接收学生输入；以下为 AutoDL/Linux 终端命令：
 
 ```bash
 python prepare.py
 read -p "请输入训练轮数：" EPOCHS
-python train.py --epochs "$EPOCHS" --output outputs/baseline
+read -p "请输入 batch size（参考32）：" BATCH_SIZE
+python train.py --epochs "$EPOCHS" --batch-size "$BATCH_SIZE" --output outputs/baseline
 python evaluate.py --checkpoint outputs/baseline/best.pt --output outputs/baseline
 python predict.py --checkpoint outputs/baseline/best.pt --index 0
 ```
@@ -36,10 +37,11 @@ python predict.py --checkpoint outputs/baseline/best.pt --index 0
 
 ```bash
 read -p "请输入对比实验的训练轮数：" COMPARISON_EPOCHS
-python train.py --epochs "$COMPARISON_EPOCHS" --output outputs/comparison
+read -p "请输入对比实验的 batch size：" COMPARISON_BATCH_SIZE
+python train.py --epochs "$COMPARISON_EPOCHS" --batch-size "$COMPARISON_BATCH_SIZE" --output outputs/comparison
 ```
 
-根据训练与验证曲线讨论设置是否合适；不把教师的实测轮数当作学生必须遵守的任务要求。
+batch size可以给出32作为参考，轮数可参照教师实测记录，但均不是固定要求。根据训练与验证曲线讨论设置是否合适；不把教师的实测轮数当作学生必须遵守的任务要求。
 
 ### CPU 备用命令
 
@@ -79,8 +81,8 @@ Notebook 最后生成 `/kaggle/working/byteformer_mnist_results.zip`；提醒学
 - “模型曾在 ImageNet 上学习”不意味着数字任务无需训练；MNIST 与 ImageNet 的图像内容不同，分类头也不同。
 - 说明 MNIST 训练、验证、测试来自不同样本；正式设置为 50,000 训练、1,000 验证、10,000 测试，另有 9,000 验证池样本未用。复现实验需要记录实际样本数。
 - 强调 `best.pt` 按验证集选择。即使最后一轮训练损失更低，最佳模型也可能来自更早的轮次。
-- 对比实验每次从同一官方预训练权重开始，保持默认随机种子、初始学习率及第 4、6 轮衰减设置，只改 epoch。不要误以为是接着上次的最佳模型继续训练。
-- 学生自行设置对比轮数，记录选择依据。学生可以报告两组最终测试结果，但不应再根据测试成绩反复改参数。
+- 对比实验每次从同一官方预训练权重开始，保持数据划分、随机种子和学习率策略相同。建议轮数与batch size一次只改一项；两项都变时说明比较的局限。不要误以为是接着上次的最佳模型继续训练。
+- 学生自行设置训练轮数和batch size，记录选择依据。学生可以报告两组最终测试结果，但不应再根据测试成绩反复改参数。
 - 学生发现错例时，把“观察到的笔画特征”和“对错误原因的推测”分开。一次错例不足以证明模型内部学到了什么。
 
 ## 建议评分：100 分
@@ -90,7 +92,7 @@ Notebook 最后生成 `/kaggle/working/byteformer_mnist_results.zip`；提醒学
 | 环境和数据准备 | 15 | 有自己的环境、下载校验和运行记录 |
 | 基线实验完成 | 25 | 参数、日志和结果文件相互一致，能独立运行 |
 | 指标与曲线解读 | 20 | 理解 loss、accuracy，区分验证和测试，解读符合实际数据 |
-| 单参数对比 | 20 | 只改轮数，保留独立输出，基于验证结果作比较 |
+| 参数对比 | 20 | 自行设置参数并说明依据，保留独立输出，基于验证结果作比较 |
 | 错例分析 | 10 | 有样本、标签与预测证据，解释合理且明确推测边界 |
 | 报告与可复现性 | 10 | 环境、代码版本、命令和提交材料完整，诚实报告限制 |
 

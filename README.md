@@ -12,7 +12,7 @@
 | --- | --- |
 | 下载数据与预训练权重，完成一次基线训练 | 下载成功记录、训练日志和 `metrics.json` |
 | 读懂训练损失与验证准确率曲线 | `curves.png`，用自己的话解释两个指标 |
-| 自行选择训练轮数，并用另一设置作对比 | 两个独立输出目录与验证集结果比较 |
+| 自行设置训练轮数和 batch size，并作参数对比 | 两个独立输出目录与验证集结果比较 |
 | 查看一个识别错误的数字并提出解释 | 数字图像、真实标签、预测标签与简短分析 |
 | 提交实验报告 | 使用 [Word 报告模板](docs/学生实验报告模板.docx)（也提供 [Markdown 版](docs/student_report_template.md)） |
 
@@ -71,14 +71,15 @@ python prepare.py
 
 ## 4. 完成基线微调
 
-训练轮数不作统一规定。Kaggle 在课程 Notebook 中输入自己选择的正整数；AutoDL/Linux 终端使用下面的命令：
+训练轮数和 batch size 均由学生设置，不作统一规定。Kaggle 在课程 Notebook 中输入自己选择的正整数；AutoDL/Linux 终端使用下面的命令：
 
 ```bash
 read -p "请输入训练轮数：" EPOCHS
-python train.py --epochs "$EPOCHS" --train-samples 50000 --val-samples 1000 --test-samples 10000 --batch-size 32 --lr 0.0001 --lr-milestones 4 6 --lr-gamma 0.2 --output outputs/baseline
+read -p "请输入 batch size（参考32）：" BATCH_SIZE
+python train.py --epochs "$EPOCHS" --train-samples 50000 --val-samples 1000 --test-samples 10000 --batch-size "$BATCH_SIZE" --lr 0.0001 --lr-milestones 4 6 --lr-gamma 0.2 --output outputs/baseline
 ```
 
-`--epochs` 接受任意正整数。程序保留教师实测用的默认值以方便复现，但它不是课程要求；课堂入口会让你自行输入轮数。记录自己的设置，根据训练和验证曲线决定后续是否调整；测试集只用于最终评估。终端中的 `read` 不要搬到 Kaggle 单元格，Notebook 已用 `input()` 处理输入。
+`--epochs` 与 `--batch-size` 均接受正整数。程序保留教师实测用的默认值以方便复现，但它不是课程要求；课堂入口会让你自行输入轮数和 batch size；参考值不等于固定要求。记录自己的设置，根据训练和验证曲线决定后续是否调整；测试集只用于最终评估。终端中的 `read` 不要搬到 Kaggle 单元格，Notebook 已用 `input()` 处理输入。
 
 | 参数 | 本次设置 | 含义 |
 | --- | --- | --- |
@@ -86,7 +87,7 @@ python train.py --epochs "$EPOCHS" --train-samples 50000 --val-samples 1000 --te
 | `--train-samples` | `50000` | 使用 50,000 个训练样本 |
 | `--val-samples` | `1000` | 使用 1,000 个验证样本 |
 | `--test-samples` | `10000` | 最后评估全部 10,000 个官方测试样本 |
-| `--batch-size` | `32` | 每批 32 个样本 |
+| `--batch-size` | 自行设置，参考 `32` | 每批样本数；可结合显存与训练情况调整 |
 | `--lr` | `0.0001` | 主干学习率；新分类头使用其 10 倍，即 `0.001` |
 | `--lr-milestones` | `4 6` | 第 4、6 轮结束后降低学习率 |
 | `--lr-gamma` | `0.2` | 每次降低时乘以 0.2 |
@@ -158,18 +159,19 @@ python predict.py --checkpoint outputs/baseline/best.pt --image assets/example_d
 
 为了接近 MNIST 的输入形式，请使用**黑底白字、一个居中的手写数字**。手机拍照中的背景、光照、方向和书写风格可能与 MNIST 差别较大，出现错误并不意味着训练脚本运行失败。自制图片是额外体验，不替代规定的测试集评估。
 
-## 6. 自选训练轮数，观察验证结果
+## 6. 自选参数，观察验证结果
 
-自行选择另一训练轮数作对比，保持其余设置相同；不规定两组必须使用哪些轮数，也不要求第二次必须更长。Kaggle 在对比单元格输入自己的设置；AutoDL/Linux 终端运行：
+自行设置另一组训练轮数和 batch size；不规定两组的具体数值。建议一次只改变其中一项，另一项沿用基线，便于判断效果。Kaggle 在对比单元格输入自己的设置；AutoDL/Linux 终端运行：
 
 ```bash
 read -p "请输入对比实验的训练轮数：" COMPARISON_EPOCHS
-python train.py --epochs "$COMPARISON_EPOCHS" --output outputs/comparison
+read -p "请输入对比实验的 batch size：" COMPARISON_BATCH_SIZE
+python train.py --epochs "$COMPARISON_EPOCHS" --batch-size "$COMPARISON_BATCH_SIZE" --output outputs/comparison
 ```
 
-两次都从同一官方预训练权重开始，固定数据划分、随机种子、批次大小和学习率策略。保留 `outputs/baseline`，另存 `outputs/comparison`；重跑使用新的输出目录，并让评估与预测的 checkpoint 路径对应。
+两次都从同一官方预训练权重开始，保持数据划分、随机种子和学习率策略相同；若两项参数都改变，请说明比较的局限。保留 `outputs/baseline`，另存 `outputs/comparison`；重跑使用新的输出目录，并让评估与预测的 checkpoint 路径对应。
 
-根据两次实验的 **训练与验证曲线** 比较损失、最佳验证准确率和耗时，解释自己为什么选择这些设置。更多轮数不保证更好。可以根据验证集判断下一步是否调整，但不能根据测试集反复选参数。报告中填写自己的实际轮数，不照抄教师实测配置。
+根据两次实验的 **训练与验证曲线** 比较损失、最佳验证准确率和耗时，解释自己为什么选择这些设置。更多轮数不保证更好。可以根据验证集判断下一步是否调整，但不能根据测试集反复选参数。报告中填写自己的实际轮数和 batch size，不照抄教师实测配置。
 
 仅做 CPU 流程验证时，如实说明完整实验尚未完成。
 
@@ -198,7 +200,7 @@ python train.py --epochs "$COMPARISON_EPOCHS" --output outputs/comparison
 | `can't open file 'train.py'` | 当前目录不对。先进入能看到 `train.py` 的课程目录。 |
 | `GPU available: False` | Kaggle 设置中开启 GPU；无可用额度时切换 AutoDL，或先使用 CPU 快速路线。 |
 | 下载超时或校验失败 | 检查网络后重新执行 `python prepare.py`；持续失败时使用教师预下载的材料。不要忽略校验错误。 |
-| `CUDA out of memory` | 把 `--batch-size 32` 改为 `--batch-size 16`，必要时改为 `8`；在报告中记录变更，两组实验保持相同批次大小。 |
+| `CUDA out of memory` | 降低自己设置的 batch size，例如从 32 降到 16 或 8，并记录实际值；若比较轮数的影响，则保持 batch size 相同。 |
 | 训练很慢 | 检查是否在 CPU 上运行；先验证 CPU 快速路线，完整实验使用 Kaggle 或 AutoDL GPU。 |
 | 找不到 `best.pt` | 检查训练是否正常完成，以及 `--checkpoint` 是否与训练时的 `--output` 对应。 |
 | 准确率比同学低 | 先对比样本数、轮数、种子和输入设置。保留真实结果，再解释差异；不要通过反复测试来选择参数。 |
@@ -230,7 +232,8 @@ python -m pip install -r requirements.txt
 python -c "import torch; print(torch.__version__); print('GPU available:', torch.cuda.is_available())"
 python prepare.py
 read -p "请输入训练轮数：" EPOCHS
-python train.py --epochs "$EPOCHS" --train-samples 50000 --val-samples 1000 --test-samples 10000 --batch-size 32 --lr 0.0001 --lr-milestones 4 6 --lr-gamma 0.2 --output outputs/baseline
+read -p "请输入 batch size（参考32）：" BATCH_SIZE
+python train.py --epochs "$EPOCHS" --train-samples 50000 --val-samples 1000 --test-samples 10000 --batch-size "$BATCH_SIZE" --lr 0.0001 --lr-milestones 4 6 --lr-gamma 0.2 --output outputs/baseline
 ```
 
 4. 按第 5–7 步继续评估、预测和自选参数对比。JupyterLab 左侧文件浏览器可以打开生成的图片。
@@ -266,7 +269,7 @@ python prepare.py
 
 教师首次 8 轮运行用时 **712.90 秒（约 11.88 分钟）**，该次原始配置末尾测试了 1,000 张；锁定模型后，另行完整评估 10,000 张用时 **5.93 秒**。学生命令已直接设置 `--test-samples 10000`，一次完成完整测试。不要把教师原始 `metrics.json` 中的 1,000 张结果当作完整测试成绩。
 
-训练与验证记录见 [`examples/course_baseline/`](examples/course_baseline/)，正式完整测试证据见 [`examples/course_full_test/evaluation.json`](examples/course_full_test/evaluation.json)。以上轮数仅是教师这次实测记录，不规定学生的训练轮数。学生自行设置并报告自己的结果。旧的 6,000 张、3 轮实验只保留在历史记录中。
+训练与验证记录见 [`examples/course_baseline/`](examples/course_baseline/)，正式完整测试证据见 [`examples/course_full_test/evaluation.json`](examples/course_full_test/evaluation.json)。以上轮数仅是教师这次实测记录，不规定学生的训练轮数。学生自行设置轮数和 batch size，并报告自己的结果。旧的 6,000 张、3 轮实验只保留在历史记录中。
 
 软件参考环境为 Python 3.9.25、PyTorch 2.3.0+cu121、NumPy 1.26.4、Pillow 11.3.0、matplotlib 3.9.4、requests 2.32.5，GPU 为 NVIDIA GeForce RTX 4090。记录中的用时不含依赖安装和网络下载，不是 Kaggle 或 AutoDL 的速度承诺。环境差异可能影响复现结果。
 
