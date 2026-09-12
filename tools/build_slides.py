@@ -280,7 +280,6 @@ def main():
     s=d.slide('14 课程入口与参考资料','详细点击步骤、完整命令和排错说明，统一放在配套指南与Notebook。')
     sources=[('课程仓库：代码、Notebook、数据、PPT、报告模板',REPO),('Kaggle Notebook 官方文档','https://www.kaggle.com/docs/notebooks'),('AutoDL 官方快速开始','https://www.autodl.com/docs/quick_start/'),('ByteFormer 原论文：Bytes Are All You Need','https://arxiv.org/abs/2306.00238'),('Apple CoreNet：ByteFormer代码与预训练权重','https://github.com/apple/corenet/tree/main/projects/byteformer'),('MNIST：CVDF镜像与原作者说明','https://github.com/cvdfoundation/mnist')]
     for i,(label,url) in enumerate(sources):link(s,.92,2.25+i*.59,11.55,label,url,19)
-    text(s,.91,6.27,11.46,.56,'校园、校徽来自教师样例并保留原权利；代码、数据与模型归属见仓库说明。',15,GRAY)
     note(s,'所有链接为可点击链接。PPT共15页，对齐教师样例的信息密度；课堂主讲只需本PPT，学生逐步实操使用Notebook。未进行真实Kaggle或AutoDL登录执行，所有性能结果注明本地实测。')
     assert len(d.prs.slides)==15
     out=ROOT.parent/('_reference_analysis/course_preview.pptx' if args.draft else 'ByteFormer_MNIST_零基础实验课.pptx')
