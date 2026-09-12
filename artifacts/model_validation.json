@@ -1,0 +1,22 @@
+{
+  "checkpoint_sha256": "13646ae929d20f3fb48f0a25e0a945dd59ad070746dbf651c6b2a64856867d82",
+  "pytorch": "2.3.0+cu121",
+  "device": "cpu",
+  "loading": {
+    "backbone_tensors_loaded": 167,
+    "classifier_replaced": true,
+    "source_classes": 1000,
+    "target_classes": 10,
+    "corrected_masks": true,
+    "parameters_total": 15729610
+  },
+  "right_padding_max_abs_error": 1.430511474609375e-06,
+  "two_forwards_seconds": 0.11694805501610972,
+  "mixed_length_batch_max_abs_error": 2.771615982055664e-06,
+  "backpropagation": "finite nonzero gradients in embedding, conv, first/last layers, head",
+  "official_compatibility_mode_max_abs_errors": {
+    "1100": 0.0,
+    "1536": 0.0
+  },
+  "official_parity_scope": "corrected_masks=False/use_sdpa=False only; course mask fixes intentionally change upstream outputs"
+}

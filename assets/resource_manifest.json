@@ -1,0 +1,34 @@
+{
+  "weights": {
+    "filename": "imagenet_jpeg_q100_k8_w128.pt",
+    "url": "https://docs-assets.developer.apple.com/ml-research/models/cvnets-v2/multimodal_classification/imagenet_jpeg_q100_k8_w128.pt",
+    "sha256": "13646ae929d20f3fb48f0a25e0a945dd59ad070746dbf651c6b2a64856867d82",
+    "bytes": 63748911
+  },
+  "mnist": {
+    "source": "https://github.com/cvdfoundation/mnist",
+    "original_authors": "Yann LeCun, Corinna Cortes, Christopher J.C. Burges",
+    "archives": [
+      {
+        "filename": "t10k-images-idx3-ubyte.gz",
+        "md5": "9fb629c4189551a2d022fa330f9573f3",
+        "bytes": 1648877
+      },
+      {
+        "filename": "t10k-labels-idx1-ubyte.gz",
+        "md5": "ec29112dd5afa0611ce80d1b7f02629c",
+        "bytes": 4542
+      },
+      {
+        "filename": "train-images-idx3-ubyte.gz",
+        "md5": "f68b3c2dcbeaaa9fbdd348bbdeb94873",
+        "bytes": 9912422
+      },
+      {
+        "filename": "train-labels-idx1-ubyte.gz",
+        "md5": "d53e105ee54ea40749a09fcbcd1e9432",
+        "bytes": 28881
+      }
+    ]
+  }
+}

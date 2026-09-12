@@ -1,0 +1,33 @@
+{
+  "evaluation_default_subset": {
+    "samples": 1000,
+    "correct": 886,
+    "accuracy": 0.886,
+    "prediction_indices_labels_match_training_exactly": true
+  },
+  "baseline_full_official_test": {
+    "samples": 10000,
+    "correct": 8872,
+    "accuracy": 0.8872,
+    "report": "outputs/full_test/evaluation.json"
+  },
+  "prediction_official_index_0": {
+    "true": 7,
+    "prediction": 7,
+    "confidence_printed": 0.9993
+  },
+  "prediction_custom": {
+    "image": "assets/example_digit.png",
+    "source": "Original official MNIST test index 0",
+    "prediction": 7,
+    "confidence_printed": 0.9993,
+    "automatic_inversion": false
+  },
+  "invalid_arguments_rejected": [
+    "evaluate --test-samples 0",
+    "evaluate --test-samples 10001",
+    "predict --index -1",
+    "predict --index 10000",
+    "predict --threads 0"
+  ]
+}

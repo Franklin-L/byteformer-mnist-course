@@ -1,0 +1,53 @@
+{
+  "created_utc": "2026-09-12T04:53:01.634100+00:00",
+  "config": {
+    "epochs": 1,
+    "train_samples": 1000,
+    "val_samples": 200,
+    "test_samples": 200,
+    "batch_size": 16,
+    "lr": 0.0001,
+    "seed": 42,
+    "device": "cpu",
+    "threads": 4,
+    "output": "outputs/cpu_smoke",
+    "weights": "/home/Li_fangcheng/teacher_assistant/byteformer_experiment/byteformer-mnist-course/checkpoints/imagenet_jpeg_q100_k8_w128.pt",
+    "encoding": "JPEG_RGB_28x28_quality100_subsampling0_pad2048_v1",
+    "corrected_masks": true,
+    "head_lr_multiplier": 10
+  },
+  "initial_validation": {
+    "loss": 2.8772295570373534,
+    "accuracy": 0.105,
+    "correct": 21,
+    "samples": 200
+  },
+  "best_epoch": 1,
+  "best_validation_accuracy": 0.265,
+  "test": {
+    "loss": 1.9943194580078125,
+    "accuracy": 0.205,
+    "correct": 41,
+    "samples": 200
+  },
+  "elapsed_seconds": 65.65631783998106,
+  "history": [
+    {
+      "epoch": 1,
+      "train_loss": 2.207822172164917,
+      "train_accuracy": 0.178,
+      "val_loss": 1.90618408203125,
+      "val_accuracy": 0.265,
+      "seconds": 57.218364467989886
+    }
+  ],
+  "environment": {
+    "python": "3.9.25",
+    "torch": "2.3.0+cu121",
+    "device": "cpu",
+    "hardware": "x86_64",
+    "numpy": "1.26.4"
+  },
+  "pretrained_sha256": "13646ae929d20f3fb48f0a25e0a945dd59ad070746dbf651c6b2a64856867d82",
+  "split_sha256": "4e091dee41c354136949eb6c1dc7530f178a00a50ee8dc39f76e8287fb214b65"
+}

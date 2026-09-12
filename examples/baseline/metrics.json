@@ -1,0 +1,69 @@
+{
+  "created_utc": "2026-09-12T04:51:39.968422+00:00",
+  "config": {
+    "epochs": 3,
+    "train_samples": 6000,
+    "val_samples": 1000,
+    "test_samples": 1000,
+    "batch_size": 32,
+    "lr": 0.0001,
+    "seed": 42,
+    "device": "auto",
+    "threads": 4,
+    "output": "outputs/baseline",
+    "weights": "/home/Li_fangcheng/teacher_assistant/byteformer_experiment/byteformer-mnist-course/checkpoints/imagenet_jpeg_q100_k8_w128.pt",
+    "encoding": "JPEG_RGB_28x28_quality100_subsampling0_pad2048_v1",
+    "corrected_masks": true,
+    "head_lr_multiplier": 10
+  },
+  "initial_validation": {
+    "loss": 2.9310309143066404,
+    "accuracy": 0.086,
+    "correct": 86,
+    "samples": 1000
+  },
+  "best_epoch": 3,
+  "best_validation_accuracy": 0.885,
+  "test": {
+    "loss": 0.3873220415711403,
+    "accuracy": 0.886,
+    "correct": 886,
+    "samples": 1000
+  },
+  "elapsed_seconds": 39.48332220801967,
+  "history": [
+    {
+      "epoch": 1,
+      "train_loss": 1.1177307966550192,
+      "train_accuracy": 0.6133333333333333,
+      "val_loss": 0.6447820739746094,
+      "val_accuracy": 0.795,
+      "seconds": 11.131905475020176
+    },
+    {
+      "epoch": 2,
+      "train_loss": 0.36633506697416307,
+      "train_accuracy": 0.8846666666666667,
+      "val_loss": 0.49903772735595703,
+      "val_accuracy": 0.839,
+      "seconds": 11.338947102020029
+    },
+    {
+      "epoch": 3,
+      "train_loss": 0.2143886596262455,
+      "train_accuracy": 0.9395,
+      "val_loss": 0.3649643454551697,
+      "val_accuracy": 0.885,
+      "seconds": 11.194124341011047
+    }
+  ],
+  "environment": {
+    "python": "3.9.25",
+    "torch": "2.3.0+cu121",
+    "device": "cuda",
+    "hardware": "NVIDIA GeForce RTX 4090",
+    "numpy": "1.26.4"
+  },
+  "pretrained_sha256": "13646ae929d20f3fb48f0a25e0a945dd59ad070746dbf651c6b2a64856867d82",
+  "split_sha256": "54aa6a5d3497386292b8cc5c50518dd3bdc3b5fc12f8f64f68d205f1948e4b4b"
+}

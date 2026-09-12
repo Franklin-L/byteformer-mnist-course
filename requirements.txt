@@ -1,0 +1,5 @@
+# For Kaggle/AutoDL PyTorch images; intentionally does not reinstall torch.
+numpy>=1.26,<2
+Pillow>=10.4,<13
+matplotlib>=3.9,<4
+requests>=2.32,<3

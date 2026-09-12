@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+.DS_Store
+.ipynb_checkpoints/
+.corenet_data_cache/
+checkpoints/*.pt
+outputs/
+data/cache/
+*.part
+*.zip
+.venv/

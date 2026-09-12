@@ -1,0 +1,38 @@
+[ENV] Python 3.9.25 | PyTorch 2.3.0+cu121 | device=cuda
+[GPU] NVIDIA GeForce RTX 4090
+[DATA] train pool: 6000 images; JPEG bytes 882..1771
+[DATA] train pool: 1000 images; JPEG bytes 886..1698
+[MODEL] Full pretrained Tiny; 15,729,610 trainable parameters; new 10-class head
+/home/Li_fangcheng/.conda/envs/byteformer/lib/python3.9/site-packages/torch/nn/modules/conv.py:306: UserWarning: Plan failed with a cudnnException: CUDNN_BACKEND_EXECUTION_PLAN_DESCRIPTOR: cudnnFinalize Descriptor Failed cudnn_status: CUDNN_STATUS_NOT_SUPPORTED (Triggered internally at ../aten/src/ATen/native/cudnn/Conv_v8.cpp:919.)
+  return F.conv1d(input, weight, bias, self.stride,
+[BEFORE] validation accuracy=8.60% (new untrained 10-class head)
+/home/Li_fangcheng/.conda/envs/byteformer/lib/python3.9/site-packages/torch/autograd/graph.py:744: UserWarning: Plan failed with a cudnnException: CUDNN_BACKEND_EXECUTION_PLAN_DESCRIPTOR: cudnnFinalize Descriptor Failed cudnn_status: CUDNN_STATUS_NOT_SUPPORTED (Triggered internally at ../aten/src/ATen/native/cudnn/Conv_v8.cpp:919.)
+  return Variable._execution_engine.run_backward(  # Calls into the C++ engine to run the backward pass
+[TRAIN] epoch 1/5 step 1/188 loss=2.5805
+[TRAIN] epoch 1/5 step 50/188 loss=1.2909
+[TRAIN] epoch 1/5 step 100/188 loss=0.8299
+[TRAIN] epoch 1/5 step 150/188 loss=0.5246
+[EPOCH 1] train_acc=61.33% val_acc=79.50% time=11.1s
+[TRAIN] epoch 2/5 step 1/188 loss=0.3202
+[TRAIN] epoch 2/5 step 50/188 loss=0.3219
+[TRAIN] epoch 2/5 step 100/188 loss=0.5154
+[TRAIN] epoch 2/5 step 150/188 loss=0.0564
+[EPOCH 2] train_acc=88.47% val_acc=83.90% time=11.3s
+[TRAIN] epoch 3/5 step 1/188 loss=0.0694
+[TRAIN] epoch 3/5 step 50/188 loss=0.2895
+[TRAIN] epoch 3/5 step 100/188 loss=0.0268
+[TRAIN] epoch 3/5 step 150/188 loss=0.7246
+[EPOCH 3] train_acc=93.95% val_acc=88.50% time=9.7s
+[TRAIN] epoch 4/5 step 1/188 loss=0.0567
+[TRAIN] epoch 4/5 step 50/188 loss=0.6515
+[TRAIN] epoch 4/5 step 100/188 loss=0.0764
+[TRAIN] epoch 4/5 step 150/188 loss=0.0131
+[EPOCH 4] train_acc=95.38% val_acc=89.70% time=9.3s
+[TRAIN] epoch 5/5 step 1/188 loss=0.1482
+[TRAIN] epoch 5/5 step 50/188 loss=0.2496
+[TRAIN] epoch 5/5 step 100/188 loss=0.1609
+[TRAIN] epoch 5/5 step 150/188 loss=0.0302
+[EPOCH 5] train_acc=96.62% val_acc=90.40% time=10.6s
+[DATA] official test: 1000 images; JPEG bytes 965..1697
+[DONE] best epoch=5; test accuracy=89.50% (895/1000); elapsed=57.7s
+[SAVED] /home/Li_fangcheng/teacher_assistant/byteformer_experiment/byteformer-mnist-course/outputs/epochs5 / best.pt, metrics.json, history.csv, curves.png, predictions.png, confusion_matrix.png

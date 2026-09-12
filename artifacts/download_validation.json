@@ -1,0 +1,7 @@
+{
+  "source": "https://docs-assets.developer.apple.com/ml-research/models/cvnets-v2/multimodal_classification/imagenet_jpeg_q100_k8_w128.pt",
+  "sha256": "13646ae929d20f3fb48f0a25e0a945dd59ad070746dbf651c6b2a64856867d82",
+  "downloaded_bytes": 63748911,
+  "seconds": 3.8462775769876316,
+  "verified_against_local_pretrained": true
+}

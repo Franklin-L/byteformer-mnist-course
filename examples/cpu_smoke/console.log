@@ -1,0 +1,11 @@
+[ENV] Python 3.9.25 | PyTorch 2.3.0+cu121 | device=cpu
+[DATA] train pool: 1000 images; JPEG bytes 890..1771
+[DATA] train pool: 200 images; JPEG bytes 940..1642
+[MODEL] Full pretrained Tiny; 15,729,610 trainable parameters; new 10-class head
+[BEFORE] validation accuracy=10.50% (new untrained 10-class head)
+[TRAIN] epoch 1/1 step 1/63 loss=3.1155
+[TRAIN] epoch 1/1 step 50/63 loss=1.9608
+[EPOCH 1] train_acc=17.80% val_acc=26.50% time=57.2s
+[DATA] official test: 200 images; JPEG bytes 1002..1675
+[DONE] best epoch=1; test accuracy=20.50% (41/200); elapsed=65.7s
+[SAVED] /home/Li_fangcheng/teacher_assistant/byteformer_experiment/byteformer-mnist-course/outputs/cpu_smoke / best.pt, metrics.json, history.csv, curves.png, predictions.png, confusion_matrix.png

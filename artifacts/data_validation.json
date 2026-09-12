@@ -1,0 +1,20 @@
+{
+  "encoding": "JPEG_RGB_28x28_quality100_subsampling0_pad2048_v1",
+  "pillow_version": "11.3.0",
+  "checked_images": 70000,
+  "pad_length": 2048,
+  "all_fit": true,
+  "train": {
+    "images": 60000,
+    "min_bytes": 827,
+    "max_bytes": 1788,
+    "max_length_original_index": 59452
+  },
+  "test": {
+    "images": 10000,
+    "min_bytes": 873,
+    "max_bytes": 1724,
+    "max_length_original_index": 3364
+  },
+  "method": "Read all original MNIST gzip archives; call image_to_bytes for every image; do not use or write token caches"
+}
