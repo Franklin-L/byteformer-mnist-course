@@ -73,7 +73,6 @@ class Deck:
         text(s,.6,.86,12.1,.56,title,30,INK,True)
         rect(s,.65,1.5,12.02,.023,'BACBD7')
         if subtitle: text(s,.66,1.66,12,.55,subtitle,17,GRAY)
-        rect(s,.28,6.97,.32,.32,'B8D7EA'); rect(s,.68,6.97,.32,.32,'C5C3D3')
         text(s,12.1,7.0,.55,.3,str(len(self.prs.slides)),11,GRAY,align=PP_ALIGN.RIGHT)
         return s
     def bullets(self,title,items,subtitle=''):
