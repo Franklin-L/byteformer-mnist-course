@@ -63,13 +63,13 @@ def picture(slide, path, x, y, w, h):
 class Deck:
     def __init__(self):
         self.prs=Presentation(); self.prs.slide_width=Inches(13.333); self.prs.slide_height=Inches(7.5)
-        self.prs.core_properties.title='ByteFormer 微调 MNIST：零基础实验课'
+        self.prs.core_properties.title='码流图像分类任务说明'
         self.prs.core_properties.author='Franklin-L'
-        self.prs.core_properties.subject='ByteFormer微调MNIST图像分类实验'
+        self.prs.core_properties.subject='码流图像分类：ByteFormer微调MNIST'
     def slide(self,title,subtitle=''):
         s=self.prs.slides.add_slide(self.prs.slide_layouts[6])
         picture(s,ASSETS/'hust_wordmark.png',.55,.2,2.65,.52)
-        text(s,8.5,.24,4.2,.35,'ByteFormer · MNIST 实验课',13,GRAY,align=PP_ALIGN.RIGHT)
+        text(s,8.5,.24,4.2,.35,'码流图像分类',13,GRAY,align=PP_ALIGN.RIGHT)
         text(s,.6,.86,12.1,.56,title,30,INK,True)
         rect(s,.65,1.5,12.02,.023,'BACBD7')
         if subtitle: text(s,.66,1.66,12,.55,subtitle,17,GRAY)
@@ -141,10 +141,11 @@ def main():
     s=d.prs.slides.add_slide(d.prs.slide_layouts[6])
     picture(s,ASSETS/'campus.png',0,0,13.333,2.5);rect(s,0,2.53,13.333,.055,BLUE)
     picture(s,ASSETS/'hust_seal.png',.7,3.2,1.8,1.8)
-    text(s,2.8,3.03,9.7,1.13,'ByteFormer 微调 MNIST',36,BLUE,True)
-    text(s,2.82,4.28,9.5,.75,'图像分类实验任务说明',30,INK)
-    text(s,2.83,5.23,9.6,.48,'授课教师：吴科君',23,INK)
-    link(s,2.85,6.59,10,REPO,REPO,16)
+    text(s,2.8,3.23,10.0,1.13,'码流图像分类任务说明',36,BLUE,True)
+    text(s,2.83,4.68,4.65,.55,'助教：李方成',24,'000000',True)
+    text(s,8.0,4.68,4.65,.55,'教师：吴科君',24,'000000',True)
+    text(s,2.83,5.46,4.65,.55,'lifangcheng2002@163.com',19,'000000',True)
+    text(s,8.0,5.46,4.65,.55,'kjwu@hust.edu.cn',19,'000000',True)
     # 2. Objective and route.
     s=d.bullets('01 实验目标与任务要求',[('实验目标','加载官方预训练ByteFormer，完成MNIST手写数字0—9分类。'),('实验内容','设置训练参数，完成模型微调、验证结果分析及错例分析。'),('提交材料','提交实验报告及运行记录，包括参数设置、学习曲线、评估结果和错例分析。')])
     # 3. ByteFormer and fine tuning, merged.

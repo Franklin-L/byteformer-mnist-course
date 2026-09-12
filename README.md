@@ -1,14 +1,19 @@
-# ByteFormer 微调 MNIST：零基础课程实验
+# 码流图像分类
 
-用一个已经学过图像知识的 **ByteFormer** 模型，识别手写数字 `0–9`。你将完成下载材料、运行训练、查看结果、修改一个参数和分析一个错例。无需从零编写神经网络。
+本实验基于 ByteFormer 预训练模型，在 MNIST 数据集上完成码流图像分类。实验内容包括环境配置、模型微调、参数对比和结果分析。
+
+| 任课人员 | 姓名 | 邮箱 |
+| --- | --- | --- |
+| 教师 | 吴科君 | kjwu@hust.edu.cn |
+| 助教 | 李方成 | lifangcheng2002@163.com |
 
 16 页课程课件：[PowerPoint](docs/ByteFormer_MNIST_零基础实验课.pptx) / [PDF](docs/ByteFormer_MNIST_零基础实验课.pdf)。课程仓库：[Franklin-L/byteformer-mnist-course](https://github.com/Franklin-L/byteformer-mnist-course)。推荐使用 **Kaggle 免费 GPU + 本仓库笔记本**，无需在自己的电脑上配置深度学习环境。
 
-本课程使用 Apple 官方发布的 ImageNet 预训练 ByteFormer Tiny 权重，替换为 10 类分类头，再对 MNIST 进行**全参数微调**。我们提供适合教学的精简 PyTorch 实现，保留 12 层 Transformer 和预训练参数结构。实现对官方代码中的 padding mask 处理问题做了修正，具体差异见代码和教师复现记录。
+实验采用 Apple 发布的 ImageNet 预训练 ByteFormer Tiny，保留 12 层 Transformer，将分类头调整为 10 类，并使用 MNIST 更新模型参数。
 
-## 你需要完成什么
+## 实验要求
 
-| 必做任务 | 完成证据 |
+| 实验任务 | 提交内容 |
 | --- | --- |
 | 下载数据与预训练权重，完成一次基线训练 | 下载成功记录、训练日志和 `metrics.json` |
 | 读懂训练损失与验证准确率曲线 | `curves.png`，用自己的话解释两个指标 |
@@ -18,7 +23,7 @@
 
 **微调**：从已训练的参数继续学习新任务。**MNIST**：手写数字图像数据集。**epoch（轮）**：把本次选定的训练样本学习一遍。**batch（批次）**：每次一起送入模型的一小组样本。**loss（损失）**：训练时使用的误差，通常希望它下降。**accuracy（准确率）**：预测正确的比例，通常希望它上升。
 
-ByteFormer 读取的是**文件字节序列**。本实验把 MNIST 灰度图转成 RGB 图像，以 JPEG 格式编码，再把 JPEG 字节交给模型；学生不需要手工转换图片。它与直接把像素小块输入普通视觉 Transformer 的处理流程不同。
+ByteFormer 读取文件字节序列。本实验通过脚本将 MNIST 图像转换为 RGB 格式并编码为 JPEG，再将 JPEG 字节输入模型。
 
 ## 1. 在 Kaggle 打开课程笔记本（推荐）
 
@@ -28,7 +33,7 @@ ByteFormer 读取的是**文件字节序列**。本实验把 MNIST 灰度图转�
 - [CSDN：科研小白扫盲：Kaggle平台使用指导指南](https://blog.csdn.net/yyyyyybw/article/details/148336854)
 - [Kaggle 官方 Notebook 文档](https://www.kaggle.com/docs/notebooks)
 
-准备好 GPU 后，回到本课程导入 Notebook；不需要运行教程中的其他项目。页面中的界面和额度说明以 Kaggle 当前账号实际显示为准。
+准备好 GPU 后，导入本课程 Notebook。GPU 验证要求和可用额度以账号页面为准。
 
 1. 注册并登录 [Kaggle](https://www.kaggle.com/)，进入 [Code](https://www.kaggle.com/code) 页面，新建 Notebook。
 2. 从本仓库下载 [`course_kaggle.ipynb`](course_kaggle.ipynb)，在 Kaggle 的 **File → Import Notebook** 中导入该文件。界面名称可能调整，寻找“导入笔记本 / Import Notebook”即可。
@@ -36,11 +41,9 @@ ByteFormer 读取的是**文件字节序列**。本实验把 MNIST 灰度图转�
 4. 从上到下逐个运行单元格：点击左侧运行按钮，等待当前单元格结束后继续。第一次不要直接运行全部单元格。
 5. 环境检查单元格显示 `GPU available: True` 即可继续。若为 `False`，先确认设置；无法获取 GPU 时使用下方 AutoDL 备用路线。
 
-Kaggle 操作参考：[官方 Notebook 文档](https://www.kaggle.com/docs/notebooks)。本项目已在本地 GPU 与 CPU 完成实测；Kaggle 和 AutoDL 的网页步骤依据官方文档整理，尚未用本课程账号登录实机验证。
-
 ## 2. 获取代码并检查环境
 
-**使用课程笔记本时，这些步骤已经写好，直接运行对应单元格。** 以下保留命令，方便你看懂实际做了什么。Kaggle 的 Python 单元格中，shell 命令前需要 `!`，切换目录使用 `%cd`：
+课程 Notebook 已包含以下命令，运行对应单元格即可。Kaggle 的 Python 单元格中，shell 命令前加 `!`，切换目录使用 `%cd`：
 
 ```python
 !git clone https://github.com/Franklin-L/byteformer-mnist-course.git /kaggle/working/byteformer-mnist-course
@@ -75,7 +78,7 @@ python prepare.py
 
 **成功判断：** 命令正常结束，没有下载失败或校验失败的错误。数据放在 `data/` 下，预训练文件放在 `checkpoints/` 下。
 
-官方预训练权重不放入普通 Git 提交，由脚本从官方来源下载。网络受限时，可使用教师准备的课堂资源包，内含代码、MNIST、官方预训练权重和 `teacher_checkpoint/best.pt`。资源包不含 Python/PyTorch 安装包，仍需已有 PyTorch 环境；学生自己的默认训练输出为 `outputs/baseline`，与教师模型分开保存。MNIST 原始文件的来源、校验和许可说明见仓库材料。
+预训练权重由 `prepare.py` 自动下载。网络下载困难时，可使用课程资源包，其中包含代码、MNIST、预训练权重和演示模型 `teacher_checkpoint/best.pt`。使用资源包仍需安装 Python/PyTorch；训练结果默认保存到 `outputs/baseline`。
 
 ## 4. 完成基线微调
 
@@ -87,7 +90,7 @@ read -p "请输入 batch size（参考32）：" BATCH_SIZE
 python train.py --epochs "$EPOCHS" --train-samples 50000 --val-samples 1000 --test-samples 10000 --batch-size "$BATCH_SIZE" --lr 0.0001 --lr-milestones 4 6 --lr-gamma 0.2 --output outputs/baseline
 ```
 
-`--epochs` 与 `--batch-size` 均接受正整数。程序保留教师实测用的默认值以方便复现，但它不是课程要求；课堂入口会让你自行输入轮数和 batch size；参考值不等于固定要求。记录自己的设置，根据训练和验证曲线决定后续是否调整；测试集只用于最终评估。终端中的 `read` 不要搬到 Kaggle 单元格，Notebook 已用 `input()` 处理输入。
+`--epochs` 和 `--batch-size` 填写正整数，batch size 可参考 `32`。根据训练与验证曲线调整设置，测试集用于最终评估。Kaggle 使用 Notebook 中的 `input()` 输入参数；以下 `read` 命令用于终端。
 
 | 参数 | 本次设置 | 含义 |
 | --- | --- | --- |
@@ -103,9 +106,7 @@ python train.py --epochs "$EPOCHS" --train-samples 50000 --val-samples 1000 --te
 
 正式课程使用 **50,000 张训练图 + 1,000 张验证图 + 10,000 张测试图**。默认随机种子为 `42`：官方 60,000 张训练图先固定分为 50,000 张训练池和 10,000 张验证池，本实验使用整个训练池，以及验证池的前 1,000 张；**验证池其余 9,000 张保留未用**。训练与验证没有重叠。官方 10,000 张测试图单独保留，在训练完成后全部评估；测试数据不用于更新参数或挑选最佳模型。
 
-不要把“验证池有 10,000 张”写成“本实验使用 10,000 张验证图”。我们实际验证样本数是 **1,000**，也没有使用官方全部 60,000 张训练图更新参数。
-
-学习率会自动降低：第 1–4 轮主干为 `0.0001`，第 5–6 轮为 `0.00002`，第 7 轮起为 `0.000004`；分类头始终使用主干的 10 倍。可以理解为先学习，再用较小步幅调整，学生无需手工干预。
+默认学习率在第 4、6 轮结束后分别乘以 `0.2`，分类头学习率为主干的 10 倍。可通过 `--lr-milestones` 和 `--lr-gamma` 调整。
 
 - **训练集：** 用来更新模型参数。
 - **验证集：** 每轮结束后检查，用来选出最佳模型。
@@ -125,7 +126,7 @@ outputs/baseline/
 └── confusion_matrix.png    # 各数字之间的混淆情况
 ```
 
-在全部 10,000 张官方测试图上评估并记录自己的准确率，结合训练与验证曲线解释结果。课程演示不规定学生必须达到某个准确率；不同设置可能取得更高或更低的结果。
+在全部 10,000 张测试图上评估所选模型，将准确率及训练、验证曲线分析写入报告。
 
 ### CPU 快速路线
 
@@ -135,7 +136,7 @@ outputs/baseline/
 python train.py --epochs 1 --train-samples 1000 --val-samples 200 --test-samples 200 --batch-size 16 --lr 0.0001 --device cpu --output outputs/cpu_smoke
 ```
 
-这条路线仍需已经安装 PyTorch，可在 Kaggle/AutoDL 的 PyTorch 环境里使用 `--device cpu` 执行。它用于验证下载、训练和输出流程，**不保证准确率，也不等同于完整基线实验**。ByteFormer 仍然是一个需要计算资源的 Transformer 模型，小样本不代表 CPU 训练一定很快。报告中请明确写出你实际使用的路线和参数。
+CPU 命令使用较少样本检查数据准备、训练与输出流程。运行前需要安装 PyTorch；完整实验建议使用 GPU。
 
 ## 5. 读取结果，单独评估与预测
 
@@ -157,7 +158,7 @@ python evaluate.py --checkpoint outputs/baseline/best.pt --output outputs/baseli
 python predict.py --checkpoint outputs/baseline/best.pt --index 0
 ```
 
-结果图保存为 `outputs/baseline/prediction_single.png`。把 `0` 改成 `0–9999` 中的其他索引，可查看另一个测试样本。这只是查看个例，不能用一张图代表整体性能。
+结果图保存为 `outputs/baseline/prediction_single.png`。将 `--index 0` 改为 `0–9999` 中的其他索引，可查看对应测试样本。
 
 可选：先预测仓库附带的示例图片；之后将路径替换为自己上传的图片：
 
@@ -165,7 +166,7 @@ python predict.py --checkpoint outputs/baseline/best.pt --index 0
 python predict.py --checkpoint outputs/baseline/best.pt --image assets/example_digit.png
 ```
 
-为了接近 MNIST 的输入形式，请使用**黑底白字、一个居中的手写数字**。手机拍照中的背景、光照、方向和书写风格可能与 MNIST 差别较大，出现错误并不意味着训练脚本运行失败。自制图片是额外体验，不替代规定的测试集评估。
+自制图片采用黑底白字、单个居中的手写数字。可比较自制图片与 MNIST 样本的笔画、背景和方向，分析预测差异。
 
 ## 6. 自选参数，观察验证结果
 
@@ -179,13 +180,11 @@ python train.py --epochs "$COMPARISON_EPOCHS" --batch-size "$COMPARISON_BATCH_SI
 
 两次都从同一官方预训练权重开始，保持数据划分、随机种子和学习率策略相同；若两项参数都改变，请说明比较的局限。保留 `outputs/baseline`，另存 `outputs/comparison`；重跑使用新的输出目录，并让评估与预测的 checkpoint 路径对应。
 
-根据两次实验的 **训练与验证曲线** 比较损失、最佳验证准确率和耗时，解释自己为什么选择这些设置。更多轮数不保证更好。可以根据验证集判断下一步是否调整，但不能根据测试集反复选参数。报告中填写自己的实际轮数和 batch size，不照抄教师实测配置。
-
-仅做 CPU 流程验证时，如实说明完整实验尚未完成。
+比较两次实验的训练损失、最佳验证准确率和耗时，说明参数调整的影响，并记录各自的最终测试结果。
 
 ## 7. 找一个错例并提交报告
 
-预测示例图展示前 12 个测试样本，并额外加入最多 4 个实际错例；这些额外错例是为了讲解错误而选择的，不能用图中正确比例当作整体准确率。笔记本还会从 `test_predictions.npz` 读出错例的官方测试索引，供你再次预测并保存证据。打开预测图或混淆矩阵，寻找一个被识别错的数字。如果本次测试没有错例，报告真实情况，并分析一个自制图片的错误或一个容易混淆的样本，明确说明它的来源。
+预测图包含前 12 个测试样本及最多 4 个错例，整体准确率记录在 `metrics.json` 中。Notebook 会从 `test_predictions.npz` 读取错例的测试索引，可用于再次预测和保存图片。选择一个错例，分析图像特征与预测差异；若没有错例，可分析一个容易混淆的样本，并说明样本来源。
 
 在 [Word 报告模板](docs/学生实验报告模板.docx)（也提供 [Markdown 版](docs/student_report_template.md)）中完成记录，提交以下材料：
 
@@ -211,7 +210,7 @@ python train.py --epochs "$COMPARISON_EPOCHS" --batch-size "$COMPARISON_BATCH_SI
 | `CUDA out of memory` | 降低自己设置的 batch size，例如从 32 降到 16 或 8，并记录实际值；若比较轮数的影响，则保持 batch size 相同。 |
 | 训练很慢 | 检查是否在 CPU 上运行；先验证 CPU 快速路线，完整实验使用 Kaggle 或 AutoDL GPU。 |
 | 找不到 `best.pt` | 检查训练是否正常完成，以及 `--checkpoint` 是否与训练时的 `--output` 对应。 |
-| 准确率比同学低 | 先对比样本数、轮数、种子和输入设置。保留真实结果，再解释差异；不要通过反复测试来选择参数。 |
+| 准确率比同学低 | 比较样本数、轮数、batch size 和输入设置，结合训练与验证曲线分析差异。 |
 | `already contains a run` | 已有结果受保护。改用新 `--output` 目录，并同步修改评估/预测的 checkpoint 路径。 |
 | 重启 Kaggle 会话后文件丢失 | 从保存的输出或已下载结果恢复；重新训练要使用原设置并如实记录。 |
 | Kaggle 提示只读目录 | 把代码放到 `/kaggle/working/`，不要在 `/kaggle/input/` 直接训练。 |
@@ -267,26 +266,15 @@ python prepare.py
 
 需要 SSH 时，从实例页面复制**自己的 SSH 登录命令**，在本机 PowerShell/终端执行，再输入平台显示的密码；输入密码时终端不会显示字符。连接后执行与上面相同的 `cd` 和训练命令。初学者优先使用网页 JupyterLab；SSH 长任务需按 [官方 SSH 指南](https://www.autodl.com/docs/ssh/)使用终端会话保活。
 
-## 演示运行记录
+## 拓展任务
 
-以下保留一次演示运行记录，供复现时核对，不作为学生成绩标准：在全部 **10,000 张官方测试图上，准确率为 97.07%（9,707/10,000）**。训练使用 50,000 张，实际验证使用 1,000 张。
+完成 MNIST 规定任务并提交实验报告，即达标及格。额外完成 CIFAR-10 微调可加分，Stanford40 动作识别分类为进阶加分任务。拓展任务需自行适配数据读取和分类头，提交代码、数据划分、实验结果与分析。
 
-| 教师实测配置（不是固定课程要求） | 最佳验证准确率 | 完整 10,000 张测试准确率 | 验证选出的最佳轮次 |
-| --- | --- | --- | --- |
-| 50,000 张训练、8 轮、第 4/6 轮后学习率乘 0.2 | 97.30% | 97.07% | 第 5 轮 |
+## 配套材料与参考文献
 
-教师首次 8 轮运行用时 **712.90 秒（约 11.88 分钟）**，该次原始配置末尾测试了 1,000 张；锁定模型后，另行完整评估 10,000 张用时 **5.93 秒**。学生命令已直接设置 `--test-samples 10000`，一次完成完整测试。不要把教师原始 `metrics.json` 中的 1,000 张结果当作完整测试成绩。
-
-训练与验证记录见 [`examples/course_baseline/`](examples/course_baseline/)，正式完整测试证据见 [`examples/course_full_test/evaluation.json`](examples/course_full_test/evaluation.json)。以上轮数仅是教师这次实测记录，不规定学生的训练轮数。学生自行设置轮数和 batch size，并报告自己的结果。旧的 6,000 张、3 轮实验只保留在历史记录中。
-
-软件参考环境为 Python 3.9.25、PyTorch 2.3.0+cu121、NumPy 1.26.4、Pillow 11.3.0、matplotlib 3.9.4、requests 2.32.5，GPU 为 NVIDIA GeForce RTX 4090。记录中的用时不含依赖安装和网络下载，不是 Kaggle 或 AutoDL 的速度承诺。环境差异可能影响复现结果。
-
-`requirements.txt` 用于已有 PyTorch 的 Kaggle/AutoDL 环境；`requirements-reproduce.txt` 记录教师实测依赖，仅供需要复现该软件组合的教师参考，**学生不需要在 Kaggle 中安装后者**。
-
-## 教师与来源说明
-
-- 学生报告：[Word 模板](docs/学生实验报告模板.docx) / [Markdown 模板](docs/student_report_template.md)。备课与评分建议：[教师指南](docs/teacher_guide.md)。
-- 原始方法与预训练模型：Apple 的 [CoreNet 项目](https://github.com/apple/corenet)；权重来源、文件校验与实现差异以课程脚本和复现记录为准。
-- MNIST 原始压缩文件随课程提供；来源、校验与许可说明见仓库材料。
-
-本课程是教学适配，并非 Apple 官方课程。精简实现、MNIST 输入转换、训练/验证划分和 padding mask 修正可能使结果与官方完整 ImageNet 配置不同，不能据此声称复现了论文中的 ImageNet 性能。
+- [实验报告 Word 模板](docs/学生实验报告模板.docx) / [Markdown 模板](docs/student_report_template.md)
+- [教师指南](docs/teacher_guide.md) / [演示运行记录](docs/run_record.md)
+- ByteFormer 论文：[Bytes Are All You Need](https://arxiv.org/abs/2306.00238)
+- 原始代码与预训练模型：[Apple CoreNet](https://github.com/apple/corenet/tree/main/projects/byteformer)
+- MNIST 数据：[CVDF 镜像](https://github.com/cvdfoundation/mnist)
+- [代码、模型与素材来源说明](THIRD_PARTY_NOTICES.md)

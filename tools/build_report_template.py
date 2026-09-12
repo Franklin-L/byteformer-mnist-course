@@ -23,7 +23,7 @@ def main():
         style._element.get_or_add_rPr().rFonts.set(qn('w:eastAsia'), 'Microsoft YaHei')
         style.font.size = Pt(11 if name == 'Normal' else 20 if name == 'Title' else 14)
     document.styles['Normal'].paragraph_format.space_after = Pt(7)
-    document.core_properties.title = 'ByteFormer 微调 MNIST 实验报告模板'
+    document.core_properties.title = '码流图像分类实验报告模板'
     document.core_properties.author = 'Franklin-L'
     lines = (ROOT/'docs/student_report_template.md').read_text().splitlines()
     i, in_code = 0, False
@@ -59,7 +59,7 @@ def main():
                 for run in paragraph.runs: run.font.color.rgb=RGBColor.from_string('176BA0')
         i += 1
     footer=section.footer.paragraphs[0]
-    footer.text='ByteFormer · MNIST 课程实验 | 填写自己的真实结果'
+    footer.text='码流图像分类实验报告'
     document.save(ROOT/'docs/学生实验报告模板.docx')
     print(ROOT/'docs/学生实验报告模板.docx')
 
