@@ -22,6 +22,14 @@ ByteFormer 读取的是**文件字节序列**。本实验把 MNIST 灰度图转�
 
 ## 1. 在 Kaggle 打开课程笔记本（推荐）
 
+课前可先参考以下教程完成 Kaggle 平台准备：
+
+- [知乎：Kaggle GPU资源使用教程——针对超级小白](https://zhuanlan.zhihu.com/p/18209757723)
+- [CSDN：科研小白扫盲：Kaggle平台使用指导指南](https://blog.csdn.net/yyyyyybw/article/details/148336854)
+- [Kaggle 官方 Notebook 文档](https://www.kaggle.com/docs/notebooks)
+
+准备好 GPU 后，回到本课程导入 Notebook；不需要运行教程中的其他项目。页面中的界面和额度说明以 Kaggle 当前账号实际显示为准。
+
 1. 注册并登录 [Kaggle](https://www.kaggle.com/)，进入 [Code](https://www.kaggle.com/code) 页面，新建 Notebook。
 2. 从本仓库下载 [`course_kaggle.ipynb`](course_kaggle.ipynb)，在 Kaggle 的 **File → Import Notebook** 中导入该文件。界面名称可能调整，寻找“导入笔记本 / Import Notebook”即可。
 3. 在笔记本设置中，把 **Accelerator** 设为可用的 **GPU**，并打开 **Internet**。如果提示账号验证，按 Kaggle 的页面提示完成。GPU 是否可用及使用额度以账号页面为准。

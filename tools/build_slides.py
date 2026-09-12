@@ -200,14 +200,20 @@ def main():
     link(s,.84,5.55,5.4,'Kaggle：创建Notebook',KAGGLE,18);link(s,6.75,5.55,5.4,'AutoDL：实例与价格',AUTODL,18)
     text(s,.86,6.13,11.6,.6,'配套：course_kaggle.ipynb逐步操作 ｜ README完整命令 ｜ Word实验报告模板。',18)
     note(s,'平台网页步骤依据官方文档整理；本课程尚未登录Kaggle或AutoDL实际账号执行。所有展示的准确率、时间来自本地记录的RTX4090实验。无需在学生个人电脑安装CUDA。')
-    # 6. Kaggle setup on one page.
-    s=d.slide('05 Kaggle 准备：导入、GPU、网络，一次设好')
-    text(s,.85,1.98,6.0,3.95,'1. 从GitHub下载course_kaggle.ipynb。\n2. 新建Notebook，File → Import Notebook。\n3. 在设置中选择GPU Accelerator。\n4. 打开Internet，按提示完成账号验证。\n5. 从上到下逐格运行，先完成环境检查。',21)
-    rect(s,7.3,2.12,5.0,2.07,LIGHT,rounded=True)
-    text(s,7.55,2.37,4.5,1.45,'成功标志\nGPU available: True\n随后运行“获取课程”单元格。',21,BLUE,True)
-    text(s,7.52,4.4,4.65,1.83,'命令规则\nKaggle单元格：!python …\n切换目录：%cd …\nAutoDL终端：python …',20)
-    text(s,.85,6.42,11.5,.4,'按顺序逐格运行：训练单元格会提示输入轮数和batch size。',17,RED)
-    note(s,'下载原始ipynb文件，不要将GitHub网页另存为ipynb。GPU检查在独立子进程中运行，避免安装NumPy依赖前污染内核。运行一格后等它完成，再继续下一格。工作目录必须可写：/kaggle/working/byteformer-mnist-course，而不是只读/kaggle/input。界面名称变化时参考官方Notebook文档。')
+    # 6. External platform tutorials and the course entry.
+    s=d.slide('05 Kaggle GPU：课前教程与课程入口')
+    tutorials=[
+        ('知乎｜Kaggle GPU资源使用教程——针对超级小白','https://zhuanlan.zhihu.com/p/18209757723'),
+        ('CSDN｜科研小白扫盲：Kaggle平台使用指导指南','https://blog.csdn.net/yyyyyybw/article/details/148336854'),
+        ('Kaggle官方｜Notebook使用文档','https://www.kaggle.com/docs/notebooks'),
+    ]
+    for i,(label,url) in enumerate(tutorials):
+        y=2.0+i*.86
+        rect(s,.82,y,11.67,.68,LIGHT,rounded=True)
+        link(s,1.03,y+.12,11.19,label,url,21)
+    link(s,.96,4.88,11.4,'课程Notebook：下载course_kaggle.ipynb',REPO+'/raw/refs/heads/main/course_kaggle.ipynb',21)
+    text(s,.99,5.58,11.35,.78,'按教程准备好GPU后，导入课程Notebook，逐格运行。\n环境检查显示 GPU available: True，即可继续实验。',21)
+    note(s,'教程仅作平台准备入口，不要求运行文章中的示例项目。中文教程来自搜索检索；CSDN和知乎限制自动读取，本次未逐图核验，授课前请用学生浏览器确认可访问性。界面、验证和GPU额度以Kaggle实际页面及官方文档为准。下载原始ipynb文件后在Kaggle导入；课程尚未登录Kaggle账号实机执行。')
     # 7. Download/prep/files combined.
     s=d.slide('06 获取代码、数据与预训练权重','Kaggle笔记本已写好这些命令，按顺序运行即可。')
     command=f'!git clone {REPO}.git\n%cd /kaggle/working/byteformer-mnist-course\n!python -m pip install -r requirements.txt\n!python prepare.py'
