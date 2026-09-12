@@ -1,7 +1,6 @@
-"""Build the editable Chinese course deck from verified experiment evidence."""
+"""Build the editable Chinese course deck for student-guided experiments."""
 import argparse
 import gzip
-import json
 import shutil
 import subprocess
 from pathlib import Path
@@ -117,20 +116,6 @@ class Deck:
         return s
 
 
-def metrics(name, filename='metrics.json'):
-    for base in ['outputs','examples']:
-        p=ROOT/base/name/filename
-        if p.exists(): return json.loads(p.read_text())
-    return None
-
-
-def evidence(name, filename):
-    for base in ['outputs','examples']:
-        p=ROOT/base/name/filename
-        if p.exists(): return p
-    return None
-
-
 def digits_asset():
     p=ASSETS/'mnist_digits.png'
     raw=ROOT/'data/MNIST/raw'
@@ -156,13 +141,6 @@ def main():
     parser.add_argument('--draft',action='store_true')
     parser.add_argument('--pdf',action='store_true')
     args=parser.parse_args()
-    m=metrics('course_baseline');f=metrics('course_full_test','evaluation.json')
-    if not args.draft and (not m or not f or f['test']['accuracy']<.95):
-        raise RuntimeError('Final deck requires verified formal experiments and full-test accuracy >=95%.')
-    val=f"{100*m['best_validation_accuracy']:.2f}%" if m else '待正式记录'
-    full=f"{100*f['test']['accuracy']:.2f}%" if f else '待完整评估'
-    best=m['best_epoch'] if m else 5
-    elapsed=f"{m['elapsed_seconds']/60:.2f}分钟" if m else '以记录为准'
     d=Deck()
     # 1. Cover, preserving the teacher's visual template.
     s=d.prs.slides.add_slide(d.prs.slide_layouts[6])
@@ -172,9 +150,9 @@ def main():
     text(s,2.82,4.28,9.5,.75,'零基础图像分类实验课',30,INK)
     text(s,2.83,5.3,9.6,.8,'按步骤运行 · 查看真实结果 · 亲手修改一个参数',20,GRAY)
     link(s,2.85,6.43,10,REPO,REPO,16)
-    note(s,'沿用教师样例的校园、校徽与白蓝风格，不沿用旧老师邮箱、截止日期或其他旧课程信息。本课PPT压缩为15页；逐格操作细节见course_kaggle.ipynb和README。')
+    note(s,'沿用教师样例的校园、校徽与白蓝风格，不沿用旧老师邮箱、截止日期或其他旧课程信息。本课PPT共16页；逐格操作细节见course_kaggle.ipynb和README。')
     # 2. Objective and route.
-    s=d.bullets('01 任务要求与完成路线',[('完成一次真实微调','加载官方预训练ByteFormer，识别MNIST手写数字0—9；教师正式测试97.07%。'),('亲手完成三个操作','自行设置参数并微调 → 观察验证曲线 → 查看并解释一个错例。'),('交付自己的实验记录','保留指标、曲线、错例和Word报告，不能用教师结果代替自己的运行。')],notes='先展示最终任务，再介绍学习路线：准备环境和资源、训练、评估/预测、单参数练习、提交。评分见第14页。不会要求学生从零编写神经网络。')
+    s=d.bullets('01 任务要求与完成路线',[('完成一次真实微调','加载官方预训练ByteFormer，完成MNIST手写数字0—9分类。'),('亲手完成三个操作','自行设置参数并微调 → 观察验证曲线 → 查看并解释一个错例。'),('交付自己的实验记录','保留自己的指标、曲线、错例和Word报告，说明参数选择与结果。')],notes='先展示最终任务，再介绍学习路线：准备环境和资源、训练、评估/预测、单参数练习、提交。评分见第14页。不会要求学生从零编写神经网络。')
     # 3. ByteFormer and fine tuning, merged.
     s=d.slide('02 实验原理：文件字节输入 + 预训练微调')
     labels=['手写数字图','JPEG 文件','字节序列','ByteFormer','数字0—9']
@@ -222,7 +200,7 @@ def main():
     text(s,.88,5.72,11.6,.92,'prepare.py：准备资源　train.py：微调　evaluate.py：评估　predict.py：预测\ndata/：数据　checkpoints/：预训练权重　outputs/：你自己的实验结果',18,GRAY)
     note(s,'Notebook实际使用绝对目标路径并检测已有目录，重复运行不会删除结果。默认Kaggle工作目录为/kaggle/working。requirements只安装轻量依赖、限制NumPy<2，不重装平台PyTorch/CUDA。数据4个MD5、权重SHA256已实测；资源缺失可重新运行prepare。网络受限可使用教师含数据和权重的课堂资源包，仍需已有PyTorch环境。')
     # 8. Training parameters + command.
-    s=d.slide('07 正式训练：看懂参数，运行一条命令')
+    s=d.slide('07 开始训练：看懂参数，运行一条命令')
     settings=[('训练样本','50,000'),('验证 / 测试','1,000 / 10,000'),('训练轮数','自行设置'),('batch size','自行设置，参考32'),('学习率','主干1e-4；分类头10倍')]
     for i,(a,b) in enumerate(settings):
         y=2.03+i*.69;rect(s,.8,y,5.52,.59,LIGHT);text(s,.94,y+.1,2.18,.4,a,19,BLUE,True);text(s,3.15,y+.1,3.04,.43,b,18)
@@ -230,16 +208,21 @@ def main():
     text(s,6.91,4.25,5.38,1.6,'看到[DONE]即训练完成。\n结果保存到outputs/baseline/。\n请记录实际使用的参数。',20)
     text(s,.9,6.12,11.45,.55,'训练轮数和batch size均可调整；参考值仅供起步，测试集只作最终评估。',17,GRAY)
     note(s,'epochs和batch size由学生输入；参考配置为train50000/val1000/test10000/batch32/lr1e-4/milestones4,6/gamma0.2/seed42。原正式实测训练末先测试1000，之后独立全10000；发布默认把最终测试整合成10000，共用同一score代码。输出目录已有best.pt时会报错保护结果；重跑换output且对应修改后续checkpoint。模型从官方权重全参数微调，AdamW weight_decay0.01，分类头10倍学习率。')
-    # 9. Real numbers and real curves.
-    s=d.slide('08 正式实测结果：先用验证选模型，再做测试')
-    values=[('最佳验证准确率',val),('完整测试准确率',full),('模型选择依据','验证集表现')]
-    for i,(a,b) in enumerate(values):
-        x=.84+i*4.18;rect(s,x,1.97,3.9,1.0,LIGHT,rounded=True);text(s,x+.13,2.08,3.64,.32,a,16,GRAY,align=PP_ALIGN.CENTER);text(s,x+.13,2.43,3.64,.46,b,25,BLUE,True,PP_ALIGN.CENTER)
-    p=evidence('course_baseline','curves.png')
-    if p:picture(s,p,.82,3.2,11.7,3.18)
-    else:text(s,1,4,11,1,'等待正式训练曲线',24,GRAY,align=PP_ALIGN.CENTER)
-    text(s,.91,6.53,11.45,.32,f'本次教师实测约{elapsed}，不含安装下载及末尾出图。云平台耗时以实际运行为准。',14,GRAY)
-    note(s,'结果来自examples/course_baseline与course_full_test。完整10000测试97.07%(9707/10000)，由验证97.30%选择第5轮模型；轮数是该次实测记录，不是课程要求。曲线蓝色训练、橙色验证。loss通常希望下降，accuracy通常希望上升；训练与验证差距反映泛化。完整测试不用于选最佳轮次。')
+    # 9. Read the student's own learning curves and metrics.
+    s=d.slide('08 查看自己的训练结果')
+    codebox(s,.82,2.0,11.7,1.28,'from IPython.display import display, Image\ndisplay(Image("outputs/baseline/curves.png"))',20)
+    prompts=[
+        ('训练损失','损失是否逐渐下降？\n后期是否还在改善？'),
+        ('验证表现','验证准确率怎样变化？\n与训练表现差距多大？'),
+        ('测试结果','加载验证集选出的模型，\n在测试集上评估并记录。'),
+    ]
+    for i,(heading,body) in enumerate(prompts):
+        x=.83+i*4.17
+        rect(s,x,3.78,3.88,1.91,LIGHT,rounded=True)
+        text(s,x+.17,3.96,3.52,.43,heading,23,BLUE,True)
+        text(s,x+.17,4.65,3.52,.92,body,19)
+    text(s,.93,6.12,11.4,.55,'指标与参数保存在metrics.json中；结合曲线，解释本次实验的结果。',19,GRAY)
+    note(s,'在课程Notebook中显示学生本次运行的曲线。训练损失用于观察拟合过程，验证集用于模型与参数选择；锁定模型后查看测试结果，不根据测试分数反复调参。本页只引导结果解读，不展示教师准确率或设置成绩门槛。')
     # 10. Evaluation, inference, and mistakes on one page.
     s=d.slide('09 评估、单图预测与错例检查')
     codebox(s,.8,2.0,11.75,1.31,'!python evaluate.py --checkpoint outputs/baseline/best.pt\n!python predict.py --checkpoint outputs/baseline/best.pt --index 0',17)
@@ -264,24 +247,40 @@ def main():
     link(s,.9,6.57,11.3,'AutoDL官方快速开始（实例、JupyterLab、Terminal）','https://www.autodl.com/docs/quick_start/',14)
     note(s,'按AutoDL控制台选择空闲GPU、计费方式和PyTorch镜像，无需多卡。GPU检查命令python -c "import torch; print(torch.cuda.is_available())"。GitHub慢可用仓库ZIP上传解压进入正确目录。下载打包详细命令见README。关机与数据保留按当前官方规则，不承诺永久保存。')
     # 13. FAQ.
-    s=d.table('12 常见问题：从错误最后一行定位',['现象','处理'],[['GPU available: False','开启Kaggle GPU；或确认AutoDL实例和PyTorch环境'],['No module named ...','在当前课程目录安装requirements.txt，确认使用同一环境'],['下载超时 / 校验失败','开启Internet重试；或使用教师预下载资源包'],['CUDA out of memory','减小batch size，如32降到16或8，并记录实际值'],['输出目录已存在 / best.pt找不到','重跑使用新output；评估checkpoint对应实际训练目录'],['准确率低于参考','核对样本量、轮数、预训练来源与学习率策略，记录真实结果']], [4.15,7.65])
-    text(s,.88,6.53,11.45,.32,'CPU备用：README提供1,000张训练图、1轮的流程检查命令；它不代表正式95%以上的课程效果。',14,GRAY)
+    s=d.table('12 常见问题：从错误最后一行定位',['现象','处理'],[['GPU available: False','开启Kaggle GPU；或确认AutoDL实例和PyTorch环境'],['No module named ...','在当前课程目录安装requirements.txt，确认使用同一环境'],['下载超时 / 校验失败','开启Internet重试；或使用教师预下载资源包'],['CUDA out of memory','减小batch size，如32降到16或8，并记录实际值'],['输出目录已存在 / best.pt找不到','重跑使用新output；评估checkpoint对应实际训练目录'],['验证表现不再改善','查看训练与验证曲线，检查样本量、预训练权重与学习率']], [4.15,7.65])
+    text(s,.88,6.53,11.45,.32,'CPU备用：README提供小样本流程检查命令，便于先熟悉代码运行。',14,GRAY)
     note(s,'不要为一个warning盲目重装CUDA。出现cuDNN plan fallback但程序继续且loss有限可记录；Traceback且进程停止时看最后一行。CPU小样本路线已实测通过，但不是完整作业。所有操作均不需要修改其他同学的环境或删除公共数据。')
     # 14. Packaging and grading combined.
     s=d.slide('13 下载结果、填写报告并提交')
     text(s,.86,1.98,6.03,3.64,'① 运行Notebook最后的打包单元格。\n② 在文件面板下载byteformer_mnist_results.zip。\n③ 用Word模板填写自己的环境、命令、指标和解释。\n④ 附两组曲线、预测图、错例证据。\n\n默认不用提交数据集、Python环境或大模型。',21)
-    rows=[('环境与数据',15),('基线完成',25),('曲线与指标解读',20),('单参数对比',20),('错例分析',10),('报告完整性',10)]
-    text(s,7.17,2.03,5.0,.47,'建议评分 / 100分',23,BLUE,True)
-    for i,(a,b) in enumerate(rows):
-        y=2.68+i*.51;rect(s,7.14,y,5.07,.45,LIGHT);text(s,7.29,y+.05,3.92,.35,a,17);text(s,11.26,y+.05,.72,.35,str(b),17,BLUE,True)
+    checks=['训练、验证和测试流程完整','记录实际参数与运行环境','说明训练与验证曲线变化','完成一次自选参数对比','查看预测并分析错例','提交自己的实验报告']
+    text(s,7.17,2.03,5.0,.47,'基础任务达标检查',23,BLUE,True)
+    for i,item in enumerate(checks):
+        y=2.68+i*.51
+        rect(s,7.14,y,5.07,.45,LIGHT)
+        text(s,7.29,y+.05,4.75,.35,item,17)
     text(s,.9,6.31,11.43,.57,'提交渠道与截止时间由任课教师说明；只填写真实运行结果，验证与测试指标不要混写。',17,RED)
     note(s,'Word模板路径docs/学生实验报告模板.docx。ZIP只含json/csv/png/npz小文件，不含best.pt；若后续想预测请另存模型。Kaggle ZIP在/kaggle/working根目录，AutoDL打包命令见README。评分重操作和解释，不按准确率排名替代教学目标。')
-    # 15. References and concrete entry.
-    s=d.slide('14 课程入口与参考资料','详细点击步骤、完整命令和排错说明，统一放在配套指南与Notebook。')
+    # 15. Optional higher-grade tasks; no additional experiments are required here.
+    s=d.slide('14 拓展加分任务')
+    rect(s,.83,1.96,11.68,.86,LIGHT,rounded=True)
+    text(s,1.03,2.17,11.25,.46,'完成MNIST规定任务并提交实验报告，即达标及格。',23,BLUE,True)
+    tasks=[
+        (.83,'加分任务一｜CIFAR-10微调','把ByteFormer微调流程迁移到CIFAR-10。\n自行适配数据读取与分类任务，\n完成训练、验证和测试。'),
+        (6.81,'进阶加分任务二｜Stanford40','完成斯坦福40动作识别数据集的微调分类。\n自行准备数据、调整分类头并设置参数，\n分析预测结果与典型错例。'),
+    ]
+    for x,heading,body in tasks:
+        rect(s,x,3.22,5.7,2.42,LIGHT,rounded=True)
+        text(s,x+.17,3.44,5.34,.46,heading,22,BLUE,True)
+        text(s,x+.17,4.18,5.34,1.28,body,18)
+    text(s,.98,5.99,11.35,.84,'完成额外任务可获得加分，挑战进阶任务可争取更高分。\n附上代码、数据划分、实际结果与简要分析，说明你做了哪些调整。',20)
+    note(s,'MNIST规定任务完成即可达标及格。两项拓展均为可选加分路径，不设固定加分数值或准确率门槛；本轮仅补充任务说明，未执行CIFAR-10或Stanford40实验，也不宣称课程现有脚本已直接支持这两个数据集。')
+    # 16. References and concrete entry.
+    s=d.slide('15 课程入口与参考资料','详细点击步骤、完整命令和排错说明，统一放在配套指南与Notebook。')
     sources=[('课程仓库：代码、Notebook、数据、PPT、报告模板',REPO),('Kaggle Notebook 官方文档','https://www.kaggle.com/docs/notebooks'),('AutoDL 官方快速开始','https://www.autodl.com/docs/quick_start/'),('ByteFormer 原论文：Bytes Are All You Need','https://arxiv.org/abs/2306.00238'),('Apple CoreNet：ByteFormer代码与预训练权重','https://github.com/apple/corenet/tree/main/projects/byteformer'),('MNIST：CVDF镜像与原作者说明','https://github.com/cvdfoundation/mnist')]
     for i,(label,url) in enumerate(sources):link(s,.92,2.25+i*.59,11.55,label,url,19)
-    note(s,'所有链接为可点击链接。PPT共15页，对齐教师样例的信息密度；课堂主讲只需本PPT，学生逐步实操使用Notebook。未进行真实Kaggle或AutoDL登录执行，所有性能结果注明本地实测。')
-    assert len(d.prs.slides)==15
+    note(s,'所有链接为可点击链接。PPT共16页，对齐教师样例的信息密度；课堂主讲只需本PPT，学生逐步实操使用Notebook。未进行真实Kaggle或AutoDL登录执行，所有性能结果注明本地实测。')
+    assert len(d.prs.slides)==16
     out=ROOT.parent/('_reference_analysis/course_preview.pptx' if args.draft else 'ByteFormer_MNIST_零基础实验课.pptx')
     out.parent.mkdir(parents=True,exist_ok=True);d.prs.save(out)
     if not args.draft:shutil.copy2(out,ROOT/'docs'/out.name)

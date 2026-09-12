@@ -2,7 +2,7 @@
 
 用一个已经学过图像知识的 **ByteFormer** 模型，识别手写数字 `0–9`。你将完成下载材料、运行训练、查看结果、修改一个参数和分析一个错例。无需从零编写神经网络。
 
-15 页课程课件：[PowerPoint](docs/ByteFormer_MNIST_零基础实验课.pptx) / [PDF](docs/ByteFormer_MNIST_零基础实验课.pdf)。课程仓库：[Franklin-L/byteformer-mnist-course](https://github.com/Franklin-L/byteformer-mnist-course)。推荐使用 **Kaggle 免费 GPU + 本仓库笔记本**，无需在自己的电脑上配置深度学习环境。
+16 页课程课件：[PowerPoint](docs/ByteFormer_MNIST_零基础实验课.pptx) / [PDF](docs/ByteFormer_MNIST_零基础实验课.pdf)。课程仓库：[Franklin-L/byteformer-mnist-course](https://github.com/Franklin-L/byteformer-mnist-course)。推荐使用 **Kaggle 免费 GPU + 本仓库笔记本**，无需在自己的电脑上配置深度学习环境。
 
 本课程使用 Apple 官方发布的 ImageNet 预训练 ByteFormer Tiny 权重，替换为 10 类分类头，再对 MNIST 进行**全参数微调**。我们提供适合教学的精简 PyTorch 实现，保留 12 层 Transformer 和预训练参数结构。实现对官方代码中的 padding mask 处理问题做了修正，具体差异见代码和教师复现记录。
 
@@ -125,7 +125,7 @@ outputs/baseline/
 └── confusion_matrix.png    # 各数字之间的混淆情况
 ```
 
-正式课程的参考目标是全部 10,000 张官方测试图准确率达到 **95% 以上**。请保留自己的真实结果；若低于目标，先检查样本数、训练轮数、学习率衰减和权重来源，再向教师说明。不要把教师演示结果或截图中的数值抄成自己的实验数据。
+在全部 10,000 张官方测试图上评估并记录自己的准确率，结合训练与验证曲线解释结果。课程演示不规定学生必须达到某个准确率；不同设置可能取得更高或更低的结果。
 
 ### CPU 快速路线
 
@@ -267,9 +267,9 @@ python prepare.py
 
 需要 SSH 时，从实例页面复制**自己的 SSH 登录命令**，在本机 PowerShell/终端执行，再输入平台显示的密码；输入密码时终端不会显示字符。连接后执行与上面相同的 `cd` 和训练命令。初学者优先使用网页 JupyterLab；SSH 长任务需按 [官方 SSH 指南](https://www.autodl.com/docs/ssh/)使用终端会话保活。
 
-## 教师实测参考：不要抄作自己的结果
+## 演示运行记录
 
-正式课程已达到 95% 以上的参考目标：在全部 **10,000 张官方测试图上，准确率为 97.07%（9,707/10,000）**。训练使用 50,000 张，实际验证使用 1,000 张。
+以下保留一次演示运行记录，供复现时核对，不作为学生成绩标准：在全部 **10,000 张官方测试图上，准确率为 97.07%（9,707/10,000）**。训练使用 50,000 张，实际验证使用 1,000 张。
 
 | 教师实测配置（不是固定课程要求） | 最佳验证准确率 | 完整 10,000 张测试准确率 | 验证选出的最佳轮次 |
 | --- | --- | --- | --- |
