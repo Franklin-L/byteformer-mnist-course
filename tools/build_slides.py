@@ -14,6 +14,7 @@ from pptx.enum.shapes import MSO_SHAPE
 
 ROOT = Path(__file__).resolve().parents[1]
 ASSETS = ROOT / 'docs/assets'
+RESEARCH_FIGURES = ROOT / 'research/figures'
 BLUE, INK, LIGHT, RED, GRAY = '176BA0', '243547', 'EDF4F8', 'BA3F3F', '647483'
 FONT = 'Noto Sans CJK SC'
 REPO = 'https://github.com/Franklin-L/byteformer-mnist-course'
@@ -63,13 +64,13 @@ def picture(slide, path, x, y, w, h):
 class Deck:
     def __init__(self):
         self.prs=Presentation(); self.prs.slide_width=Inches(13.333); self.prs.slide_height=Inches(7.5)
-        self.prs.core_properties.title='码流图像分类任务说明'
+        self.prs.core_properties.title='字节域语义内容理解实验说明'
         self.prs.core_properties.author='Franklin-L'
-        self.prs.core_properties.subject='码流图像分类：ByteFormer微调MNIST'
+        self.prs.core_properties.subject='字节模型与ByteFormer码流图像分类实验'
     def slide(self,title,subtitle=''):
         s=self.prs.slides.add_slide(self.prs.slide_layouts[6])
         picture(s,ASSETS/'hust_wordmark.png',.55,.2,2.65,.52)
-        text(s,8.5,.24,4.2,.35,'码流图像分类',13,GRAY,align=PP_ALIGN.RIGHT)
+        text(s,8.0,.24,4.7,.35,'字节域语义内容理解',13,GRAY,align=PP_ALIGN.RIGHT)
         text(s,.6,.86,12.1,.56,title,30,INK,True)
         rect(s,.65,1.5,12.02,.023,'BACBD7')
         if subtitle: text(s,.66,1.66,12,.55,subtitle,17,GRAY)
@@ -140,126 +141,207 @@ def main():
     s=d.prs.slides.add_slide(d.prs.slide_layouts[6])
     picture(s,ASSETS/'campus.png',0,0,13.333,2.5);rect(s,0,2.53,13.333,.055,BLUE)
     picture(s,ASSETS/'hust_seal.png',.7,3.2,1.8,1.8)
-    text(s,2.8,3.23,10.0,1.13,'码流图像分类任务说明',36,BLUE,True)
+    text(s,2.8,3.23,10.0,1.13,'字节域语义内容理解实验说明',34,BLUE,True)
     text(s,2.83,4.68,4.65,.55,'助教：李方成',24,'000000',True)
     text(s,8.0,4.68,4.65,.55,'教师：吴科君',24,'000000',True)
     text(s,2.83,5.46,4.65,.55,'lifangcheng2002@163.com',19,'000000',True)
     text(s,8.0,5.46,4.65,.55,'kjwu@hust.edu.cn',19,'000000',True)
-    # 2. Objective and route.
-    s=d.bullets('01 实验目标与任务要求',[('实验目标','加载官方预训练ByteFormer，完成MNIST手写数字0—9分类。'),('实验内容','设置训练参数，完成模型微调、验证结果分析及错例分析。'),('提交材料','提交实验报告及运行记录，包括参数设置、学习曲线、评估结果和错例分析。')])
-    # 3. ByteFormer and fine tuning, merged.
-    s=d.slide('02 ByteFormer原理与微调方法')
-    labels=['手写数字图','JPEG 文件','字节序列','ByteFormer','数字0—9']
-    for i,label in enumerate(labels):
-        x=.72+i*2.48;rect(s,x,2.15,2.16,1.0,LIGHT,rounded=True);text(s,x+.07,2.45,2,.48,label,21,BLUE,True,PP_ALIGN.CENTER)
-        if i<4:text(s,x+2.17,2.49,.32,.35,'→',22,BLUE)
-    text(s,.86,3.57,11.65,2.35,'① 加载Apple官方ImageNet JPEG预训练ByteFormer Tiny。\n② 保留完整12层主干，把原1000类分类头换成10类。\n③ 使用MNIST继续训练全部参数，输出数字0—9的分类结果。',23)
-    text(s,.87,6.07,11.6,.6,'学生只需运行脚本；图像转JPEG、字节读取、模型加载均已封装。',19,GRAY)
-    # 4. Explicit disjoint splits.
-    s=d.slide('03 MNIST 数据与训练 / 验证 / 测试划分')
-    picture(s,digits_asset(),.65,1.85,5.05,2.5)
-    text(s,.86,4.69,4.8,1.0,'28×28灰度图；10个数字类别。\n原始文件已随GitHub仓库提供。',20)
-    rows=[('训练','50,000张','更新模型参数'),('验证','1,000张','每轮检查，选择best.pt'),('测试','10,000张','模型确定后最终评估')]
-    for i,(a,b,c) in enumerate(rows):
-        y=2.05+i*1.18;rect(s,6.08,y,6.43,1.0,LIGHT,rounded=True)
-        text(s,6.25,y+.10,2.0,.80,a+'\n'+b,20,BLUE,True)
-        text(s,8.55,y+.29,3.8,.5,c,20)
-    text(s,.88,6.12,11.65,.65,'官方60,000张训练图先分为50,000训练池+10,000验证池；本课固定取1,000验证图，余9,000张未使用。',16,GRAY)
-    # 5. Platform choice and material entry.
-    s=d.table('04 实验环境与配套材料',['运行平台','环境要求','使用方式'],[['Kaggle免费GPU','账号、可用GPU额度、Internet','导入课程Notebook，逐格运行'],['AutoDL备用','按当前报价租1张GPU','选择PyTorch镜像，打开Terminal'],['本地CPU','已有Python/PyTorch环境','小样本流程检查，不替代正式实验']], [2.6,4.5,4.7],subtitle='免费额度、可用GPU与租用价格，以平台当前页面为准。')
-    link(s,.84,5.55,5.4,'Kaggle：创建Notebook',KAGGLE,18);link(s,6.75,5.55,5.4,'AutoDL：实例与价格',AUTODL,18)
-    text(s,.86,6.13,11.6,.6,'配套：course_kaggle.ipynb逐步操作 ｜ README完整命令 ｜ Word实验报告模板。',18)
-    # 6. External platform tutorials and the course entry.
-    s=d.slide('05 Kaggle GPU使用参考')
-    tutorials=[
-        ('知乎｜Kaggle GPU资源使用教程——针对超级小白','https://zhuanlan.zhihu.com/p/18209757723'),
-        ('CSDN｜科研小白扫盲：Kaggle平台使用指导指南','https://blog.csdn.net/yyyyyybw/article/details/148336854'),
-        ('Kaggle官方｜Notebook使用文档','https://www.kaggle.com/docs/notebooks'),
+    # 2. Multimedia communication and burst errors.
+    s=d.slide('01 多媒体通信与码流损坏','图像和视频经过压缩编码后，以二进制码流的形式传输或存储。')
+    flow=[('图像 / 视频\n信源',.72),('压缩编码\nJPEG / H.264',3.15),('信道或\n存储介质',5.58),('解码与\n视觉分析',8.01),('分类 / 检测\n内容理解',10.44)]
+    for i,(label,x) in enumerate(flow):
+        rect(s,x,2.12,2.05,.86,LIGHT,rounded=True)
+        text(s,x+.07,2.30,1.91,.5,label,18,BLUE,True,PP_ALIGN.CENTER)
+        if i<4:text(s,x+2.08,2.35,.31,.35,'→',20,BLUE,True,PP_ALIGN.CENTER)
+    text(s,.82,3.34,5.4,.4,'Gilbert–Elliott 二状态模型',22,INK,True)
+    rect(s,1.0,4.08,1.56,.86,'DDEEDF',rounded=True);text(s,1.1,4.24,1.36,.48,'G｜良好',21,'31734F',True,PP_ALIGN.CENTER)
+    rect(s,4.07,4.08,1.56,.86,'F5DEDE',rounded=True);text(s,4.17,4.24,1.36,.48,'B｜不良',21,RED,True,PP_ALIGN.CENTER)
+    text(s,2.64,4.00,1.38,.4,'p：进入不良',16,GRAY,align=PP_ALIGN.CENTER)
+    text(s,2.64,4.69,1.38,.4,'r：恢复良好',16,GRAY,align=PP_ALIGN.CENTER)
+    text(s,2.50,4.28,1.72,.35,'→',24,RED,True,PP_ALIGN.CENTER)
+    text(s,2.50,4.59,1.72,.35,'←',24,'31734F',True,PP_ALIGN.CENTER)
+    text(s,.91,5.30,5.0,.92,'G状态错误率低；B状态错误率高。\nr较小时，错误容易连续出现，形成突发损坏。',17,GRAY)
+    text(s,6.65,3.35,5.55,.4,'常见的码流损坏',22,INK,True)
+    rect(s,6.63,4.04,2.61,1.17,LIGHT,rounded=True)
+    text(s,6.82,4.19,2.23,.38,'Bit flip',21,BLUE,True,PP_ALIGN.CENTER)
+    text(s,6.79,4.62,2.29,.37,'0 ↔ 1，长度不变',16,GRAY,align=PP_ALIGN.CENTER)
+    rect(s,9.63,4.04,2.61,1.17,LIGHT,rounded=True)
+    text(s,9.82,4.19,2.23,.38,'Byte loss',21,BLUE,True,PP_ALIGN.CENTER)
+    text(s,9.79,4.62,2.29,.37,'字节丢失，位置移动',16,GRAY,align=PP_ALIGN.CENTER)
+    text(s,6.72,5.51,5.41,.72,'课程使用离散时间表达，p、r表示状态转移概率；\n连续时间模型中相应参数写作转移率。',16,GRAY)
+    # 3. Image/video structures and motivation.
+    s=d.slide('02 图像与视频码流结构')
+    text(s,.82,1.87,5.55,.42,'JPEG 图像码流',23,BLUE,True)
+    jpeg=[('SOI','开始'),('DQT','量化表'),('SOF','尺寸'),('DHT','码表'),('SOS','扫描头'),('Scan','图像数据'),('EOI','结束')]
+    widths=[.66,1.0,.8,.8,.8,1.25,.66];x=.82
+    for i,((tag,desc),w) in enumerate(zip(jpeg,widths)):
+        fill='D9EAF4' if tag not in ('DQT','DHT','Scan') else 'F4E5D5'
+        rect(s,x,2.49,w,.83,fill,rounded=True);text(s,x+.03,2.61,w-.06,.28,tag,15,INK,True,PP_ALIGN.CENTER);text(s,x+.03,2.91,w-.06,.24,desc,11,GRAY,align=PP_ALIGN.CENTER)
+        x+=w+.08
+    text(s,.84,3.62,5.45,1.46,'文件标记、尺寸、量化表或Huffman表受损，可能直接导致解码失败；扫描数据受损会出现错块、花屏和错误传播。',18)
+    text(s,6.77,1.87,5.55,.42,'H.264 视频码流',23,BLUE,True)
+    video=[('Start code','定位NAL'),('SPS / PPS','解码参数'),('IDR / I','关键帧'),('P / B','预测帧')]
+    for i,(tag,desc) in enumerate(video):
+        x=6.78+i*1.42
+        rect(s,x,2.49,1.25,.83,'E3EDF5' if i<2 else 'E8E2F3',rounded=True)
+        text(s,x+.04,2.61,1.17,.28,tag,14,INK,True,PP_ALIGN.CENTER)
+        text(s,x+.04,2.91,1.17,.24,desc,11,GRAY,align=PP_ALIGN.CENTER)
+    text(s,6.81,3.62,5.43,1.46,'SPS/PPS或关键帧受损会影响后续多帧；P、B帧依赖参考帧，错误可沿时间方向继续传播。',18)
+    rect(s,.84,5.52,11.46,.72,'F5E4E4',rounded=True)
+    text(s,1.04,5.72,11.06,.38,'码流结构受损 → 无法正确解码 → 像素域模型得不到可靠输入 → 直接从字节中理解内容',21,RED,True,PP_ALIGN.CENTER)
+    # 4. General byte models only.
+    s=d.slide('03 代表性字节模型','字节模型直接读取0—255字节值，重点解决超长序列和多尺度结构建模。')
+    models=[
+        ('MEGABYTE','2023','全局模型处理字节块\n局部模型预测块内字节','论文公开；社区实现'),
+        ('ByteFormer','2023','卷积缩短序列\n窗口Transformer分类','官方代码与预训练权重'),
+        ('MambaByte','2024','选择性状态空间模型\n近似线性处理长序列','官方代码与权重'),
+        ('bGPT','2024','Patch-level + Byte-level\n多模态字节生成','官方代码与多模态权重'),
+        ('mBLM','2025','多层级Byte Patch\nTransformer / Mamba可选','官方代码与Python包'),
     ]
-    for i,(label,url) in enumerate(tutorials):
-        y=2.0+i*.86
-        rect(s,.82,y,11.67,.68,LIGHT,rounded=True)
-        link(s,1.03,y+.12,11.19,label,url,21)
-    link(s,.96,4.88,11.4,'课程Notebook：下载course_kaggle.ipynb',REPO+'/raw/refs/heads/main/course_kaggle.ipynb',21)
-    text(s,.99,5.58,11.35,.78,'按教程准备好GPU后，导入课程Notebook，逐格运行。\n环境检查显示 GPU available: True，即可继续实验。',21)
-    # 7. Download/prep/files combined.
-    s=d.slide('06 获取代码、数据与预训练权重','Kaggle笔记本已写好这些命令，按顺序运行即可。')
+    for i,(name,year,body,status) in enumerate(models):
+        x=.65+i*2.53
+        rect(s,x,2.22,2.28,3.23,LIGHT,rounded=True)
+        text(s,x+.11,2.43,2.06,.42,name,20,BLUE,True,PP_ALIGN.CENTER)
+        text(s,x+.11,2.88,2.06,.3,year,15,GRAY,align=PP_ALIGN.CENTER)
+        text(s,x+.14,3.45,2.0,.93,body,16,INK,align=PP_ALIGN.CENTER)
+        text(s,x+.14,4.73,2.0,.45,status,13,GRAY,align=PP_ALIGN.CENTER)
+    rect(s,.83,5.85,11.69,.63,'DDEBF3',rounded=True)
+    text(s,1.01,6.02,11.34,.34,'课程选择ByteFormer：直接支持文件分类，有公开代码和预训练权重，适合完成MNIST微调。',20,BLUE,True,PP_ALIGN.CENTER)
+    # 5. ByteFormer framework and the course classification task.
+    s=d.slide('04 ByteFormer框架与课程任务')
+    picture(s,RESEARCH_FIGURES/'byteformer_model_arch.png',.68,1.92,5.25,3.9)
+    stages=[('MNIST图像','JPEG编码'),('字节序列','0—255'),('ByteFormer','预训练主干'),('分类结果','数字0—9')]
+    for i,(heading,body) in enumerate(stages):
+        x=6.25+i*1.53
+        rect(s,x,2.16,1.28,1.08,LIGHT,rounded=True)
+        text(s,x+.05,2.31,1.18,.32,heading,16,BLUE,True,PP_ALIGN.CENTER)
+        text(s,x+.05,2.72,1.18,.28,body,13,GRAY,align=PP_ALIGN.CENTER)
+        if i<3:text(s,x+1.29,2.49,.22,.3,'→',18,BLUE,True,PP_ALIGN.CENTER)
+    text(s,6.31,3.64,5.65,1.88,'· 使用公开的ByteFormer Tiny预训练权重\n· 将分类头改为10个类别\n· 在训练集更新参数，用验证集选择模型\n· 最后在独立测试集上报告结果',19)
+    rect(s,.82,6.12,11.64,.58,'DDEBF3',rounded=True)
+    text(s,1.02,6.27,11.24,.32,'基础任务：完成码流图像分类、参数对比和结果分析。',20,BLUE,True,PP_ALIGN.CENTER)
+    # 6. Balanced 1/10 MNIST split.
+    s=d.slide('05 课程数据集与三类划分','课程仓库已经提供固定划分，所有同学使用相同样本。')
+    picture(s,digits_asset(),.69,2.12,5.0,3.94)
+    splits=[('训练集','5,000','每类500张\n包含原图与轻微旋转、平移视图'),('验证集','1,000','每类100张\n用于选择最佳模型'),('测试集','1,000','每类100张\n训练结束后独立评估')]
+    for i,(name,count,body) in enumerate(splits):
+        x=6.02+i*2.13
+        rect(s,x,2.18,1.89,3.18,LIGHT,rounded=True)
+        text(s,x+.11,2.41,1.67,.38,name,22,BLUE,True,PP_ALIGN.CENTER)
+        text(s,x+.11,3.02,1.67,.48,count,27,INK,True,PP_ALIGN.CENTER)
+        text(s,x+.13,3.79,1.63,1.0,body,15,GRAY,align=PP_ALIGN.CENTER)
+    text(s,6.14,5.76,6.12,.61,'数据文件：data/course_1of10/　测试集不参与训练和模型选择。',16,GRAY)
+    # 7. GPU platforms and external tutorials on one page.
+    s=d.table('06 实验环境与在线平台',['运行平台','适用情况','入口'],[
+        ['Kaggle免费GPU','推荐；导入课程Notebook后运行','Notebook + Internet + GPU'],
+        ['AutoDL租用GPU','Kaggle额度不足时使用','选择PyTorch镜像，打开Terminal'],
+        ['本地环境','用于查看代码或小规模检查','Python、PyTorch环境']], [2.45,5.1,4.25],subtitle='平台界面、免费额度和租用价格可能调整，以平台当前页面为准。')
+    links=[
+        ('知乎｜Kaggle GPU资源使用教程','https://zhuanlan.zhihu.com/p/18209757723'),
+        ('CSDN｜Kaggle平台使用指导','https://blog.csdn.net/yyyyyybw/article/details/148336854'),
+        ('Kaggle官方Notebook文档','https://www.kaggle.com/docs/notebooks'),
+        ('AutoDL官方快速开始','https://www.autodl.com/docs/quick_start/'),
+    ]
+    for i,(label,url) in enumerate(links):
+        link(s,.87+(i%2)*6.0,5.42+(i//2)*.58,5.65,label,url,16)
+    # 8. Code, data, and pretrained weights.
+    s=d.slide('07 获取代码、数据与预训练权重','课程Notebook中已经写好相同命令。')
     command=f'!git clone {REPO}.git\n%cd /kaggle/working/byteformer-mnist-course\n!python -m pip install -r requirements.txt\n!python prepare.py'
-    codebox(s,.8,2.35,11.73,1.92,command,17)
-    text(s,.87,4.65,11.6,.8,'看到[READY]即准备完成：MNIST约11.6MB随仓库提供；官方权重约64MB自动下载并校验。',20)
-    text(s,.88,5.72,11.6,.92,'prepare.py：准备资源　train.py：微调　evaluate.py：评估　predict.py：预测\ndata/：数据　checkpoints/：预训练权重　outputs/：你自己的实验结果',18,GRAY)
-    # 8. Training parameters + command.
-    s=d.slide('07 模型训练与参数设置')
-    settings=[('训练样本','50,000'),('验证 / 测试','1,000 / 10,000'),('训练轮数','自行设置'),('batch size','自行设置，参考32'),('学习率','主干1e-4；分类头10倍')]
+    codebox(s,.8,2.24,11.73,1.92,command,17)
+    text(s,.87,4.49,11.6,.55,'看到[READY]即准备完成；课程数据集随仓库提供，ByteFormer预训练权重自动下载并校验。',19)
+    text(s,.88,5.31,11.6,1.14,'train_course_subset.py：训练　evaluate_course_corruption.py：测试\npredict.py：单图预测　data/course_1of10/：固定数据　outputs/：实验结果',18,GRAY)
+    # 9. Student-selected training settings.
+    s=d.slide('08 模型训练与参数设置')
+    settings=[('训练 / 验证 / 测试','5,000 / 1,000 / 1,000'),('训练轮数','根据验证结果自行设置'),('batch size','自行设置，参考32'),('学习率','主干1e-4；分类头10倍'),('输入增强','轻微旋转与水平平移')]
     for i,(a,b) in enumerate(settings):
-        y=2.03+i*.69;rect(s,.8,y,5.52,.59,LIGHT);text(s,.94,y+.1,2.18,.4,a,19,BLUE,True);text(s,3.15,y+.1,3.04,.43,b,18)
-    codebox(s,6.77,2.09,5.72,1.88,'EPOCHS = int(input("epochs: "))\nBATCH_SIZE = int(input("batch: "))\n!python train.py --epochs {EPOCHS} \\\n  --batch-size {BATCH_SIZE}',16)
-    text(s,6.91,4.25,5.38,1.6,'看到[DONE]即训练完成。\n结果保存到outputs/baseline/。\n请记录实际使用的参数。',20)
-    text(s,.9,6.12,11.45,.55,'训练轮数和batch size均可调整；参考值仅供起步，测试集只作最终评估。',17,GRAY)
-    # 9. Read the student's own learning curves and metrics.
-    s=d.slide('08 训练结果分析')
-    codebox(s,.82,2.0,11.7,1.28,'from IPython.display import display, Image\ndisplay(Image("outputs/baseline/curves.png"))',20)
+        y=2.01+i*.69;rect(s,.8,y,5.53,.59,LIGHT);text(s,.94,y+.1,2.24,.4,a,18,BLUE,True);text(s,3.23,y+.1,2.95,.43,b,17)
+    codebox(s,6.67,2.05,5.82,2.18,'EPOCHS = int(input("epochs: "))\nBATCH_SIZE = int(input("batch: "))\n!python train_course_subset.py \\\n  --method clean --epochs {EPOCHS} \\\n  --batch-size {BATCH_SIZE} --clean-augmentations \\\n  --output outputs/course_clean',13)
+    text(s,6.82,4.59,5.43,1.18,'训练过程中观察验证集准确率；\n结果保存在outputs/course_clean/。',19)
+    text(s,.9,6.14,11.45,.55,'轮数与batch size没有固定答案，请在报告中写明自己的设置。',17,GRAY)
+    # 10. Curves and metrics.
+    s=d.slide('09 训练结果分析')
+    codebox(s,.82,1.98,11.7,1.25,'from IPython.display import display, Image\ndisplay(Image("outputs/course_clean/curves.png"))',19)
     prompts=[
-        ('训练损失','损失是否逐渐下降？\n后期是否还在改善？'),
-        ('验证表现','验证准确率怎样变化？\n与训练表现差距多大？'),
-        ('测试结果','加载验证集选出的模型，\n在测试集上评估并记录。'),
+        ('训练损失','是否总体下降？\n是否出现明显波动？'),
+        ('验证结果','准确率怎样变化？\n最佳结果出现在哪一轮？'),
+        ('测试结果','加载验证集选出的模型，\n在独立测试集上评估。'),
     ]
     for i,(heading,body) in enumerate(prompts):
         x=.83+i*4.17
-        rect(s,x,3.78,3.88,1.91,LIGHT,rounded=True)
-        text(s,x+.17,3.96,3.52,.43,heading,23,BLUE,True)
-        text(s,x+.17,4.65,3.52,.92,body,19)
-    text(s,.93,6.12,11.4,.55,'指标与参数保存在metrics.json中；结合曲线，解释本次实验的结果。',19,GRAY)
-    # 10. Evaluation, inference, and mistakes on one page.
-    s=d.slide('09 评估、单图预测与错例检查')
-    codebox(s,.8,2.0,11.75,1.31,'!python evaluate.py --checkpoint outputs/baseline/best.pt\n!python predict.py --checkpoint outputs/baseline/best.pt --index 0',17)
-    text(s,.88,3.69,6.03,2.16,'评估：读取best.pt，保存evaluation.json。\n预测：显示真实标签与预测，生成单图结果。\n实操：换一个0—9999的测试索引。\n错例：Notebook自动给出错误样本索引。',20)
-    picture(s,ROOT/'assets/example_digit.png',8.49,3.55,2.6,2.28)
-    text(s,7.5,5.95,4.6,.45,'真实标签7 ｜ 模型预测7',20,BLUE,True,PP_ALIGN.CENTER)
-    text(s,.9,6.24,6.5,.47,'Notebook另提供完整预测图和混淆矩阵，供查找与分析错例。',16,GRAY)
-    # 11. Student-selected parameters and a compact worksheet.
-    s=d.slide('10 参数对比实验')
-    codebox(s,.81,2.03,11.71,1.92,'COMPARISON_EPOCHS = int(input("epochs: "))\nCOMPARISON_BATCH_SIZE = int(input("batch: "))\n!python train.py --epochs {COMPARISON_EPOCHS} \\\n  --batch-size {COMPARISON_BATCH_SIZE} --output outputs/comparison',17)
-    text(s,.88,4.18,5.75,1.96,'轮数和batch size均自行设置，\n建议一次只改变其中一项。\n数据、随机种子和预训练来源相同。\n保留baseline，另存comparison。',19)
-    rect(s,7.04,4.12,5.16,2.08,LIGHT,rounded=True)
-    text(s,7.25,4.25,4.72,1.81,'对比分析内容\n· 验证准确率是否提高？\n· 训练损失怎样变化？\n· 改变设置的收益与代价？\n· 为什么还需要验证集？',17)
-    text(s,.9,6.37,11.35,.4,'记录两次实验的参数、验证准确率与耗时，解释设置变化带来的影响。',16,GRAY)
-    # 12. Entire AutoDL route on one page.
-    s=d.slide('11 AutoDL环境配置与运行')
-    text(s,.86,1.96,11.65,.68,'租用1张GPU并选择PyTorch镜像 → 打开JupyterLab → Terminal；以下命令前不加 !。',20)
-    codebox(s,.82,2.65,11.71,2.73,f'cd /root/autodl-tmp\ngit clone {REPO}.git\ncd byteformer-mnist-course\npython -m pip install -r requirements.txt\npython prepare.py\nread -p "epochs: " EPOCHS\nread -p "batch size (ref 32): " BATCH_SIZE\npython train.py --epochs "$EPOCHS" --batch-size "$BATCH_SIZE"',16)
-    text(s,.91,5.56,11.43,.89,'运行后下载outputs中的指标和图；如需继续预测，保存best.pt。\n结束后回控制台关机：关闭浏览器不等于关机。价格以页面当前报价为准。',19)
-    link(s,.9,6.57,11.3,'AutoDL官方快速开始（实例、JupyterLab、Terminal）','https://www.autodl.com/docs/quick_start/',14)
-    # 13. FAQ.
-    s=d.table('12 常见问题与处理方法',['现象','处理'],[['GPU available: False','开启Kaggle GPU；或确认AutoDL实例和PyTorch环境'],['No module named ...','在当前课程目录安装requirements.txt，确认使用同一环境'],['下载超时 / 校验失败','开启Internet重试；或使用教师预下载资源包'],['CUDA out of memory','减小batch size，如32降到16或8，并记录实际值'],['输出目录已存在 / best.pt找不到','重跑使用新output；评估checkpoint对应实际训练目录'],['验证表现不再改善','查看训练与验证曲线，检查样本量、预训练权重与学习率']], [4.15,7.65])
-    text(s,.88,6.53,11.45,.32,'CPU备用：README提供小样本流程检查命令，便于先熟悉代码运行。',14,GRAY)
-    # 14. Packaging and grading combined.
+        rect(s,x,3.66,3.88,1.9,LIGHT,rounded=True)
+        text(s,x+.17,3.86,3.52,.43,heading,22,BLUE,True)
+        text(s,x+.17,4.53,3.52,.88,body,18)
+    text(s,.93,6.03,11.4,.61,'history.csv保存每轮结果；metrics.json保存最佳轮次、参数和运行时间。',18,GRAY)
+    # 11. Evaluation, prediction and errors.
+    s=d.slide('10 测试、单图预测与错例检查')
+    codebox(s,.8,1.96,11.75,1.62,'!python evaluate_course_corruption.py \\\n  --checkpoint outputs/course_clean/best.pt --output outputs/course_clean_eval\n!python predict.py --checkpoint outputs/course_clean/best.pt --index 0',15)
+    text(s,.88,3.91,6.22,1.93,'Clean：基础任务的独立测试结果。\nMedium-Flip / Loss / Mixed：加分项使用。\n将--index改成其他测试索引，可查看预测概率。\n结合预测图和错误索引分析典型错例。',18)
+    picture(s,ROOT/'assets/example_digit.png',8.51,3.75,2.55,2.18)
+    text(s,7.62,6.03,4.37,.4,'真实标签7 ｜ 模型预测7',19,BLUE,True,PP_ALIGN.CENTER)
+    # 12. Parameter comparison.
+    s=d.slide('11 参数对比实验')
+    codebox(s,.81,2.0,11.71,2.13,'COMPARISON_EPOCHS = int(input("epochs: "))\nCOMPARISON_BATCH_SIZE = int(input("batch: "))\n!python train_course_subset.py --method clean \\\n  --epochs {COMPARISON_EPOCHS} --batch-size {COMPARISON_BATCH_SIZE} \\\n  --clean-augmentations --output outputs/comparison',14)
+    text(s,.88,4.35,5.75,1.63,'轮数和batch size均可自行设置。\n建议一次只改变一个参数，其他条件保持一致。\n保留第一次结果，另存outputs/comparison。',18)
+    rect(s,7.02,4.31,5.18,1.72,LIGHT,rounded=True)
+    text(s,7.24,4.47,4.74,1.38,'比较内容\n· 验证集准确率与训练时间\n· 损失曲线和收敛速度\n· 参数变化带来的收益与代价',17)
+    text(s,.9,6.30,11.35,.4,'报告中列出两次设置及结果，并说明比较结论。',16,GRAY)
+    # 13. AutoDL and common problems combined.
+    s=d.slide('12 AutoDL运行与常见问题')
+    codebox(s,.78,1.94,6.13,3.55,f'cd /root/autodl-tmp\ngit clone {REPO}.git\ncd byteformer-mnist-course\npython -m pip install -r requirements.txt\npython prepare.py\npython train_course_subset.py --method clean \\\n  --epochs "$EPOCHS" --batch-size "$BATCH_SIZE" \\\n  --clean-augmentations --output outputs/course_clean',12)
+    problems=[('没有使用GPU','检查Kaggle加速器或AutoDL实例'),('缺少Python包','重新安装requirements.txt'),('显存不足','减小batch size并记录实际值'),('输出目录已有文件','改用新的output目录')]
+    for i,(heading,body) in enumerate(problems):
+        y=2.0+i*.91
+        rect(s,7.25,y,5.0,.75,LIGHT,rounded=True)
+        text(s,7.43,y+.11,1.78,.3,heading,16,BLUE,True)
+        text(s,9.17,y+.11,2.88,.43,body,15)
+    text(s,.88,5.80,6.05,.79,'运行前在Terminal中设置EPOCHS和BATCH_SIZE；\n实验结束后下载outputs并在控制台关机。',17,GRAY)
+    link(s,7.34,6.00,4.8,'AutoDL官方快速开始','https://www.autodl.com/docs/quick_start/',16)
+    # 14. Submission requirements.
     s=d.slide('13 实验结果与报告提交')
-    text(s,.86,1.98,6.03,3.64,'① 运行Notebook最后的打包单元格。\n② 在文件面板下载byteformer_mnist_results.zip。\n③ 用Word模板填写自己的环境、命令、指标和解释。\n④ 附两组曲线、预测图、错例证据。\n\n默认不用提交数据集、Python环境或大模型。',21)
-    checks=['训练、验证和测试流程完整','记录实际参数与运行环境','说明训练与验证曲线变化','完成一次自选参数对比','查看预测并分析错例','提交自己的实验报告']
-    text(s,7.17,2.03,5.0,.47,'基础任务达标检查',23,BLUE,True)
+    text(s,.86,1.98,6.03,3.71,'① 保存训练曲线和测试结果。\n② 完成一次参数对比。\n③ 展示单图预测或典型错例。\n④ 填写实验环境、命令、参数与结果分析。\n⑤ 打包代码、结果图和实验报告。\n\n数据集和Python环境不需要重复提交。',20)
+    checks=['完成训练、验证和测试流程','记录实际轮数与batch size','区分验证集结果和测试集结果','说明曲线变化与参数对比','给出预测结果与错例分析','提交个人实验报告']
+    text(s,7.17,2.03,5.0,.47,'基础任务检查',23,BLUE,True)
     for i,item in enumerate(checks):
         y=2.68+i*.51
         rect(s,7.14,y,5.07,.45,LIGHT)
         text(s,7.29,y+.05,4.75,.35,item,17)
-    text(s,.9,6.31,11.43,.57,'提交时间与方式由任课教师通知；报告分别列出验证集和测试集结果。',17,RED)
-    # 15. Optional higher-grade tasks; no additional experiments are required here.
-    s=d.slide('14 拓展任务与加分要求')
-    rect(s,.83,1.96,11.68,.86,LIGHT,rounded=True)
-    text(s,1.03,2.17,11.25,.46,'完成MNIST规定任务并提交实验报告，即达标及格。',23,BLUE,True)
-    tasks=[
-        (.83,'加分任务一｜CIFAR-10微调','把ByteFormer微调流程迁移到CIFAR-10。\n自行适配数据读取与分类任务，\n完成训练、验证和测试。'),
-        (6.81,'进阶加分任务二｜Stanford40','完成斯坦福40动作识别数据集的微调分类。\n自行准备数据、调整分类头并设置参数，\n分析预测结果与典型错例。'),
+    text(s,.9,6.31,11.43,.57,'报告分别列出训练集、验证集和测试集的用途与结果。',17,RED)
+    # 15. Bonus corrupted-bitstream task with concrete directions.
+    s=d.slide('14 加分项：损坏码流分类','课程提供与干净测试集对应的损坏测试数据，共包含以下两种基本损坏。')
+    rect(s,.77,2.13,3.72,1.50,'F6E5E1',rounded=True)
+    text(s,.96,2.31,3.34,.39,'Bit flip｜比特翻转',21,RED,True,PP_ALIGN.CENTER)
+    text(s,.97,2.86,3.31,.56,'翻转选中字节的1位（长度不变）\n10100110 → 10100010',14,INK,align=PP_ALIGN.CENTER)
+    rect(s,4.79,2.13,3.72,1.50,'F4EAD8',rounded=True)
+    text(s,4.98,2.31,3.34,.39,'Byte loss｜字节丢失',21,'A46A25',True,PP_ALIGN.CENTER)
+    text(s,4.99,2.86,3.31,.56,'删除字节，后续字节前移\nFF D8 A1 3C → FF D8 3C',14,INK,align=PP_ALIGN.CENTER)
+    rect(s,8.81,2.13,3.72,1.50,LIGHT,rounded=True)
+    text(s,9.00,2.31,3.34,.39,'Mixed｜混合损坏',21,BLUE,True,PP_ALIGN.CENTER)
+    text(s,9.01,2.84,3.31,.65,'每个样本随机选择翻转或丢失\n检验模型对未知损坏的适应能力',14,INK,align=PP_ALIGN.CENTER)
+    text(s,.83,3.93,2.75,.4,'可以尝试的方向',21,BLUE,True)
+    directions=[('① 结果分析','比较Clean、Flip、Loss、Mixed，观察哪类损坏影响更大。'),('② 损坏增强','训练时随机加入bit flip和byte loss样本。'),('③ 一致性约束','让同一图像的干净码流与损坏码流输出接近。')]
+    for i,(heading,body) in enumerate(directions):
+        x=.82+i*4.02
+        rect(s,x,4.42,3.72,1.18,LIGHT,rounded=True)
+        text(s,x+.14,4.57,3.44,.33,heading,17,BLUE,True)
+        text(s,x+.14,4.96,3.44,.52,body,14)
+    text(s,.86,5.91,2.22,.35,'参考资料：',15,GRAY,True)
+    link(s,2.25,5.89,2.55,'CBSU-ALLM','https://doi.org/10.1016/j.patcog.2026.114151',14)
+    link(s,4.65,5.89,2.25,'BRACE','https://arxiv.org/abs/2608.15695',14)
+    link(s,6.65,5.89,2.25,'BSCV','https://arxiv.org/abs/2309.13890',14)
+    text(s,.87,6.37,11.45,.34,'提交改进方法、训练设置以及四类测试结果；可自行组合其他增强或鲁棒训练方法。',15,GRAY)
+    # 16. References and entry points.
+    s=d.slide('15 配套材料与参考文献','实验步骤、命令和数据说明见课程仓库与Notebook。')
+    sources=[
+        ('课程仓库：代码、Notebook、数据、PPT和报告模板',REPO),
+        ('ByteFormer：Bytes Are All You Need','https://arxiv.org/abs/2306.00238'),
+        ('MEGABYTE：Predicting Million-byte Sequences','https://arxiv.org/abs/2305.07185'),
+        ('MambaByte：Token-free Selective State Space Model','https://arxiv.org/abs/2401.13660'),
+        ('bGPT：Byte Models are Digital World Simulators','https://arxiv.org/abs/2402.19155'),
+        ('mBLM：Hierarchical Transformers for Byte Modeling','https://arxiv.org/abs/2502.14553'),
+        ('Kaggle Notebook官方文档','https://www.kaggle.com/docs/notebooks'),
+        ('AutoDL官方快速开始','https://www.autodl.com/docs/quick_start/'),
     ]
-    for x,heading,body in tasks:
-        rect(s,x,3.22,5.7,2.42,LIGHT,rounded=True)
-        text(s,x+.17,3.44,5.34,.46,heading,22,BLUE,True)
-        text(s,x+.17,4.18,5.34,1.28,body,18)
-    text(s,.98,5.99,11.35,.84,'完成拓展任务可获得加分，进阶任务的加分高于基础拓展任务。\n提交代码、数据划分、实验结果及分析，说明数据处理和模型调整方法。',20)
-    # 16. References and concrete entry.
-    s=d.slide('15 配套材料与参考文献','实验步骤、运行命令和常见问题见README与课程Notebook。')
-    sources=[('课程仓库：代码、Notebook、数据、PPT、报告模板',REPO),('Kaggle Notebook 官方文档','https://www.kaggle.com/docs/notebooks'),('AutoDL 官方快速开始','https://www.autodl.com/docs/quick_start/'),('ByteFormer 原论文：Bytes Are All You Need','https://arxiv.org/abs/2306.00238'),('Apple CoreNet：ByteFormer代码与预训练权重','https://github.com/apple/corenet/tree/main/projects/byteformer'),('MNIST：CVDF镜像与原作者说明','https://github.com/cvdfoundation/mnist')]
-    for i,(label,url) in enumerate(sources):link(s,.92,2.25+i*.59,11.55,label,url,19)
+    for i,(label,url) in enumerate(sources):link(s,.92,2.02+i*.50,11.55,label,url,16)
     assert len(d.prs.slides)==16
     out=ROOT.parent/('_reference_analysis/course_preview.pptx' if args.draft else 'ByteFormer_MNIST_零基础实验课.pptx')
     out.parent.mkdir(parents=True,exist_ok=True);d.prs.save(out)

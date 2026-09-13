@@ -17,6 +17,7 @@ from torch.utils.data import DataLoader, Dataset
 from build_course_dataset import DATA_DIR
 from byteformer_model import build_model
 from course_corruption import MEDIUM_SCENARIOS, corrupt_bytes, random_training_params
+from data_utils import ENCODING
 from prepare import ROOT, WEIGHT_NAME, digest
 from train import choose_device
 
@@ -177,6 +178,7 @@ def main():
     config = {key: str(value) if isinstance(value, Path) else value
               for key, value in vars(args).items()}
     config.update(train_samples=5000, val_samples=1000, test_samples=1000,
+                  encoding=ENCODING, corrected_masks=True,
                   selection=('clean validation accuracy' if args.method == 'clean'
                              else 'mean of clean and Medium-Mixed validation accuracy'))
     best_score, best_epoch, history = -1.0, 0, []

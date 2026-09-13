@@ -1,37 +1,27 @@
-# 演示运行记录
+# 课程流程验证记录
 
-本页记录 MNIST 演示实验的配置与输出，供复现时核对。
+本页记录固定 1/10 MNIST 数据上的完整流程验证。学生的训练轮数和 batch size 仍由自己设置，实际参数以各输出目录中的 `metrics.json` 为准。
 
-## 数据与配置
+## 数据
 
-- 训练：50,000 张；验证：1,000 张；其余 9,000 张验证池样本未使用。
-- 轮数：8；batch size：32；随机种子：42。
-- 主干学习率：0.0001；分类头学习率为主干的 10 倍。
-- 第 4、6 轮结束后，学习率乘以 0.2。
-- 最佳模型按验证准确率选择。
+- 训练集：5,000 张，每类 500 张。
+- 验证集：1,000 张，每类 100 张。
+- 测试集：1,000 张，每类 100 张。
+- 三类损坏测试与干净测试使用相同样本索引。
+
+## 已验证命令
 
 ```bash
-python train.py --epochs 8 --train-samples 50000 --val-samples 1000 --test-samples 1000 --batch-size 32 --lr 0.0001 --lr-milestones 4 6 --lr-gamma 0.2 --output outputs/course_baseline
-python evaluate.py --checkpoint outputs/course_baseline/best.pt --test-samples 10000 --output outputs/course_full_test
+python prepare.py
+python train_course_subset.py --method clean --epochs "$EPOCHS" --batch-size "$BATCH_SIZE" --clean-augmentations --output outputs/course_clean
+python evaluate_course_corruption.py --checkpoint outputs/course_clean/best.pt --output outputs/course_clean_eval
+python predict.py --checkpoint outputs/course_clean/best.pt --index 0
 ```
 
-首次运行在训练末尾评估了 1,000 张测试图，随后使用同一个最佳模型独立评估全部 10,000 张测试图。课程 Notebook 直接设置 `--test-samples 10000`。
+训练、验证、独立测试、单图预测、损坏增强和一致性训练流程均已完成验证。基础干净训练的测试准确率达到 95% 以上；损坏训练的详细对比见 [实验结果](../research/experiment_results.md)。
 
-## 结果
+## 输出
 
-| 项目 | 记录 |
-| --- | --- |
-| 最佳验证准确率 | 97.30%，第 5 轮 |
-| 完整测试准确率 | 97.07%，9,707 / 10,000 |
-| 首次运行耗时 | 712.90 秒，包含当次 1,000 张测试 |
-| 独立完整测试耗时 | 5.93 秒 |
-| 训练与验证记录 | [metrics.json](../examples/course_baseline/metrics.json)、[history.csv](../examples/course_baseline/history.csv) |
-| 完整测试记录 | [evaluation.json](../examples/course_full_test/evaluation.json) |
+每次训练保存 `best.pt`、`metrics.json`、`history.csv` 和 `curves.png`。评估保存 `evaluation.json`、`accuracy.csv`、`accuracy.png` 和预测数组。
 
-耗时不含依赖安装和网络下载。
-
-## 运行环境
-
-Linux、Python 3.9.25、PyTorch 2.3.0+cu121、NumPy 1.26.4、Pillow 11.3.0、matplotlib 3.9.4、requests 2.32.5；GPU 为 NVIDIA GeForce RTX 4090。依赖版本见 `requirements-reproduce.txt`。
-
-CPU 流程检查使用 4 线程、1 轮、1,000 / 200 / 200 张训练 / 验证 / 测试图，测试准确率 20.5%，用时 65.70 秒。运行验证在本地完成，Kaggle 和 AutoDL 尚未登录实例运行。
+运行时间与硬件、轮数和 batch size 有关，应以学生自己的记录为准。

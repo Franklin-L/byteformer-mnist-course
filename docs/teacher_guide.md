@@ -10,7 +10,7 @@
 
 ## 课前准备
 
-1. 检查学生是否能够访问课程仓库、下载 Notebook 并开启 GPU。Kaggle 使用教程见 PPT 第 6 页；AutoDL 作为备用平台。
+1. 检查学生是否能够访问课程仓库、下载 Notebook 并开启 GPU。Kaggle 使用教程见 PPT；AutoDL 作为备用平台。
 2. 在授课环境运行 `python prepare.py`，准备数据与预训练权重。
 3. 设置训练轮数与 batch size，完成一次基线训练，检查曲线、指标和预测图。
 4. 更改一个参数完成对比实验，结果保存到 `outputs/comparison`。
@@ -28,9 +28,9 @@
 python prepare.py
 read -p "请输入训练轮数：" EPOCHS
 read -p "请输入 batch size（参考32）：" BATCH_SIZE
-python train.py --epochs "$EPOCHS" --batch-size "$BATCH_SIZE" --output outputs/baseline
-python evaluate.py --checkpoint outputs/baseline/best.pt --output outputs/baseline
-python predict.py --checkpoint outputs/baseline/best.pt --index 0
+python train_course_subset.py --method clean --epochs "$EPOCHS" --batch-size "$BATCH_SIZE" --clean-augmentations --output outputs/course_clean
+python evaluate_course_corruption.py --checkpoint outputs/course_clean/best.pt --output outputs/course_clean_eval
+python predict.py --checkpoint outputs/course_clean/best.pt --index 0
 ```
 
 ### 自选对比命令
@@ -38,7 +38,7 @@ python predict.py --checkpoint outputs/baseline/best.pt --index 0
 ```bash
 read -p "请输入对比实验的训练轮数：" COMPARISON_EPOCHS
 read -p "请输入对比实验的 batch size：" COMPARISON_BATCH_SIZE
-python train.py --epochs "$COMPARISON_EPOCHS" --batch-size "$COMPARISON_BATCH_SIZE" --output outputs/comparison
+python train_course_subset.py --method clean --epochs "$COMPARISON_EPOCHS" --batch-size "$COMPARISON_BATCH_SIZE" --clean-augmentations --output outputs/comparison
 ```
 
 ## 课堂安排
@@ -59,7 +59,7 @@ python train.py --epochs "$COMPARISON_EPOCHS" --batch-size "$COMPARISON_BATCH_SI
 ## 教学要点
 
 - ByteFormer 输入为文件字节序列；MNIST 图像转换由脚本完成。
-- 使用 50,000 张训练图、1,000 张验证图及 10,000 张测试图，另有 9,000 张验证池样本未使用。
+- 使用固定的平衡划分：5,000 张训练图、1,000 张验证图和 1,000 张测试图，每类数量相同。
 - 训练集更新参数，验证集选择 `best.pt`，模型确定后在测试集上评估。
 - 对比实验从同一预训练权重开始，保持数据划分、随机种子和学习率策略一致，建议每次调整一个参数。
 - 结合训练损失与验证准确率讨论参数效果；错例分析应描述图像特征、预测结果和可能原因。
@@ -68,7 +68,7 @@ python train.py --epochs "$COMPARISON_EPOCHS" --batch-size "$COMPARISON_BATCH_SI
 
 完成 MNIST 规定任务并提交实验报告，即达标及格。报告包含环境、参数、曲线、评估结果、一次参数对比和错例分析。
 
-额外完成 CIFAR-10 微调可加分；Stanford40 动作识别分类为进阶任务。学生自行适配数据读取与分类头，提交代码、数据划分、结果及分析。
+加分项使用课程提供的损坏测试集。学生比较 bit flip、byte loss 和混合损坏的影响，并可尝试损坏增强、预测一致性或特征对齐，提交四类测试结果与分析。
 
 ## 课程材料
 
