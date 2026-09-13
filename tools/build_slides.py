@@ -235,7 +235,7 @@ def main():
     s=d.table('06 实验环境与在线平台',['运行平台','适用情况','入口'],[
         ['Kaggle免费GPU','推荐；导入课程Notebook后运行','Notebook + Internet + GPU'],
         ['AutoDL租用GPU','Kaggle额度不足时使用','选择PyTorch镜像，打开Terminal'],
-        ['本地环境','用于查看代码或小规模检查','Python、PyTorch环境']], [2.45,5.1,4.25],subtitle='平台界面、免费额度和租用价格可能调整，以平台当前页面为准。')
+        ['本地GPU','已安装Python 3.9—3.12','pip install -r requirements-local.txt']], [2.45,5.1,4.25],subtitle='平台界面、免费额度和租用价格可能调整，以平台当前页面为准。')
     links=[
         ('知乎｜Kaggle GPU资源使用教程','https://zhuanlan.zhihu.com/p/18209757723'),
         ('CSDN｜Kaggle平台使用指导','https://blog.csdn.net/yyyyyybw/article/details/148336854'),

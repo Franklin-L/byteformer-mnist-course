@@ -49,6 +49,17 @@ Kaggle 单元格：
 
 AutoDL 或普通 Linux 终端去掉命令前的 `!`，并使用 `cd` 进入仓库目录。`prepare.py` 会检查 MNIST 文件并下载、校验 ByteFormer 预训练权重。
 
+## 本地电脑安装环境
+
+如果学生使用自己的 NVIDIA GPU 电脑，推荐 Python 3.9–3.12，在项目目录运行：
+
+```bash
+python -m pip install -r requirements-local.txt
+python prepare.py
+```
+
+`requirements-local.txt` 会安装 CUDA 12.1 版 PyTorch 和课程依赖。电脑需要有可用的 NVIDIA 显卡驱动。Kaggle 和 AutoDL 的 PyTorch 镜像已经安装 PyTorch，仍使用较轻量的 `requirements.txt`。
+
 ## 基础训练
 
 训练轮数和 batch size 由学生设置。batch size 可参考 32；显存不足时可减小。
