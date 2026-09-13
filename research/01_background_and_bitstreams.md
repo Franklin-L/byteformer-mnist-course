@@ -56,11 +56,6 @@ Gilbert–Elliott 模型用两个状态描述具有突发性的信道：
 
 JPEG 使用变长熵编码。码流中的一个错误可能改变后续比特的分组方式，直到重新同步或扫描结束。byte loss 还会改变后续字节位置，通常比等数量的孤立像素噪声更难处理。
 
-图片语义理解部分可结合以下工作讲解：
-
-- **CBSU-ALLM**：*Corrupted bitstream semantic understanding by adaptive-modal large language models*，Pattern Recognition，DOI [10.1016/j.patcog.2026.114151](https://doi.org/10.1016/j.patcog.2026.114151)。该工作面向受损图像码流的语义理解。
-- **Cibic**：*Pixel-free foundation model for robust corrupted image bitstream captioning*，DOI [10.1016/j.patcog.2026.114238](https://doi.org/10.1016/j.patcog.2026.114238)。该工作从受损 JPEG 字节直接生成描述，不依赖成功解码。
-
 ## 4. H.264/AVC 视频码流结构
 
 H.264 Annex B 码流通常由带起始码的 NAL 单元组成。起始码常见为 `000001` 或 `00000001`，其后是 NAL header 和 payload。
@@ -75,11 +70,6 @@ H.264 Annex B 码流通常由带起始码的 NAL 单元组成。起始码常见�
 | SEI 等辅助 NAL | 时间、显示或其他补充信息 | 对应辅助信息丢失或异常 |
 
 视频压缩利用帧内和帧间相关性。同一 GOP 中，P/B 帧依赖参考帧；关键 NAL 单元或参考帧受损后，影响可能持续多个画面。与单张 JPEG 相比，视频码流还包含明显的时间依赖和跨帧错误传播。
-
-视频部分可结合以下材料：
-
-- **BSCV**：*Bitstream-Corrupted Video Recovery: A Novel Benchmark Dataset and Method*，[论文](https://arxiv.org/abs/2309.13890)与[数据生成代码](https://github.com/LIUTIGHE/BSCV-Dataset)。其损坏过程在编码视频的码流单元中删除连续片段，用于模拟码流损坏视频。
-- **VUB**：*Learn to Understand Video from Bitstream Modeling and Distillation*，本地稿件位于 `/home/Li_fangcheng/video_understand/VUB/PRCV2026_bitstream.pdf`，研究从视频原始码流直接完成内容理解。
 
 ## 5. 为什么需要字节域语义理解
 
@@ -98,5 +88,3 @@ H.264 Annex B 码流通常由带起始码的 NAL 单元组成。起始码常见�
 - JPEG 标准：ITU-T T.81，*Digital compression and coding of continuous-tone still images*。
 - H.264/AVC 标准：ITU-T H.264，*Advanced video coding for generic audiovisual services*。
 - Gilbert, 1960；Elliott, 1963：突发噪声信道的两状态建模。
-- ByteAction 本地稿件：`/home/Li_fangcheng/byte_HOI/paper_response/ByteAction/ByteAction.pdf`。
-- VUB 本地稿件：`/home/Li_fangcheng/video_understand/VUB/PRCV2026_bitstream.pdf`。

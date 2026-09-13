@@ -5,12 +5,16 @@
 ## 材料索引
 
 - [01_background_and_bitstreams.md](01_background_and_bitstreams.md)：多媒体通信、Gilbert–Elliott 信道、JPEG 与 H.264 码流结构。
-- [02_byte_model_landscape.md](02_byte_model_landscape.md)：字节模型与码流语义理解工作的梳理，以及选择 ByteFormer 的理由。
+- [02_byte_model_landscape.md](02_byte_model_landscape.md)：bGPT、MEGABYTE、MambaByte、mBLM 等字节模型，以及选择 ByteFormer 的理由。
 - [03_dataset_and_experiment_protocol.md](03_dataset_and_experiment_protocol.md)：MNIST 1/10 平衡子集、Medium 损坏集和实验方案。
+- [04_bonus_corrupted_bitstream_references.md](04_bonus_corrupted_bitstream_references.md)：损坏码流加分项与 CBSU-ALLM、BRACE、BSCV 等参考资料。
+- [05_ppt_content_structure.md](05_ppt_content_structure.md)：后续课件的内容顺序和基础部分、加分项的划分。
 - `experiment_results.md`：训练和测试完成后写入实测结果。
 - `figures/byteformer_model_arch.png`：ByteFormer 官方模型结构图。
-- `figures/byteaction_overview.png`、`byteaction_framework.png`：ByteAction 的对比图和方法框架。
-- `figures/vub_motivation.png`、`vub_framework.png`：视频像素流程与码流流程对比，以及 VUB 框架。
+- `figures/bgpt_model.png`：bGPT 官方模型结构图。
+- `figures/mblm_architecture.png`：mBLM 官方多尺度结构图。
+- `figures/byteaction_overview.png`、`byteaction_framework.png`：加分项中 ByteAction 的对比图和方法框架。
+- `figures/vub_motivation.png`、`vub_framework.png`：加分项中视频像素流程与码流流程对比，以及 VUB 框架。
 
 图中内容来自相应论文，课件使用时保留论文题名和引用。
 

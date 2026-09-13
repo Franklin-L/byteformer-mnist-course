@@ -1,60 +1,84 @@
-# 字节模型与码流语义理解工作梳理
+# 字节模型梳理与 ByteFormer 选择
 
-## 1. 从字节序列建模到多媒体内容理解
+## 1. 什么是字节模型
 
-字节模型把 `0–255` 的字节值作为基本符号，避免为每种文件格式单独设计像素、音频或文本输入接口。不同工作关注的目标并不完全相同：有的研究通用字节生成，有的研究长序列效率，有的直接处理图像或视频码流。
+计算机中的文本、图像、音频、视频和程序最终都以字节保存。字节模型直接把 `0–255` 作为基本符号，在原始字节序列上学习规律，不必先把输入切分成单词 token，也不必为每种文件格式设计完全不同的输入接口。
 
-| 工作 | 主要输入与任务 | 结构特点 | 代码情况 | 与本课程的关系 |
-| --- | --- | --- | --- | --- |
-| ByteFormer | 图像、音频等文件字节；分类 | 字节嵌入、局部下采样、Transformer 编码器 | [Apple CoreNet](https://github.com/apple/corenet/tree/main/projects/byteformer) | 有公开代码和预训练权重，直接支持分类，本课程采用 |
-| bGPT | 任意数字文件的字节；生成与多任务 | decoder-only Transformer，学习字节世界模型 | [公开仓库](https://github.com/sanderwood/bgpt) | 展示通用字节建模能力，模型规模和训练目标不适合零基础分类实验 |
-| MEGABYTE | 长字节序列生成 | 全局块模型与局部字节模型分层建模 | [论文](https://arxiv.org/abs/2305.07185)，[社区实现](https://github.com/lucidrains/MEGABYTE-pytorch) | 说明长字节序列可通过多尺度结构降低计算量 |
-| MambaByte | 无 token 的长字节序列建模 | 基于状态空间模型处理长上下文 | [公开仓库](https://github.com/jxiw/MambaByte) | 代表 Transformer 之外的长字节序列路线 |
-| Byte Latent Transformer | 动态字节 patch 的语言建模 | 根据局部复杂度形成可变长度 patch | [公开仓库](https://github.com/facebookresearch/blt) | 代表动态分块和潜变量字节建模路线 |
-| TransFace++ | JPEG 字节；人脸识别 | ByteFormer 类字节主干与人脸识别训练 | [论文](https://arxiv.org/abs/2308.10133) | 证明字节输入可以用于专门的视觉识别任务 |
-| CBSU-ALLM | 受损图像码流；语义理解 | 自适应模态与大语言模型结合 | [论文 DOI](https://doi.org/10.1016/j.patcog.2026.114151)；未检索到同名公开代码仓库 | 图片码流受损后仍进行语义理解的背景工作 |
-| Cibic | 受损 JPEG 字节；图像描述 | 字节编码器、对齐层、语言解码器 | [论文 DOI](https://doi.org/10.1016/j.patcog.2026.114238)；本地有稿件 | 从分类扩展到开放文本描述 |
-| Bitstream Action Recognition is Byte Modeling | 受损图像码流；动作分类 | 从原始字节学习动作语义 | [论文](https://arxiv.org/abs/2608.15695)；未检索到同名公开代码仓库 | 本课程受损码流分类任务的直接背景 |
-| ByteAction | 受损图像码流；动作分类 | ByteFormer 主干、码流增强、损坏一致性 | [论文](https://arxiv.org/abs/2608.22760)；本地有稿件 | 本课程 Medium 损坏参数和鲁棒训练思路的主要来源 |
-| VUB | 视频原始码流；动作识别 | 分块并行建模、跨编码格式蒸馏 | 本地稿件，未作为公开课程代码发布 | 说明字节域语义理解可以从图像扩展到视频 |
+这类模型首先要解决两个问题：一是字节序列远长于常用 token 序列，二是局部字节与文件整体结构需要同时建模。现有工作主要采用分块层级结构、状态空间模型、多尺度结构或卷积下采样来降低长序列计算量。
 
-开源状态以相应论文和项目页面为准。课程只要求学生运行 ByteFormer；其余模型用于建立研究背景，不要求安装。
+## 2. 代表性字节模型
 
-## 2. ByteFormer 的输入和结构
+| 模型 | 发表时间 | 主要结构 | 典型任务 | 开源情况与资料 |
+| --- | ---: | --- | --- | --- |
+| ByT5 | 2021 | UTF-8 字节输入的 Transformer 编码器—解码器 | 文本理解与生成 | 已开源；[论文](https://arxiv.org/abs/2105.13626)及公开模型 |
+| MEGABYTE | 2023 | 全局模型处理 byte patch，局部模型预测 patch 内字节 | 超长字节序列生成 | 未找到官方实现；[论文](https://arxiv.org/abs/2305.07185)，[社区实现](https://github.com/lucidrains/MEGABYTE-pytorch) |
+| ByteFormer | 2023 | 字节嵌入、卷积降采样、窗口 Transformer 编码器 | 图像、音频等文件分类 | 已开源；[论文](https://arxiv.org/abs/2306.00238)，[Apple CoreNet](https://github.com/apple/corenet/tree/main/projects/byteformer)及预训练权重 |
+| MambaByte | 2024 | 直接在字节序列上使用选择性状态空间模型 | 长文本字节语言建模 | 已开源；[论文](https://arxiv.org/abs/2401.13660)，[官方代码与权重](https://github.com/jxiw/MambaByte) |
+| bGPT | 2024 | patch-level decoder 建模字节块关系，byte-level decoder 生成块内字节 | 文本、图像、音频、文件转换和 CPU 状态模拟 | 已开源；[论文](https://arxiv.org/abs/2402.19155)，[官方代码](https://github.com/sanderwood/bgpt)及多模态权重 |
+| mBLM | 2025 | 多层级 byte patch；每一级可使用 Transformer、Mamba 等模块 | 百万级长度字节序列建模、多模态字节任务 | 已开源；[论文](https://arxiv.org/abs/2502.14553)，[官方代码](https://github.com/ai4sd/multiscale-byte-lm)及 Python 包 |
+| Byte Latent Transformer | 2024 | 根据局部复杂度动态形成字节 patch | 字节级语言建模 | 已开源；[论文](https://arxiv.org/abs/2412.09871)，[官方代码](https://github.com/facebookresearch/blt) |
 
-ByteFormer 的输入是一维字节序列。文件中的每个字节先映射为向量，较短样本在末尾补齐，补齐位置由 padding mask 标记。随后模型通过卷积式局部下采样缩短序列，再送入 Transformer 编码器，最后将全局特征送到分类头。
+课堂介绍可重点保留 MEGABYTE、MambaByte、bGPT、mBLM 和 ByteFormer。ByT5 用来说明早期无 token 文本模型，Byte Latent Transformer 可作为动态分块方向的补充。
+
+## 3. 几种主要结构的区别
+
+### MEGABYTE：全局与局部两级生成
+
+MEGABYTE 先把长字节序列分成固定大小的 patch。全局模型学习不同 patch 之间的关系，局部模型根据全局特征逐字节生成当前 patch。它用层级结构减少长序列自注意力的计算量。
 
 ```text
-JPEG 文件字节
-    ↓
-字节值嵌入（0–255）与 padding mask
-    ↓
-局部卷积与序列下采样
-    ↓
-Transformer 编码器
-    ↓
-全局特征
-    ↓
-10 类分类头
+长字节序列 → byte patches → 全局模型
+                              ↓
+                        patch 上下文
+                              ↓
+                    局部模型逐字节预测
 ```
 
-本仓库使用 Apple 发布的 ByteFormer Tiny ImageNet JPEG 预训练参数，将最后的分类头改为 10 类，再用 MNIST JPEG 码流微调。
+### MambaByte：状态空间长序列建模
 
-## 3. 本课程选择 ByteFormer 的理由
+MambaByte 不使用子词 tokenizer，直接处理字节。它用选择性状态空间模型沿序列递推，计算量随序列长度近似线性增长，适合比普通 Transformer 更长的字节上下文。
 
-1. 输入与课程主题一致。模型直接读取 JPEG 文件字节，学生能看到“图像文件也是字节序列”。
-2. 分类接口简单。更换分类头即可完成 MNIST 十分类，不需要语言模型和复杂解码过程。
-3. 有公开实现和预训练权重。课程仓库可以给出从准备数据到训练、验证、测试的完整命令。
-4. 模型规模适合教学。单张消费级 GPU 或 Kaggle GPU 能完成微调。
-5. 易于扩展鲁棒性实验。同一模型可以直接读取 bit flip 或 byte loss 后的字节，用于比较干净训练、损坏增强和一致性训练。
+### bGPT：数字世界的字节生成模型
 
-## 4. 本课程与相关工作的衔接
+bGPT 将字节分块后，用 patch-level decoder 预测下一块的表示，再由 byte-level decoder 恢复块内字节。论文将同一套方法用于文本、图像、音频、文件格式转换和 CPU 状态建模，体现字节输入的通用性。
 
-课程主任务仍是 MNIST 码流图像分类。学生先理解 ByteFormer 的字节输入、训练集/验证集/测试集和分类准确率。扩展任务再引入受损码流：
+![bGPT 模型结构](figures/bgpt_model.png)
 
-- 参考 ByteAction 的分段损坏过程，构造 Medium-Flip、Medium-Loss 和 Medium-Mixed 测试集；
-- 观察只在干净数据上训练的模型在受损码流上的性能下降；
-- 加入在线损坏增强；
-- 在两个损坏视图之间约束预测分布和全局特征的一致性。
+### mBLM：可扩展的多尺度层级
 
-这一顺序把通信中的码流错误、文件结构、字节模型和具体分类实验连接起来，同时保留学生可完成的代码修改与结果分析。
+mBLM 将两级结构扩展为可配置的多层级结构。高层负责更长范围的字节关系，低层负责局部细节，每一级可以选择 Transformer 或 Mamba 模块。公开实现面向百万字节级上下文。
+
+![mBLM 多尺度结构](figures/mblm_architecture.png)
+
+### ByteFormer：面向分类的字节编码器
+
+ByteFormer 不以生成下一个字节为主要目标，而是把整个文件编码为全局特征，再完成分类。它先嵌入原始字节，通过一维卷积和多次 token merging 缩短序列，然后使用窗口自注意力与前馈网络提取特征。
+
+```text
+文件字节序列
+    ↓
+Byte Embedding
+    ↓
+Conv1D Token Reduction
+    ↓
+位置编码 + Window Self-Attention + FFN
+    ↓
+多阶段 Token Merging
+    ↓
+全局特征 → 分类头
+```
+
+![ByteFormer 模型结构](figures/byteformer_model_arch.png)
+
+## 4. 课程实验为什么选择 ByteFormer
+
+| 考虑因素 | ByteFormer 的情况 |
+| --- | --- |
+| 与课程任务匹配 | 直接读取 JPEG 文件字节并输出类别 |
+| 开源条件 | Apple 提供 CoreNet 代码和 ImageNet JPEG 预训练权重 |
+| 实验复杂度 | 替换为 10 类分类头即可微调 MNIST |
+| 计算资源 | 单张常见 GPU 可以完成课程规模训练 |
+| 结果展示 | 可直接比较训练、验证、干净测试和受损码流测试准确率 |
+| 后续扩展 | 同一模型可以读取 bit flip、byte loss 后的码流 |
+
+因此课程先用几种字节模型说明这一研究方向，再选择 ByteFormer 完成可操作的分类实验。CBSU-ALLM、BSCV、BRACE 等受损码流工作放在加分项参考资料中，不与基础字节模型并列。
