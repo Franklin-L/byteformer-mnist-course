@@ -72,7 +72,7 @@ python train_course_subset.py --method clean --epochs "$COMPARISON_EPOCHS" --bat
 
 ## 课程材料
 
-- 16 页课件：[PPT](ByteFormer_MNIST_零基础实验课.pptx) / [PDF](ByteFormer_MNIST_零基础实验课.pdf)
+- 19 页课件：[PPT](ByteFormer_MNIST_零基础实验课.pptx) / [PDF](ByteFormer_MNIST_零基础实验课.pdf)
 - [课程 Notebook](../course_kaggle.ipynb) / [操作指南](../README.md)
 - [实验报告模板](学生实验报告模板.docx)
 - [演示运行记录](run_record.md)

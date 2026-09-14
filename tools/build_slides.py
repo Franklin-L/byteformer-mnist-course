@@ -146,57 +146,48 @@ def main():
     text(s,8.0,4.68,4.65,.55,'教师：吴科君',24,'000000',True)
     text(s,2.83,5.46,4.65,.55,'lifangcheng2002@163.com',19,'000000',True)
     text(s,8.0,5.46,4.65,.55,'kjwu@hust.edu.cn',19,'000000',True)
-    # 2. Multimedia communication and burst errors.
-    s=d.slide('01 多媒体通信与码流损坏','图像和视频经过压缩编码后，以二进制码流的形式传输或存储。')
+    # 2. Multimedia communication and the role of a bitstream.
+    s=d.slide('01 多媒体通信与码流损坏','图像和视频经过压缩编码后，以二进制码流的形式传输、存储和解析。')
     flow=[('图像 / 视频\n信源',.72),('压缩编码\nJPEG / H.264',3.15),('信道或\n存储介质',5.58),('解码与\n视觉分析',8.01),('分类 / 检测\n内容理解',10.44)]
     for i,(label,x) in enumerate(flow):
         rect(s,x,2.12,2.05,.86,LIGHT,rounded=True)
         text(s,x+.07,2.30,1.91,.5,label,18,BLUE,True,PP_ALIGN.CENTER)
         if i<4:text(s,x+2.08,2.35,.31,.35,'→',20,BLUE,True,PP_ALIGN.CENTER)
-    text(s,.82,3.34,5.4,.4,'Gilbert–Elliott 二状态模型',22,INK,True)
-    rect(s,1.0,4.08,1.56,.86,'DDEEDF',rounded=True);text(s,1.1,4.24,1.36,.48,'G｜良好',21,'31734F',True,PP_ALIGN.CENTER)
-    rect(s,4.07,4.08,1.56,.86,'F5DEDE',rounded=True);text(s,4.17,4.24,1.36,.48,'B｜不良',21,RED,True,PP_ALIGN.CENTER)
-    text(s,2.64,4.00,1.38,.4,'p：进入不良',16,GRAY,align=PP_ALIGN.CENTER)
-    text(s,2.64,4.69,1.38,.4,'r：恢复良好',16,GRAY,align=PP_ALIGN.CENTER)
-    text(s,2.50,4.28,1.72,.35,'→',24,RED,True,PP_ALIGN.CENTER)
-    text(s,2.50,4.59,1.72,.35,'←',24,'31734F',True,PP_ALIGN.CENTER)
-    text(s,.91,5.30,5.0,.92,'G状态错误率低；B状态错误率高。\nr较小时，错误容易连续出现，形成突发损坏。',17,GRAY)
-    text(s,6.65,3.35,5.55,.4,'常见的码流损坏',22,INK,True)
-    rect(s,6.63,4.04,2.61,1.17,LIGHT,rounded=True)
-    text(s,6.82,4.19,2.23,.38,'Bit flip',21,BLUE,True,PP_ALIGN.CENTER)
-    text(s,6.79,4.62,2.29,.37,'0 ↔ 1，长度不变',16,GRAY,align=PP_ALIGN.CENTER)
-    rect(s,9.63,4.04,2.61,1.17,LIGHT,rounded=True)
-    text(s,9.82,4.19,2.23,.38,'Byte loss',21,BLUE,True,PP_ALIGN.CENTER)
-    text(s,9.79,4.62,2.29,.37,'字节丢失，位置移动',16,GRAY,align=PP_ALIGN.CENTER)
-    text(s,6.72,5.51,5.41,.72,'课程使用离散时间表达，p、r表示状态转移概率；\n连续时间模型中相应参数写作转移率。',16,GRAY)
-    # 3. Image/video structures and motivation.
-    s=d.slide('02 图像与视频码流结构')
-    text(s,.82,1.87,5.55,.42,'JPEG 图像码流',23,BLUE,True)
-    jpeg=[('SOI','开始'),('DQT','量化表'),('SOF','尺寸'),('DHT','码表'),('SOS','扫描头'),('Scan','图像数据'),('EOI','结束')]
-    widths=[.66,1.0,.8,.8,.8,1.25,.66];x=.82
-    for i,((tag,desc),w) in enumerate(zip(jpeg,widths)):
-        fill='D9EAF4' if tag not in ('DQT','DHT','Scan') else 'F4E5D5'
-        rect(s,x,2.49,w,.83,fill,rounded=True);text(s,x+.03,2.61,w-.06,.28,tag,15,INK,True,PP_ALIGN.CENTER);text(s,x+.03,2.91,w-.06,.24,desc,11,GRAY,align=PP_ALIGN.CENTER)
-        x+=w+.08
-    text(s,.84,3.62,5.45,1.46,'文件标记、尺寸、量化表或Huffman表受损，可能直接导致解码失败；扫描数据受损会出现错块、花屏和错误传播。',18)
-    text(s,6.77,1.87,5.55,.42,'H.264 视频码流',23,BLUE,True)
-    video=[('Start code','定位NAL'),('SPS / PPS','解码参数'),('IDR / I','关键帧'),('P / B','预测帧')]
-    for i,(tag,desc) in enumerate(video):
-        x=6.78+i*1.42
-        rect(s,x,2.49,1.25,.83,'E3EDF5' if i<2 else 'E8E2F3',rounded=True)
-        text(s,x+.04,2.61,1.17,.28,tag,14,INK,True,PP_ALIGN.CENTER)
-        text(s,x+.04,2.91,1.17,.24,desc,11,GRAY,align=PP_ALIGN.CENTER)
-    text(s,6.81,3.62,5.43,1.46,'SPS/PPS或关键帧受损会影响后续多帧；P、B帧依赖参考帧，错误可沿时间方向继续传播。',18)
-    rect(s,.84,5.52,11.46,.72,'F5E4E4',rounded=True)
-    text(s,1.04,5.72,11.06,.38,'码流结构受损 → 无法正确解码 → 像素域模型得不到可靠输入 → 直接从字节中理解内容',21,RED,True,PP_ALIGN.CENTER)
-    # 4. General byte models only.
-    s=d.slide('03 代表性字节模型','字节模型直接读取0—255字节值，重点解决超长序列和多尺度结构建模。')
+    text(s,.82,3.42,5.35,.42,'像素、压缩文件和字节序列',22,INK,True)
+    text(s,.86,4.02,5.45,1.46,'同一幅图像可以有不同的表示：\n· 像素矩阵：适合传统视觉网络\n· JPEG 文件：包含标记、表和扫描数据\n· 字节序列：统一处理图像、视频和其他文件',18)
+    text(s,6.65,3.42,5.55,.42,'码流损坏为什么值得研究',22,INK,True)
+    rect(s,6.63,4.03,2.61,1.20,'DDEEDF',rounded=True)
+    text(s,6.80,4.20,2.27,.39,'传输 / 存储',19,'31734F',True,PP_ALIGN.CENTER)
+    text(s,6.80,4.69,2.27,.34,'可能出现错误字节',15,GRAY,align=PP_ALIGN.CENTER)
+    rect(s,9.63,4.03,2.61,1.20,'F5DEDE',rounded=True)
+    text(s,9.80,4.20,2.27,.39,'解码 / 理解',19,RED,True,PP_ALIGN.CENTER)
+    text(s,9.80,4.69,2.27,.34,'可能无法恢复像素',15,GRAY,align=PP_ALIGN.CENTER)
+    text(s,6.73,5.56,5.36,.90,'码流模型尝试跳过不可靠的解码过程，\n直接从字节中提取内容特征。',19,BLUE,True)
+    # 3. JPEG structure.
+    s=d.slide('02 JPEG：从文件标记到扫描数据','JPEG 不是一串无意义的数字；不同段落共同描述图像如何被解码。')
+    picture(s,RESEARCH_FIGURES/'jpeg_bitstream_structure.png',.76,1.94,11.82,3.72)
+    text(s,.84,5.83,11.55,.88,'SOI / EOI 标记文件边界；DQT 和 DHT 保存解码所需的表；SOS 之后是压缩扫描数据。\n标记段或扫描数据受损，可能导致解码失败、错块或花屏。',18)
+    # 4. H.264 structure.
+    s=d.slide('03 H.264：参数、关键帧与预测帧','视频码流由多个 NAL 单元组成，帧之间还存在时间上的依赖关系。')
+    picture(s,RESEARCH_FIGURES/'h264_nal_sequence.png',.76,1.98,11.82,3.70)
+    text(s,.84,5.87,11.55,.77,'SPS / PPS 决定后续帧如何解析；IDR 是可以独立解码的关键帧；P、B 帧依赖参考帧。\n一处错误可能沿着后续帧传播，这也是视频码流分析比单张图更复杂的原因。',18)
+    # 5. Gilbert-Elliott burst error model.
+    s=d.slide('04 突发损坏：Gilbert–Elliott 二状态模型','错误不一定独立均匀出现；网络拥塞、存储故障等因素会让错误连续发生。')
+    picture(s,RESEARCH_FIGURES/'gilbert_elliott_burst.png',.70,1.92,7.20,3.95)
+    text(s,8.18,2.12,4.15,.45,'模型的两个状态',22,BLUE,True)
+    rect(s,8.18,2.78,3.96,.88,'DDEEDF',rounded=True)
+    text(s,8.35,2.98,3.62,.46,'G：良好状态，错误率低',18,'31734F',True,PP_ALIGN.CENTER)
+    rect(s,8.18,3.87,3.96,.88,'F5DEDE',rounded=True)
+    text(s,8.35,4.07,3.62,.46,'B：不良状态，错误率高',18,RED,True,PP_ALIGN.CENTER)
+    text(s,8.19,5.03,4.03,1.01,'p：G → B 的转移概率\nr：B → G 的恢复概率\nr 越小，突发错误持续越久。',18)
+    # 6. General byte models only.
+    s=d.slide('05 代表性字节模型','字节模型直接读取 0—255 字节值，重点解决超长序列和多尺度结构建模。')
     models=[
-        ('MEGABYTE','2023','全局模型处理字节块\n局部模型预测块内字节','论文公开；社区实现'),
-        ('ByteFormer','2023','卷积缩短序列\n窗口Transformer分类','官方代码与预训练权重'),
-        ('MambaByte','2024','选择性状态空间模型\n近似线性处理长序列','官方代码与权重'),
-        ('bGPT','2024','Patch-level + Byte-level\n多模态字节生成','官方代码与多模态权重'),
-        ('mBLM','2025','多层级Byte Patch\nTransformer / Mamba可选','官方代码与Python包'),
+        ('MEGABYTE','2023','全局模型处理字节块\n局部模型预测块内字节','层级生成'),
+        ('ByteFormer','2023','卷积缩短序列\n窗口 Transformer 分类','文件分类'),
+        ('MambaByte','2024','选择性状态空间模型\n近似线性处理长序列','长序列建模'),
+        ('bGPT','2024','Patch-level + Byte-level\n多模态字节生成','通用字节生成'),
+        ('mBLM','2025','多层级 Byte Patch\nTransformer / Mamba 可选','百万字节上下文'),
     ]
     for i,(name,year,body,status) in enumerate(models):
         x=.65+i*2.53
@@ -206,22 +197,27 @@ def main():
         text(s,x+.14,3.45,2.0,.93,body,16,INK,align=PP_ALIGN.CENTER)
         text(s,x+.14,4.73,2.0,.45,status,13,GRAY,align=PP_ALIGN.CENTER)
     rect(s,.83,5.85,11.69,.63,'DDEBF3',rounded=True)
-    text(s,1.01,6.02,11.34,.34,'课程选择ByteFormer：直接支持文件分类，有公开代码和预训练权重，适合完成MNIST微调。',20,BLUE,True,PP_ALIGN.CENTER)
-    # 5. ByteFormer framework and the course classification task.
-    s=d.slide('04 ByteFormer框架与课程任务')
+    text(s,1.01,6.02,11.34,.34,'课程选择 ByteFormer：面向文件分类，有公开代码和预训练权重，适合完成 MNIST 微调。',20,BLUE,True,PP_ALIGN.CENTER)
+    # 7. Why understand bytes directly.
+    s=d.slide('06 为什么要直接从字节理解内容','当文件损坏后无法完整解码，像素域模型就可能失去输入；字节模型保留了更多原始线索。')
+    picture(s,RESEARCH_FIGURES/'byteaction_framework.png',.72,1.94,5.62,3.95)
+    picture(s,RESEARCH_FIGURES/'vub_motivation.png',6.77,2.02,5.56,2.98)
+    text(s,6.81,5.17,5.45,1.11,'传统流程：码流 → 解码 → 像素 → 视觉模型\n字节域流程：码流 → 字节模型 → 分类或语义理解\n课程先完成干净码流，再观察损坏码流的差异。',18)
+    # 8. ByteFormer framework and the course classification task.
+    s=d.slide('07 ByteFormer框架与课程任务')
     picture(s,RESEARCH_FIGURES/'byteformer_model_arch.png',.68,1.92,5.25,3.9)
-    stages=[('MNIST图像','JPEG编码'),('字节序列','0—255'),('ByteFormer','预训练主干'),('分类结果','数字0—9')]
+    stages=[('MNIST','图像 / JPEG'),('字节序列','0—255'),('ByteFormer','预训练主干'),('分类结果','数字 0—9')]
     for i,(heading,body) in enumerate(stages):
         x=6.25+i*1.53
         rect(s,x,2.16,1.28,1.08,LIGHT,rounded=True)
-        text(s,x+.05,2.31,1.18,.32,heading,16,BLUE,True,PP_ALIGN.CENTER)
+        text(s,x+.05,2.31,1.18,.32,heading,12,BLUE,True,PP_ALIGN.CENTER)
         text(s,x+.05,2.72,1.18,.28,body,13,GRAY,align=PP_ALIGN.CENTER)
         if i<3:text(s,x+1.29,2.49,.22,.3,'→',18,BLUE,True,PP_ALIGN.CENTER)
     text(s,6.31,3.64,5.65,1.88,'· 使用公开的ByteFormer Tiny预训练权重\n· 将分类头改为10个类别\n· 在训练集更新参数，用验证集选择模型\n· 最后在独立测试集上报告结果',19)
     rect(s,.82,6.12,11.64,.58,'DDEBF3',rounded=True)
     text(s,1.02,6.27,11.24,.32,'基础任务：完成码流图像分类、参数对比和结果分析。',20,BLUE,True,PP_ALIGN.CENTER)
-    # 6. Balanced 1/10 MNIST split.
-    s=d.slide('05 课程数据集与三类划分','课程仓库已经提供固定划分，所有同学使用相同样本。')
+    # 9. Balanced 1/10 MNIST split.
+    s=d.slide('08 课程数据集与三类划分','课程仓库已经提供固定划分，所有同学使用相同样本。')
     picture(s,digits_asset(),.69,2.12,5.0,3.94)
     splits=[('训练集','5,000','每类500张\n包含原图与轻微旋转、平移视图'),('验证集','1,000','每类100张\n用于选择最佳模型'),('测试集','1,000','每类100张\n训练结束后独立评估')]
     for i,(name,count,body) in enumerate(splits):
@@ -231,8 +227,8 @@ def main():
         text(s,x+.11,3.02,1.67,.48,count,27,INK,True,PP_ALIGN.CENTER)
         text(s,x+.13,3.79,1.63,1.0,body,15,GRAY,align=PP_ALIGN.CENTER)
     text(s,6.14,5.76,6.12,.61,'数据文件：data/course_1of10/　测试集不参与训练和模型选择。',16,GRAY)
-    # 7. GPU platforms and external tutorials on one page.
-    s=d.table('06 实验环境与在线平台',['运行平台','适用情况','入口'],[
+    # 10. GPU platforms and external tutorials on one page.
+    s=d.table('09 实验环境与在线平台',['运行平台','适用情况','入口'],[
         ['Kaggle免费GPU','推荐；导入课程Notebook后运行','Notebook + Internet + GPU'],
         ['AutoDL租用GPU','Kaggle额度不足时使用','选择PyTorch镜像，打开Terminal'],
         ['本地GPU','已安装Python 3.9—3.12','pip install -r requirements-local.txt']], [2.45,5.1,4.25],subtitle='平台界面、免费额度和租用价格可能调整，以平台当前页面为准。')
@@ -244,22 +240,22 @@ def main():
     ]
     for i,(label,url) in enumerate(links):
         link(s,.87+(i%2)*6.0,5.42+(i//2)*.58,5.65,label,url,16)
-    # 8. Code, data, and pretrained weights.
-    s=d.slide('07 获取代码、数据与预训练权重','课程Notebook中已经写好相同命令。')
+    # 11. Code, data, and pretrained weights.
+    s=d.slide('10 获取代码、数据与预训练权重','课程Notebook中已经写好相同命令。')
     command=f'!git clone {REPO}.git\n%cd /kaggle/working/byteformer-mnist-course\n!python -m pip install -r requirements.txt\n!python prepare.py'
     codebox(s,.8,2.24,11.73,1.92,command,17)
     text(s,.87,4.49,11.6,.55,'看到[READY]即准备完成；课程数据集随仓库提供，ByteFormer预训练权重自动下载并校验。',19)
     text(s,.88,5.31,11.6,1.14,'train_course_subset.py：训练　evaluate_course_corruption.py：测试\npredict.py：单图预测　data/course_1of10/：固定数据　outputs/：实验结果',18,GRAY)
-    # 9. Student-selected training settings.
-    s=d.slide('08 模型训练与参数设置')
+    # 12. Student-selected training settings.
+    s=d.slide('11 模型训练与参数设置')
     settings=[('训练 / 验证 / 测试','5,000 / 1,000 / 1,000'),('训练轮数','根据验证结果自行设置'),('batch size','自行设置，参考32'),('学习率','主干1e-4；分类头10倍'),('输入增强','轻微旋转与水平平移')]
     for i,(a,b) in enumerate(settings):
         y=2.01+i*.69;rect(s,.8,y,5.53,.59,LIGHT);text(s,.94,y+.1,2.24,.4,a,18,BLUE,True);text(s,3.23,y+.1,2.95,.43,b,17)
     codebox(s,6.67,2.05,5.82,2.18,'EPOCHS = int(input("epochs: "))\nBATCH_SIZE = int(input("batch: "))\n!python train_course_subset.py \\\n  --method clean --epochs {EPOCHS} \\\n  --batch-size {BATCH_SIZE} --clean-augmentations \\\n  --output outputs/course_clean',13)
     text(s,6.82,4.59,5.43,1.18,'训练过程中观察验证集准确率；\n结果保存在outputs/course_clean/。',19)
     text(s,.9,6.14,11.45,.55,'轮数与batch size没有固定答案，请在报告中写明自己的设置。',17,GRAY)
-    # 10. Curves and metrics.
-    s=d.slide('09 训练结果分析')
+    # 13. Curves and metrics.
+    s=d.slide('12 训练结果分析')
     codebox(s,.82,1.98,11.7,1.25,'from IPython.display import display, Image\ndisplay(Image("outputs/course_clean/curves.png"))',19)
     prompts=[
         ('训练损失','是否总体下降？\n是否出现明显波动？'),
@@ -272,21 +268,21 @@ def main():
         text(s,x+.17,3.86,3.52,.43,heading,22,BLUE,True)
         text(s,x+.17,4.53,3.52,.88,body,18)
     text(s,.93,6.03,11.4,.61,'history.csv保存每轮结果；metrics.json保存最佳轮次、参数和运行时间。',18,GRAY)
-    # 11. Evaluation, prediction and errors.
-    s=d.slide('10 测试、单图预测与错例检查')
+    # 14. Evaluation, prediction and errors.
+    s=d.slide('13 测试、单图预测与错例检查')
     codebox(s,.8,1.96,11.75,1.62,'!python evaluate_course_corruption.py \\\n  --checkpoint outputs/course_clean/best.pt --output outputs/course_clean_eval\n!python predict.py --checkpoint outputs/course_clean/best.pt --index 0',15)
     text(s,.88,3.91,6.22,1.93,'Clean：基础任务的独立测试结果。\nMedium-Flip / Loss / Mixed：加分项使用。\n将--index改成其他测试索引，可查看预测概率。\n结合预测图和错误索引分析典型错例。',18)
     picture(s,ROOT/'assets/example_digit.png',8.51,3.75,2.55,2.18)
     text(s,7.62,6.03,4.37,.4,'真实标签7 ｜ 模型预测7',19,BLUE,True,PP_ALIGN.CENTER)
-    # 12. Parameter comparison.
-    s=d.slide('11 参数对比实验')
+    # 15. Parameter comparison.
+    s=d.slide('14 参数对比实验')
     codebox(s,.81,2.0,11.71,2.13,'COMPARISON_EPOCHS = int(input("epochs: "))\nCOMPARISON_BATCH_SIZE = int(input("batch: "))\n!python train_course_subset.py --method clean \\\n  --epochs {COMPARISON_EPOCHS} --batch-size {COMPARISON_BATCH_SIZE} \\\n  --clean-augmentations --output outputs/comparison',14)
     text(s,.88,4.35,5.75,1.63,'轮数和batch size均可自行设置。\n建议一次只改变一个参数，其他条件保持一致。\n保留第一次结果，另存outputs/comparison。',18)
     rect(s,7.02,4.31,5.18,1.72,LIGHT,rounded=True)
     text(s,7.24,4.47,4.74,1.38,'比较内容\n· 验证集准确率与训练时间\n· 损失曲线和收敛速度\n· 参数变化带来的收益与代价',17)
     text(s,.9,6.30,11.35,.4,'报告中列出两次设置及结果，并说明比较结论。',16,GRAY)
-    # 13. AutoDL and common problems combined.
-    s=d.slide('12 AutoDL运行与常见问题')
+    # 16. AutoDL and common problems combined.
+    s=d.slide('15 AutoDL运行与常见问题')
     codebox(s,.78,1.94,6.13,3.55,f'cd /root/autodl-tmp\ngit clone {REPO}.git\ncd byteformer-mnist-course\npython -m pip install -r requirements.txt\npython prepare.py\npython train_course_subset.py --method clean \\\n  --epochs "$EPOCHS" --batch-size "$BATCH_SIZE" \\\n  --clean-augmentations --output outputs/course_clean',12)
     problems=[('没有使用GPU','检查Kaggle加速器或AutoDL实例'),('缺少Python包','重新安装requirements.txt'),('显存不足','减小batch size并记录实际值'),('输出目录已有文件','改用新的output目录')]
     for i,(heading,body) in enumerate(problems):
@@ -296,8 +292,8 @@ def main():
         text(s,9.17,y+.11,2.88,.43,body,15)
     text(s,.88,5.80,6.05,.79,'运行前在Terminal中设置EPOCHS和BATCH_SIZE；\n实验结束后下载outputs并在控制台关机。',17,GRAY)
     link(s,7.34,6.00,4.8,'AutoDL官方快速开始','https://www.autodl.com/docs/quick_start/',16)
-    # 14. Submission requirements.
-    s=d.slide('13 实验结果与报告提交')
+    # 17. Submission requirements.
+    s=d.slide('16 实验结果与报告提交')
     text(s,.86,1.98,6.03,3.71,'① 保存训练曲线和测试结果。\n② 完成一次参数对比。\n③ 展示单图预测或典型错例。\n④ 填写实验环境、命令、参数与结果分析。\n⑤ 打包代码、结果图和实验报告。\n\n数据集和Python环境不需要重复提交。',20)
     checks=['完成训练、验证和测试流程','记录实际轮数与batch size','区分验证集结果和测试集结果','说明曲线变化与参数对比','给出预测结果与错例分析','提交个人实验报告']
     text(s,7.17,2.03,5.0,.47,'基础任务检查',23,BLUE,True)
@@ -306,8 +302,8 @@ def main():
         rect(s,7.14,y,5.07,.45,LIGHT)
         text(s,7.29,y+.05,4.75,.35,item,17)
     text(s,.9,6.31,11.43,.57,'报告分别列出训练集、验证集和测试集的用途与结果。',17,RED)
-    # 15. Bonus corrupted-bitstream task with concrete directions.
-    s=d.slide('14 加分项：损坏码流分类','课程提供与干净测试集对应的损坏测试数据，共包含以下两种基本损坏。')
+    # 18. Bonus corrupted-bitstream task with concrete directions.
+    s=d.slide('17 加分项：损坏码流分类','课程提供与干净测试集对应的损坏测试数据，共包含以下两种基本损坏。')
     rect(s,.77,2.13,3.72,1.50,'F6E5E1',rounded=True)
     text(s,.96,2.31,3.34,.39,'Bit flip｜比特翻转',21,RED,True,PP_ALIGN.CENTER)
     text(s,.97,2.86,3.31,.56,'翻转选中字节的1位（长度不变）\n10100110 → 10100010',14,INK,align=PP_ALIGN.CENTER)
@@ -329,8 +325,8 @@ def main():
     link(s,4.65,5.89,2.25,'BRACE','https://arxiv.org/abs/2608.15695',14)
     link(s,6.65,5.89,2.25,'BSCV','https://arxiv.org/abs/2309.13890',14)
     text(s,.87,6.37,11.45,.34,'提交改进方法、训练设置以及四类测试结果；可自行组合其他增强或鲁棒训练方法。',15,GRAY)
-    # 16. References and entry points.
-    s=d.slide('15 配套材料与参考文献','实验步骤、命令和数据说明见课程仓库与Notebook。')
+    # 19. References and entry points.
+    s=d.slide('18 配套材料与参考文献','实验步骤、命令和数据说明见课程仓库与Notebook。')
     sources=[
         ('课程仓库：代码、Notebook、数据、PPT和报告模板',REPO),
         ('ByteFormer：Bytes Are All You Need','https://arxiv.org/abs/2306.00238'),
@@ -342,7 +338,7 @@ def main():
         ('AutoDL官方快速开始','https://www.autodl.com/docs/quick_start/'),
     ]
     for i,(label,url) in enumerate(sources):link(s,.92,2.02+i*.50,11.55,label,url,16)
-    assert len(d.prs.slides)==16
+    assert len(d.prs.slides)==19
     out=ROOT.parent/('_reference_analysis/course_preview.pptx' if args.draft else 'ByteFormer_MNIST_零基础实验课.pptx')
     out.parent.mkdir(parents=True,exist_ok=True);d.prs.save(out)
     if not args.draft:shutil.copy2(out,ROOT/'docs'/out.name)

@@ -9,6 +9,9 @@
 | `byteaction_framework.png` | 同上，Figure 2；本地稿件第 4 页 |
 | `vub_motivation.png` | *Learn to Understand Video from Bitstream Modeling and Distillation*，Figure 1；本地稿件第 2 页 |
 | `vub_framework.png` | 同上，Figure 2；本地稿件第 5 页 |
+| `jpeg_bitstream_structure.png` | 课程自制 JPEG 标记段、扫描数据和十六进制字节示意图 |
+| `h264_nal_sequence.png` | 课程自制 H.264 NAL 单元与帧类型示意图 |
+| `gilbert_elliott_burst.png` | 课程自制 Gilbert–Elliott 状态转移和突发损坏示意图 |
 
 ByteAction 本地稿件：`/home/Li_fangcheng/byte_HOI/paper_response/ByteAction/ByteAction.pdf`。
 
