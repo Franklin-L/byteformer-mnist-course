@@ -3,12 +3,28 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import font_manager
 from matplotlib.patches import FancyBboxPatch, FancyArrowPatch, Rectangle
+from fontTools.ttLib import TTCollection
 
 OUT=Path('research/figures'); OUT.mkdir(parents=True,exist_ok=True)
-font_manager.fontManager.addfont('/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc')
-font_manager.fontManager.addfont('/usr/share/fonts/opentype/noto/NotoSansCJK-Bold.ttc')
-plt.rcParams['font.family']='Noto Sans CJK JP'
-plt.rcParams['axes.unicode_minus']=False
+FONT_CACHE=Path('/tmp/byteformer_noto_cjk_sc')
+FONT_CACHE.mkdir(parents=True,exist_ok=True)
+
+def extract_sc_font(source, target, face_index):
+    """Extract the Simplified Chinese face from the system CJK collection."""
+    target=Path(target)
+    if not target.exists():
+        TTCollection(source).fonts[face_index].save(target)
+    font_manager.fontManager.addfont(str(target))
+
+extract_sc_font('/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc', FONT_CACHE/'NotoSansCJKsc-Regular.ttf', 2)
+extract_sc_font('/usr/share/fonts/opentype/noto/NotoSansCJK-Bold.ttc', FONT_CACHE/'NotoSansCJKsc-Bold.ttf', 2)
+# Use one installed CJK sans-serif family for every label in the generated figures.
+# Keeping the family in the rcParams also covers Matplotlib-generated tick labels.
+plt.rcParams.update({
+    'font.family': 'sans-serif',
+    'font.sans-serif': ['Noto Sans CJK SC'],
+    'axes.unicode_minus': False,
+})
 
 # JPEG structure + representative byte row.
 fig, ax=plt.subplots(figsize=(12,4.3),dpi=180)

@@ -147,7 +147,7 @@ def main():
     text(s,2.83,5.46,4.65,.55,'lifangcheng2002@163.com',19,'000000',True)
     text(s,8.0,5.46,4.65,.55,'kjwu@hust.edu.cn',19,'000000',True)
     # 2. Multimedia communication and the role of a bitstream.
-    s=d.slide('01 多媒体通信与码流损坏','图像和视频经过压缩编码后，以二进制码流的形式传输、存储和解析。')
+    s=d.slide('01 多媒体通信与码流','图像和视频经过压缩编码后，以二进制码流的形式传输、存储和解析。')
     flow=[('图像 / 视频\n信源',.72),('压缩编码\nJPEG / H.264',3.15),('信道或\n存储介质',5.58),('解码与\n视觉分析',8.01),('分类 / 检测\n内容理解',10.44)]
     for i,(label,x) in enumerate(flow):
         rect(s,x,2.12,2.05,.86,LIGHT,rounded=True)
@@ -155,14 +155,14 @@ def main():
         if i<4:text(s,x+2.08,2.35,.31,.35,'→',20,BLUE,True,PP_ALIGN.CENTER)
     text(s,.82,3.42,5.35,.42,'像素、压缩文件和字节序列',22,INK,True)
     text(s,.86,4.02,5.45,1.46,'同一幅图像可以有不同的表示：\n· 像素矩阵：适合传统视觉网络\n· JPEG 文件：包含标记、表和扫描数据\n· 字节序列：统一处理图像、视频和其他文件',18)
-    text(s,6.65,3.42,5.55,.42,'码流损坏为什么值得研究',22,INK,True)
+    text(s,6.65,3.42,5.55,.42,'码流中包含哪些信息',22,INK,True)
     rect(s,6.63,4.03,2.61,1.20,'DDEEDF',rounded=True)
-    text(s,6.80,4.20,2.27,.39,'传输 / 存储',19,'31734F',True,PP_ALIGN.CENTER)
-    text(s,6.80,4.69,2.27,.34,'可能出现错误字节',15,GRAY,align=PP_ALIGN.CENTER)
-    rect(s,9.63,4.03,2.61,1.20,'F5DEDE',rounded=True)
-    text(s,9.80,4.20,2.27,.39,'解码 / 理解',19,RED,True,PP_ALIGN.CENTER)
-    text(s,9.80,4.69,2.27,.34,'可能无法恢复像素',15,GRAY,align=PP_ALIGN.CENTER)
-    text(s,6.73,5.56,5.36,.90,'码流模型尝试跳过不可靠的解码过程，\n直接从字节中提取内容特征。',19,BLUE,True)
+    text(s,6.80,4.20,2.27,.39,'结构信息',19,'31734F',True,PP_ALIGN.CENTER)
+    text(s,6.80,4.66,2.27,.48,'文件标记、参数表\n帧类型',14,GRAY,align=PP_ALIGN.CENTER)
+    rect(s,9.63,4.03,2.61,1.20,'E8E2F3',rounded=True)
+    text(s,9.80,4.20,2.27,.39,'内容信息',19,'5A4A86',True,PP_ALIGN.CENTER)
+    text(s,9.80,4.66,2.27,.48,'扫描数据、图像与\n视频内容',14,GRAY,align=PP_ALIGN.CENTER)
+    text(s,6.73,5.56,5.36,.90,'码流既是传输和存储的载体，\n也是理解多媒体内容的一种表示。',19,BLUE,True)
     # 3. JPEG structure.
     s=d.slide('02 JPEG：从文件标记到扫描数据','JPEG 不是一串无意义的数字；不同段落共同描述图像如何被解码。')
     picture(s,RESEARCH_FIGURES/'jpeg_bitstream_structure.png',.76,1.94,11.82,3.72)
