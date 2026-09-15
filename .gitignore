@@ -9,3 +9,6 @@ data/cache/
 *.part
 *.zip
 .venv/
+# Presentation files are kept locally and are not part of the code repository.
+docs/*.pptx
+docs/*.pdf
