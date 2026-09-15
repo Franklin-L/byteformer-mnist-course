@@ -180,8 +180,21 @@ def main():
     rect(s,8.18,3.87,3.96,.88,'F5DEDE',rounded=True)
     text(s,8.35,4.07,3.62,.46,'B：不良状态，错误率高',18,RED,True,PP_ALIGN.CENTER)
     text(s,8.19,5.03,4.03,1.01,'p：G → B 的转移概率\nr：B → G 的恢复概率\nr 越小，突发错误持续越久。',18)
+    # 5. Why understand bytes directly after the channel model.
+    s=d.slide('05 码流损坏的影响：为什么需要字节域理解','损坏位置不同，解码器可能直接失败，也可能输出不可靠的像素或后续帧。')
+    text(s,.82,1.96,11.3,.4,'损坏位置 → 解码结果 → 对视觉模型的影响',22,BLUE,True,PP_ALIGN.CENTER)
+    cards=[('文件头 / 参数表','JPEG 的 SOI、DQT、DHT；\nH.264 的 SPS、PPS','无法解析文件或后续帧','F5DEDE'),('扫描数据 / 关键帧','JPEG 压缩数据；\nH.264 的 IDR、P、B 帧','错块、花屏、错误传播','F4E5D5'),('解码输出','像素缺失、尺寸异常或\n整段视频无法恢复','像素域模型没有可靠输入','E8E2F3')]
+    for i,(heading,where,result,color) in enumerate(cards):
+        x=.78+i*4.02
+        rect(s,x,2.56,3.72,2.15,color,rounded=True)
+        text(s,x+.16,2.78,3.40,.36,heading,20,BLUE,True,PP_ALIGN.CENTER)
+        text(s,x+.18,3.31,3.36,.56,where,15,INK,align=PP_ALIGN.CENTER)
+        text(s,x+.18,4.14,3.36,.39,result,15,RED,True,align=PP_ALIGN.CENTER)
+    picture(s,RESEARCH_FIGURES/'byteaction_framework.png',.77,5.08,5.35,1.33)
+    picture(s,RESEARCH_FIGURES/'vub_motivation.png',6.99,5.12,5.32,1.16)
+    text(s,.92,6.49,11.38,.43,'传统流程：码流 → 解码 → 像素 → 视觉模型　　字节域流程：码流 → 字节模型 → 分类或语义理解',16,BLUE,True,PP_ALIGN.CENTER)
     # 6. General byte models only.
-    s=d.slide('05 代表性字节模型','字节模型直接读取 0—255 字节值，重点解决超长序列和多尺度结构建模。')
+    s=d.slide('06 代表性字节模型','字节模型直接读取 0—255 字节值，重点解决超长序列和多尺度结构建模。')
     models=[
         ('MEGABYTE','2023','全局模型处理字节块\n局部模型预测块内字节','层级生成'),
         ('ByteFormer','2023','卷积缩短序列\n窗口 Transformer 分类','文件分类'),
@@ -198,11 +211,6 @@ def main():
         text(s,x+.14,4.73,2.0,.45,status,13,GRAY,align=PP_ALIGN.CENTER)
     rect(s,.83,5.85,11.69,.63,'DDEBF3',rounded=True)
     text(s,1.01,6.02,11.34,.34,'课程选择 ByteFormer：面向文件分类，有公开代码和预训练权重，适合完成 MNIST 微调。',20,BLUE,True,PP_ALIGN.CENTER)
-    # 7. Why understand bytes directly.
-    s=d.slide('06 为什么要直接从字节理解内容','当文件损坏后无法完整解码，像素域模型就可能失去输入；字节模型保留了更多原始线索。')
-    picture(s,RESEARCH_FIGURES/'byteaction_framework.png',.72,1.94,5.62,3.95)
-    picture(s,RESEARCH_FIGURES/'vub_motivation.png',6.77,2.02,5.56,2.98)
-    text(s,6.81,5.17,5.45,1.11,'传统流程：码流 → 解码 → 像素 → 视觉模型\n字节域流程：码流 → 字节模型 → 分类或语义理解\n课程先完成干净码流，再观察损坏码流的差异。',18)
     # 8. ByteFormer framework and the course classification task.
     s=d.slide('07 ByteFormer框架与课程任务')
     picture(s,RESEARCH_FIGURES/'byteformer_model_arch.png',.68,1.92,5.25,3.9)
