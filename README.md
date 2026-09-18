@@ -137,28 +137,51 @@ python train_course_subset.py \
 - `Medium-Flip`：选中一个字节，随机翻转其中一位，码流长度不变。
 - `Medium-Loss`：删除选中的字节，后续字节前移。
 
-可以从以下方向完成加分实验：
+评估脚本会自动计算 Clean、Medium-Flip 和 Medium-Loss 三类准确率。基础任务只需完成干净测试集结果；下面两种训练方法属于加分项。
 
-1. 比较 Clean、Flip、Loss，分析哪类损坏影响更大。
-2. 在训练阶段加入随机 bit flip 和 byte loss 增强。
-3. 对同一图像的干净码流与损坏码流加入预测一致性或特征对齐约束。
+### 加分项一：损坏增强训练
 
-仓库已提供损坏增强训练入口：
+训练完成后自动评估三类测试集：
 
 ```bash
+read -r -p "请输入训练轮数: " BONUS_EPOCHS
+read -r -p "请输入 batch size: " BONUS_BATCH_SIZE
+
+AUG_OUTPUT=outputs/bonus_augmentation
+
 python train_course_subset.py \
   --method augmentation \
   --epochs "$BONUS_EPOCHS" \
   --batch-size "$BONUS_BATCH_SIZE" \
   --clean-augmentations \
-  --output outputs/course_corruption_aug
-
+  --output "$AUG_OUTPUT" && \
 python evaluate_course_corruption.py \
-  --checkpoint outputs/course_corruption_aug/best.pt \
-  --output outputs/course_corruption_aug_eval
+  --checkpoint "$AUG_OUTPUT/best.pt" \
+  --output "${AUG_OUTPUT}_eval"
 ```
 
-还可以将 `--method augmentation` 改为 `--method consistency`。背景与方法资料见 [加分项参考资料](research/04_bonus_corrupted_bitstream_references.md)，其中包括 CBSU-ALLM、BRACE、BSCV、ByteAction 等工作。
+### 加分项二：一致性约束训练
+
+训练完成后自动评估三类测试集：
+
+```bash
+read -r -p "请输入训练轮数: " CONSISTENCY_EPOCHS
+read -r -p "请输入 batch size: " CONSISTENCY_BATCH_SIZE
+
+CONSISTENCY_OUTPUT=outputs/bonus_consistency
+
+python train_course_subset.py \
+  --method consistency \
+  --epochs "$CONSISTENCY_EPOCHS" \
+  --batch-size "$CONSISTENCY_BATCH_SIZE" \
+  --clean-augmentations \
+  --output "$CONSISTENCY_OUTPUT" && \
+python evaluate_course_corruption.py \
+  --checkpoint "$CONSISTENCY_OUTPUT/best.pt" \
+  --output "${CONSISTENCY_OUTPUT}_eval"
+```
+
+背景与方法资料见 [加分项参考资料](research/04_bonus_corrupted_bitstream_references.md)，其中包括 CBSU-ALLM、BRACE、BSCV、ByteAction 等工作。
 
 ## AutoDL 备用路线
 
