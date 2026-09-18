@@ -16,7 +16,6 @@ from torch.utils.data import DataLoader, Dataset
 
 from build_course_dataset import DATA_DIR
 from byteformer_model import build_model
-from course_corruption import MEDIUM_SCENARIOS, corrupt_bytes, random_training_params
 from data_utils import ENCODING
 from prepare import ROOT, WEIGHT_NAME, digest
 from train import choose_device
@@ -39,29 +38,12 @@ class ArrayDataset(Dataset):
         return torch.from_numpy(tokens.astype(np.int64)), int(self.labels[index])
 
 
-def corrupt_batch(tokens, strength, seed, fixed=None):
-    source = tokens.detach().cpu().numpy()
-    result = np.full(source.shape, -1, dtype=np.int64)
-    rng = np.random.default_rng(seed)
-    for row, values in enumerate(source):
-        length = int(np.count_nonzero(values >= 0))
-        raw = bytes(values[:length].astype(np.uint8))
-        params = fixed if fixed is not None else random_training_params(rng, strength)
-        damaged, _ = corrupt_bytes(raw, params, int(rng.integers(0, 2**63 - 1)))
-        output_length = min(len(damaged), source.shape[1])
-        result[row, :output_length] = np.frombuffer(
-            damaged[:output_length], dtype=np.uint8).astype(np.int64)
-    return torch.from_numpy(result)
-
-
 @torch.no_grad()
-def evaluate(model, loader, device, corrupt=None, seed=0):
+def evaluate(model, loader, device):
     model.eval()
     count = correct = 0
     loss_sum = 0.0
     for step, (tokens, labels) in enumerate(loader):
-        if corrupt is not None:
-            tokens = corrupt_batch(tokens, 'strong', seed + step, fixed=corrupt)
         tokens, labels = tokens.to(device), labels.to(device)
         logits = model(tokens)
         loss_sum += nn.functional.cross_entropy(logits, labels).item() * len(labels)
@@ -82,10 +64,6 @@ def save_curves(output, history):
     axes[0].set_ylabel('Loss')
     axes[1].plot(epochs, [100 * row['train_accuracy'] for row in history], 'o-', label='Train')
     axes[1].plot(epochs, [100 * row['val_clean_accuracy'] for row in history], 'o-', label='Clean val')
-    axes[1].plot(epochs, [100 * row['val_medium_flip_accuracy'] for row in history],
-                 'o-', label='Medium-Flip val')
-    axes[1].plot(epochs, [100 * row['val_medium_loss_accuracy'] for row in history],
-                 'o-', label='Medium-Loss val')
     axes[1].set_ylabel('Accuracy (%)')
     for axis in axes:
         axis.set_xlabel('Epoch')
@@ -97,7 +75,7 @@ def save_curves(output, history):
 
 def parser():
     result = argparse.ArgumentParser(description=__doc__)
-    result.add_argument('--method', choices=['clean', 'augmentation'],
+    result.add_argument('--method', choices=['clean'],
                         default='clean')
     result.add_argument('--epochs', type=int, default=12)
     result.add_argument('--batch-size', type=int, default=32)
@@ -170,8 +148,7 @@ def main():
               for key, value in vars(args).items()}
     config.update(train_samples=5000, val_samples=1000, test_samples=1000,
                   encoding=ENCODING, corrected_masks=True,
-                  selection=('clean validation accuracy' if args.method == 'clean'
-                             else 'mean of clean, Medium-Flip and Medium-Loss validation accuracy'))
+                  selection='clean validation accuracy')
     best_score, best_epoch, history = -1.0, 0, []
     start = time.perf_counter()
     for epoch in range(1, args.epochs + 1):
@@ -188,16 +165,6 @@ def main():
                 logits = model(clean.to(device))
                 loss = nn.functional.cross_entropy(
                     logits, labels, label_smoothing=args.label_smoothing)
-            elif args.method == 'augmentation':
-                # Mix clean, weak, and strong views in each epoch.
-                strength = 'weak' if (epoch + step) % 3 == 0 else 'strong'
-                damaged = corrupt_batch(clean, strength,
-                                        args.seed + epoch * 100000 + step)
-                if (epoch + step) % 4 == 0:
-                    damaged = clean
-                logits = model(damaged.to(device))
-                loss = nn.functional.cross_entropy(
-                    logits, labels, label_smoothing=args.label_smoothing)
             if not torch.isfinite(loss):
                 raise RuntimeError('Non-finite training loss')
             loss.backward()
@@ -207,23 +174,13 @@ def main():
             correct += (logits.argmax(1) == labels).sum().item()
             count += len(labels)
         clean_val = evaluate(model, val_loader, device)
-        flip_val = evaluate(model, val_loader, device,
-                            MEDIUM_SCENARIOS['Medium-Flip'], args.seed + 900000)
-        loss_val = evaluate(model, val_loader, device,
-                            MEDIUM_SCENARIOS['Medium-Loss'], args.seed + 910000)
-        selection = (clean_val['accuracy'] if args.method == 'clean' else
-                     (clean_val['accuracy'] + flip_val['accuracy'] +
-                      loss_val['accuracy']) / 3)
+        selection = clean_val['accuracy']
         row = {
             'epoch': epoch,
             'train_loss': loss_sum / count,
             'train_accuracy': correct / count,
             'val_clean_loss': clean_val['loss'],
             'val_clean_accuracy': clean_val['accuracy'],
-            'val_medium_flip_loss': flip_val['loss'],
-            'val_medium_flip_accuracy': flip_val['accuracy'],
-            'val_medium_loss_loss': loss_val['loss'],
-            'val_medium_loss_accuracy': loss_val['accuracy'],
             'selection_score': selection,
             'lr': optimizer.param_groups[0]['lr'],
             'seconds': time.perf_counter() - epoch_start,
@@ -239,14 +196,11 @@ def main():
             torch.save({'model': state, 'config': config, 'best_epoch': best_epoch,
                         'best_selection_score': best_score,
                         'best_clean_val_accuracy': clean_val['accuracy'],
-                        'best_flip_val_accuracy': flip_val['accuracy'],
-                        'best_loss_val_accuracy': loss_val['accuracy']},
+                        },
                        args.output / 'best.pt')
         scheduler.step()
         print(f'[{args.method} epoch {epoch:02d}] train={100*row["train_accuracy"]:.2f}% '
               f'clean-val={100*clean_val["accuracy"]:.2f}% '
-              f'medium-flip-val={100*flip_val["accuracy"]:.2f}% '
-              f'medium-loss-val={100*loss_val["accuracy"]:.2f}% '
               f'time={row["seconds"]:.1f}s', flush=True)
     result = {
         'created_utc': datetime.now(timezone.utc).isoformat(),

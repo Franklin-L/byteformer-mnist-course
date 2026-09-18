@@ -119,20 +119,21 @@
 请将文件整理为 `学号_姓名_码流图像分类.zip`。基础任务必须包含：
 
 - [ ] `实验报告.pdf`（或教师指定格式的报告文件）。
+- [ ] 基础模型权重 `course_clean/best.pt`。
 - [ ] `course_clean/metrics.json`、`history.csv`、`curves.png` 和 `prediction_single.png`。
-- [ ] `course_clean_eval/evaluation.json`、`accuracy.csv` 和 `accuracy.png`。
+- [ ] `course_clean_eval/evaluation.json`、`predictions.png` 和 `confusion_matrix.png`。
 - [ ] `comparison/metrics.json`、`history.csv` 和 `curves.png`。
 - [ ] 报告中填写实际环境、数据划分、参数、命令、验证结果、测试结果、参数对比和错例。
 
-如果完成加分项，再加入对应的完整目录：
+如果完成加分项，再加入自己完成的增强模型和评估结果：
 
-- [ ] `bonus_augmentation/` 与 `bonus_augmentation_eval/`。
+- [ ] 加分模型的 `best.pt`。
+- [ ] 加分模型评估目录中的 `evaluation.json`、`accuracy.csv` 和 `accuracy.png`。
 - [ ] 报告中填写 Clean、Medium-Flip、Medium-Loss 三类准确率和所用方法。
 
 不要提交：
 
 - [ ] 整份 MNIST 数据集、`.venv/`、完整 GitHub 仓库或课程 PPT。
-- [ ] `best.pt` 等大型模型文件，除非教师另有要求。
 
 - [ ] 所有指标来自自己的输出文件，验证集和测试集没有混写。
 - [ ] 如果有未完成项目，在报告中直接注明。

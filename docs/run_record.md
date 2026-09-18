@@ -14,7 +14,7 @@
 ```bash
 python prepare.py
 python train_course_subset.py --method clean --epochs "$EPOCHS" --batch-size "$BATCH_SIZE" --clean-augmentations --output outputs/course_clean
-python evaluate_course_corruption.py --checkpoint outputs/course_clean/best.pt --output outputs/course_clean_eval
+python evaluate.py --checkpoint outputs/course_clean/best.pt --output outputs/course_clean_eval
 python predict.py --checkpoint outputs/course_clean/best.pt --index 0
 ```
 

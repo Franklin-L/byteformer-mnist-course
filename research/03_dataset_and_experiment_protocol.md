@@ -65,19 +65,25 @@ bit flip 对被选中的字节随机翻转一个 bit，保持码流长度；byte
 
 ## 4. 训练与评估命令
 
-两种方法使用相同的数据、预训练参数、batch size 和随机种子。训练轮数属于实验设置，可根据验证曲线继续调整，不写成课程固定要求。
+基础实验使用下面的干净训练命令。损坏增强属于课程加分项，当前课程仓库不提供可直接完成训练的命令，学生应按照 [`examples/bonus_augmentation_template.py`](../examples/bonus_augmentation_template.py) 中的伪代码自行实现。
+
+训练轮数属于实验设置，可根据验证曲线继续调整，不写成课程固定要求。
 
 ```bash
 python train_course_subset.py --method clean \
   --epochs 12 --batch-size 32 --clean-augmentations \
   --output outputs/subset_clean
-
-python train_course_subset.py --method augmentation \
-  --epochs 12 --batch-size 32 --clean-augmentations \
-  --output outputs/subset_augmentation
 ```
 
-分别在干净测试和两种固定 Medium 测试集上评估：
+基础模型只在干净测试集上评估：
+
+```bash
+python evaluate.py \
+  --checkpoint outputs/subset_clean/best.pt \
+  --output outputs/subset_clean_eval
+```
+
+完成加分项自己的训练脚本后，再使用两种固定 Medium 测试集评估：
 
 ```bash
 python evaluate_course_corruption.py \

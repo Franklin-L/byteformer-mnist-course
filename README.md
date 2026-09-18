@@ -98,7 +98,7 @@ outputs/course_clean/
 ## 独立测试与单图预测
 
 ```bash
-python evaluate_course_corruption.py \
+python evaluate.py \
   --checkpoint outputs/course_clean/best.pt \
   --output outputs/course_clean_eval
 
@@ -107,7 +107,7 @@ python predict.py \
   --index 0
 ```
 
-评估脚本同时给出 `Clean`、`Medium-Flip` 和 `Medium-Loss` 三类结果。基础任务报告 `Clean` 测试准确率；两类损坏结果用于加分项。
+基础流程的 `evaluate.py` 只评估 Clean 测试集。Medium-Flip 和 Medium-Loss 只在下面的损坏增强加分项中评估。
 
 `predict.py --index` 使用官方 MNIST 测试索引，可填写 0–9999。也可以使用黑底白字的自制图片：
 
@@ -132,6 +132,8 @@ python train_course_subset.py \
 
 ## 加分项：损坏码流分类
 
+完整的加分项流程、伪代码模板和两类损坏测试数据地址见：[加分项说明](docs/bonus_corruption.md)。
+
 课程提供与干净测试集一一对应的损坏测试数据：
 
 - `Medium-Flip`：选中一个字节，随机翻转其中一位，码流长度不变。
@@ -139,25 +141,16 @@ python train_course_subset.py \
 
 评估脚本会自动计算 Clean、Medium-Flip 和 Medium-Loss 三类准确率。基础任务只需完成干净测试集结果；损坏增强训练属于加分项。
 
-### 加分项一：损坏增强训练
+### 加分项：损坏增强训练
 
-训练完成后自动评估三类测试集：
+加分项不提供可直接完成训练的命令。请先阅读 [`examples/bonus_augmentation_template.py`](examples/bonus_augmentation_template.py) 中的伪代码，自己完成损坏码流生成、训练、验证和模型保存。
+
+完成自己的训练脚本并保存 `best.pt` 后，再运行：
 
 ```bash
-read -r -p "请输入训练轮数: " BONUS_EPOCHS
-read -r -p "请输入 batch size: " BONUS_BATCH_SIZE
-
-AUG_OUTPUT=outputs/bonus_augmentation
-
-python train_course_subset.py \
-  --method augmentation \
-  --epochs "$BONUS_EPOCHS" \
-  --batch-size "$BONUS_BATCH_SIZE" \
-  --clean-augmentations \
-  --output "$AUG_OUTPUT" && \
 python evaluate_course_corruption.py \
-  --checkpoint "$AUG_OUTPUT/best.pt" \
-  --output "${AUG_OUTPUT}_eval"
+  --checkpoint <你的加分模型>/best.pt \
+  --output <你的加分模型>_eval
 ```
 
 背景与方法资料见 [加分项参考资料](research/04_bonus_corrupted_bitstream_references.md)，其中包括 CBSU-ALLM、BRACE、BSCV、ByteAction 等工作。
@@ -197,14 +190,15 @@ python prepare.py
 学号_姓名_码流图像分类/
 ├── 实验报告.pdf
 ├── course_clean/
+│   ├── best.pt
 │   ├── metrics.json
 │   ├── history.csv
 │   ├── curves.png
 │   └── prediction_single.png
 ├── course_clean_eval/
 │   ├── evaluation.json
-│   ├── accuracy.csv
-│   └── accuracy.png
+│   ├── predictions.png
+│   └── confusion_matrix.png
 ├── comparison/
 │   ├── metrics.json
 │   ├── history.csv
@@ -213,18 +207,34 @@ python prepare.py
 
 实验报告至少写明：运行环境、训练轮数、batch size、实际命令、训练/验证/测试划分、曲线变化、参数对比、单图预测和一个错例分析。
 
-### 加分项（完成哪一项，就在压缩包中加入对应结果目录）
+基础任务必须提交 `course_clean/best.pt`；完成加分项时，再额外提交加分模型的 `best.pt` 和对应评估结果。
+
+### 加分项：损坏增强设计
+
+加分项不提供可直接完成训练的命令。请参考 [`examples/bonus_augmentation_template.py`](examples/bonus_augmentation_template.py) 中的伪代码，自己完成损坏码流生成、训练、验证和模型保存。
+
+完成训练后，使用下面的命令评估自己保存的模型：
+
+```bash
+python evaluate_course_corruption.py \
+  --checkpoint <你的加分模型>/best.pt \
+  --output <你的加分模型>_eval
+```
+
+提交：
 
 ```text
-bonus_augmentation/
-bonus_augmentation_eval/
+<你的加分模型>/best.pt
+<你的加分模型>_eval/evaluation.json
+<你的加分模型>_eval/accuracy.csv
+<你的加分模型>_eval/accuracy.png
 ```
 
 报告中填写 Clean、Medium-Flip、Medium-Loss 三类准确率，并写明使用的加分方法。
 
 ### 不需要提交
 
-不需要提交整份数据集、`.venv/`、`best.pt` 等大型模型文件、完整 GitHub 仓库或课程 PPT。Notebook 最后一格生成的 `byteformer_mnist_results.zip` 只包含实验结果，仍需与实验报告一起整理到上述压缩包中。
+不需要提交整份数据集、`.venv/`、完整 GitHub 仓库或课程 PPT。基础模型和已完成加分项的 `best.pt` 需要提交。Notebook 最后一格生成的 `byteformer_mnist_results.zip` 只包含实验结果，仍需与模型权重和实验报告一起整理到提交压缩包中。
 
 ## 参考文献
 

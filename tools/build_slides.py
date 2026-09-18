@@ -253,22 +253,22 @@ def main():
     command=f'!git clone {REPO}.git\n%cd /kaggle/working/byteformer-mnist-course\n!python -m pip install -r requirements.txt\n!python prepare.py'
     codebox(s,.8,2.24,11.73,1.92,command,17)
     text(s,.87,4.49,11.6,.55,'看到[READY]即准备完成；课程数据集随仓库提供，ByteFormer预训练权重自动下载并校验。',19)
-    text(s,.88,5.31,11.6,1.14,'train_course_subset.py：训练　evaluate_course_corruption.py：测试\npredict.py：单图预测　data/course_1of10/：固定数据　outputs/：实验结果',18,GRAY)
+    text(s,.88,5.31,11.6,1.14,'train_course_subset.py：训练　 evaluate.py：基础测试\nevaluate_course_corruption.py：加分测试　 predict.py：单图预测\ndata/course_1of10/：固定数据　 outputs/：实验结果',18,GRAY)
     # 12. Student-selected training settings.
     s=d.slide('11 模型训练与参数设置')
     settings=[('训练 / 验证 / 测试','5,000 / 1,000 / 1,000'),('训练轮数','根据验证结果自行设置'),('batch size','自行设置，参考32'),('学习率','主干1e-4；分类头10倍'),('输入增强','轻微旋转与水平平移')]
     for i,(a,b) in enumerate(settings):
         y=2.01+i*.69;rect(s,.8,y,5.53,.59,LIGHT);text(s,.94,y+.1,2.24,.4,a,18,BLUE,True);text(s,3.23,y+.1,2.95,.43,b,17)
-    codebox(s,6.67,2.05,5.82,2.18,'EPOCHS = int(input("epochs: "))\nBATCH_SIZE = int(input("batch: "))\n!python train_course_subset.py \\\n  --method clean --epochs {EPOCHS} \\\n  --batch-size {BATCH_SIZE} --clean-augmentations \\\n  --output outputs/course_clean',13)
+    codebox(s,6.67,2.05,5.82,2.18,'read -r -p "epochs: " EPOCHS\nread -r -p "batch size: " BATCH_SIZE\npython train_course_subset.py --method clean --epochs "$EPOCHS" --batch-size "$BATCH_SIZE" --clean-augmentations --output outputs/course_clean',13)
     text(s,6.82,4.59,5.43,1.18,'训练过程中观察验证集准确率；\n结果保存在outputs/course_clean/。',19)
     text(s,.9,6.14,11.45,.55,'轮数与batch size没有固定答案，请在报告中写明自己的设置。',17,GRAY)
     # 13. Curves and metrics.
     s=d.slide('12 训练结果分析')
-    codebox(s,.82,1.98,11.7,1.25,'from IPython.display import display, Image\ndisplay(Image("outputs/course_clean/curves.png"))',19)
+    codebox(s,.82,1.98,11.7,1.25,'python -c "import json; m=json.load(open(\'outputs/course_clean/metrics.json\')); print(\'best_epoch =\', m[\'best_epoch\']); print(\'best_val_accuracy = {:.2%}\'.format(m[\'best_selection_score\']))"',13)
     prompts=[
         ('训练损失','是否总体下降？\n是否出现明显波动？'),
         ('验证结果','准确率怎样变化？\n最佳结果出现在哪一轮？'),
-        ('测试结果','加载验证集选出的模型，\n在独立测试集上评估。'),
+        ('测试结果','下一页使用 evaluate.py，\n只评估 Clean 测试集。'),
     ]
     for i,(heading,body) in enumerate(prompts):
         x=.83+i*4.17
@@ -278,13 +278,13 @@ def main():
     text(s,.93,6.03,11.4,.61,'history.csv保存每轮结果；metrics.json保存最佳轮次、参数和运行时间。',18,GRAY)
     # 14. Evaluation, prediction and errors.
     s=d.slide('13 测试、单图预测与错例检查')
-    codebox(s,.8,1.96,11.75,1.62,'!python evaluate_course_corruption.py \\\n  --checkpoint outputs/course_clean/best.pt --output outputs/course_clean_eval\n!python predict.py --checkpoint outputs/course_clean/best.pt --index 0',15)
-    text(s,.88,3.91,6.22,1.93,'Clean：基础任务的独立测试结果。\nMedium-Flip / Loss：加分项使用。\n将--index改成其他测试索引，可查看预测概率。\n结合预测图和错误索引分析典型错例。',18)
+    codebox(s,.8,1.96,11.75,1.62,'python evaluate.py --checkpoint outputs/course_clean/best.pt --output outputs/course_clean_eval\n\npython predict.py --checkpoint outputs/course_clean/best.pt --index 0',15)
+    text(s,.88,3.91,6.22,1.93,'Clean：基础任务的独立测试结果。\n损坏测试集只在加分项中使用。\n将--index改成其他测试索引，可查看预测概率。\n结合预测图和错误索引分析典型错例。',18)
     picture(s,ROOT/'assets/example_digit.png',8.51,3.75,2.55,2.18)
     text(s,7.62,6.03,4.37,.4,'真实标签7 ｜ 模型预测7',19,BLUE,True,PP_ALIGN.CENTER)
     # 15. Parameter comparison.
     s=d.slide('14 参数对比实验')
-    codebox(s,.81,2.0,11.71,2.13,'COMPARISON_EPOCHS = int(input("epochs: "))\nCOMPARISON_BATCH_SIZE = int(input("batch: "))\n!python train_course_subset.py --method clean \\\n  --epochs {COMPARISON_EPOCHS} --batch-size {COMPARISON_BATCH_SIZE} \\\n  --clean-augmentations --output outputs/comparison',14)
+    codebox(s,.81,2.0,11.71,2.13,'read -r -p "comparison epochs: " COMPARISON_EPOCHS\nread -r -p "comparison batch size: " COMPARISON_BATCH_SIZE\npython train_course_subset.py --method clean --epochs "$COMPARISON_EPOCHS" --batch-size "$COMPARISON_BATCH_SIZE" --clean-augmentations --output outputs/comparison',14)
     text(s,.88,4.35,5.75,1.63,'轮数和batch size均可自行设置。\n建议一次只改变一个参数，其他条件保持一致。\n保留第一次结果，另存outputs/comparison。',18)
     rect(s,7.02,4.31,5.18,1.72,LIGHT,rounded=True)
     text(s,7.24,4.47,4.74,1.38,'比较内容\n· 验证集准确率与训练时间\n· 损失曲线和收敛速度\n· 参数变化带来的收益与代价',17)
@@ -325,11 +325,11 @@ def main():
     text(s,7.29,2.31,4.80,.39,'Byte loss｜字节丢失',21,'A46A25',True,PP_ALIGN.CENTER)
     text(s,7.30,2.86,4.78,.56,'删除字节，后续字节前移\nFF D8 A1 3C → FF D8 3C',14,INK,align=PP_ALIGN.CENTER)
     text(s,.88,3.78,2.65,.28,'加分评估',15,BLUE,True)
-    codebox(s,.82,4.02,5.73,.92,'python evaluate_course_corruption.py \\\n+  --checkpoint outputs/course_clean/best.pt \\\n+  --output outputs/course_clean_eval',10)
+    codebox(s,.82,4.02,5.73,.92,'python evaluate_course_corruption.py --checkpoint <你的加分模型>/best.pt --output <你的加分模型>_eval',10)
     text(s,6.83,3.78,2.65,.28,'加分：损坏增强训练',15,BLUE,True)
-    codebox(s,6.77,4.02,5.73,.92,'BONUS_EPOCHS=你的轮数; BONUS_BATCH_SIZE=你的batch大小\npython train_course_subset.py --method augmentation \\\n  --epochs "$BONUS_EPOCHS" --batch-size "$BONUS_BATCH_SIZE" \\\n  --clean-augmentations --output outputs/course_corruption_aug',9)
+    codebox(s,6.77,4.02,5.73,.92,'打开 examples/bonus_augmentation_template.py\n根据 TODO 完成损坏增强训练流程\n完成后再运行左侧评估命令',11)
     text(s,.83,5.12,2.75,.3,'加分内容',19,BLUE,True)
-    directions=[('① 损坏增强','训练时随机加入 bit flip 和 byte loss 样本。'),('② 损坏测试','评估脚本自动输出 Clean、Medium-Flip、Medium-Loss。')]
+    directions=[('① 损坏增强','根据伪代码设计训练时的 bit flip 和 byte loss 增强。'),('② 损坏测试','评估脚本自动输出 Clean、Medium-Flip、Medium-Loss。')]
     for i,(heading,body) in enumerate(directions):
         x=.82+i*6.02
         rect(s,x,5.48,5.72,.95,LIGHT,rounded=True)

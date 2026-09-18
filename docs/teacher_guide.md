@@ -29,7 +29,7 @@ python prepare.py
 read -p "请输入训练轮数：" EPOCHS
 read -p "请输入 batch size（参考32）：" BATCH_SIZE
 python train_course_subset.py --method clean --epochs "$EPOCHS" --batch-size "$BATCH_SIZE" --clean-augmentations --output outputs/course_clean
-python evaluate_course_corruption.py --checkpoint outputs/course_clean/best.pt --output outputs/course_clean_eval
+python evaluate.py --checkpoint outputs/course_clean/best.pt --output outputs/course_clean_eval
 python predict.py --checkpoint outputs/course_clean/best.pt --index 0
 ```
 
