@@ -10,7 +10,7 @@
 
 ## 课前准备
 
-1. 检查学生是否能够访问课程仓库、下载 Notebook 并开启 GPU。Kaggle 使用教程见 PPT；AutoDL 作为备用平台。
+1. 检查学生是否能够访问课程仓库、下载 Notebook 并开启 GPU。课件中给出 Kaggle 使用教程；AutoDL 作为备用平台。
 2. 在授课环境运行 `python prepare.py`，准备数据与预训练权重。
 3. 设置训练轮数与 batch size，完成一次基线训练，检查曲线、指标和预测图。
 4. 更改一个参数完成对比实验，结果保存到 `outputs/comparison`。
@@ -68,11 +68,11 @@ python train_course_subset.py --method clean --epochs "$COMPARISON_EPOCHS" --bat
 
 完成 MNIST 规定任务并提交实验报告，即达标及格。报告包含环境、参数、曲线、评估结果、一次参数对比和错例分析。
 
-加分项使用课程提供的损坏测试集。学生比较 bit flip、byte loss 和混合损坏的影响，并可尝试损坏增强、预测一致性或特征对齐，提交四类测试结果与分析。
+加分项使用课程提供的损坏测试集。学生比较 bit flip 和 byte loss 的影响，并可尝试损坏增强、预测一致性或特征对齐，提交三类测试结果与分析。
 
 ## 课程材料
 
-- 19 页课件：[PPT](ByteFormer_MNIST_零基础实验课.pptx) / [PDF](ByteFormer_MNIST_零基础实验课.pdf)
+- 19 页课件由教师单独保存和提交；仓库提供对应的课程代码与实验材料。
 - [课程 Notebook](../course_kaggle.ipynb) / [操作指南](../README.md)
 - [实验报告模板](学生实验报告模板.docx)
 - [演示运行记录](run_record.md)

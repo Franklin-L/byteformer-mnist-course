@@ -4,8 +4,8 @@
 
 ## 1. 加分项可以完成的内容
 
-1. 使用课程提供的 Medium-Flip、Medium-Loss、Medium-Mixed 测试集评估干净模型。
-2. 比较三种损坏下的准确率，说明 bit flip 与 byte loss 的区别。
+1. 使用课程提供的 Medium-Flip、Medium-Loss 测试集评估干净模型。
+2. 比较两种损坏下的准确率，说明 bit flip 与 byte loss 的区别。
 3. 在训练阶段加入随机码流损坏增强。
 4. 对同一样本的轻度和重度损坏视图加入预测一致性或特征对齐约束。
 5. 与干净训练基线比较干净准确率、受损平均准确率和提升幅度。
@@ -36,7 +36,6 @@
 
 - Medium-Flip：只执行 bit flip；
 - Medium-Loss：只执行 byte loss；
-- Medium-Mixed：在两种损坏之间随机选择；
 - 固定 `S=64`、`P=0.55`、`q=0.55`，期望受损字节比例约为 30.25%。
 
-课程实测中，只用干净码流训练的 ByteFormer 在干净测试集达到 95.6%，在三种 Medium 损坏上的平均准确率降至 44.2%。加入损坏一致性训练后，干净准确率为 95.5%，受损平均准确率提高到 78.6%。完整结果见 [experiment_results.md](experiment_results.md)。
+课程实测中，只用干净码流训练的 ByteFormer 在干净测试集达到 95.6%，在两种 Medium 损坏上的平均准确率可用于观察模型鲁棒性。加入损坏一致性训练后，再比较干净准确率和两种受损准确率。完整结果见 [experiment_results.md](experiment_results.md)。

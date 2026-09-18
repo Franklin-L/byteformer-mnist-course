@@ -9,7 +9,7 @@
 
 课程材料：
 
-- [课程 PPT](docs/ByteFormer_MNIST_零基础实验课.pptx) / [PDF 预览](docs/ByteFormer_MNIST_零基础实验课.pdf)
+- 课程课件由教师另行提供；本仓库只保存代码、Notebook、数据和实验文档。
 - [Kaggle 课程 Notebook](course_kaggle.ipynb)
 - [Word 实验报告模板](docs/学生实验报告模板.docx) / [Markdown 模板](docs/student_report_template.md)
 - [课程仓库](https://github.com/Franklin-L/byteformer-mnist-course)
@@ -107,7 +107,7 @@ python predict.py \
   --index 0
 ```
 
-评估脚本同时给出 `Clean`、`Medium-Flip`、`Medium-Loss` 和 `Medium-Mixed` 四类结果。基础任务报告 `Clean` 测试准确率；三类损坏结果用于加分项。
+评估脚本同时给出 `Clean`、`Medium-Flip` 和 `Medium-Loss` 三类结果。基础任务报告 `Clean` 测试准确率；两类损坏结果用于加分项。
 
 `predict.py --index` 使用官方 MNIST 测试索引，可填写 0–9999。也可以使用黑底白字的自制图片：
 
@@ -136,11 +136,10 @@ python train_course_subset.py \
 
 - `Medium-Flip`：选中一个字节，随机翻转其中一位，码流长度不变。
 - `Medium-Loss`：删除选中的字节，后续字节前移。
-- `Medium-Mixed`：对每个样本随机选择 bit flip 或 byte loss。
 
 可以从以下方向完成加分实验：
 
-1. 比较 Clean、Flip、Loss、Mixed，分析哪类损坏影响更大。
+1. 比较 Clean、Flip、Loss，分析哪类损坏影响更大。
 2. 在训练阶段加入随机 bit flip 和 byte loss 增强。
 3. 对同一图像的干净码流与损坏码流加入预测一致性或特征对齐约束。
 

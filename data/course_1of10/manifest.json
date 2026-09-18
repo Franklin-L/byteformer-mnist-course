@@ -41,18 +41,6 @@
         "mean_changed_fraction": 0.3025538207038514,
         "decode_success_count": 4,
         "decode_rate": 0.004
-      },
-      "Medium-Mixed": {
-        "parameters": {
-          "segment_size": 64,
-          "segment_probability": 0.55,
-          "flip_probability": 0.5,
-          "byte_probability": 0.55,
-          "expected_corruption_ratio": 0.30250000000000005
-        },
-        "mean_changed_fraction": 0.3019152179086468,
-        "decode_success_count": 2,
-        "decode_rate": 0.002
       }
     }
   },
@@ -62,8 +50,8 @@
       "bytes": 27982939
     },
     "mnist_test_corrupted_medium.npz": {
-      "sha256": "38b4e1e797ee1888139253a87c771958adfd8745209e9f6fd061bef21f4399ef",
-      "bytes": 3047128
+      "sha256": "45cb87aaca101481592b7a8a6f736da097fb25fc3efa8bd489b2457c0cc82d77",
+      "bytes": 2027149
     }
   }
 }

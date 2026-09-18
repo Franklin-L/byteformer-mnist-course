@@ -2,4 +2,3 @@ scenario,accuracy,correct,samples
 Clean,0.956,956,1000
 Medium-Flip,0.596,596,1000
 Medium-Loss,0.293,293,1000
-Medium-Mixed,0.436,436,1000

@@ -98,14 +98,13 @@
 
 ## 6. 加分项（选做）
 
-若完成损坏码流分类，请填写 Clean、Medium-Flip、Medium-Loss、Medium-Mixed 四类结果，并说明 bit flip 与 byte loss 的区别、所用改进方法及其效果。
+若完成损坏码流分类，请填写 Clean、Medium-Flip、Medium-Loss 三类结果，并说明 bit flip 与 byte loss 的区别、所用改进方法及其效果。
 
 | 测试场景 | 基础模型 | 改进模型 |
 | --- | --- | --- |
 | Clean | | |
 | Medium-Flip | | |
 | Medium-Loss | | |
-| Medium-Mixed | | |
 
 改进方法：损坏增强 / 一致性约束 / 特征对齐 / 其他（写明）：
 

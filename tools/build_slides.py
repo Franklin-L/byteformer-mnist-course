@@ -279,7 +279,7 @@ def main():
     # 14. Evaluation, prediction and errors.
     s=d.slide('13 测试、单图预测与错例检查')
     codebox(s,.8,1.96,11.75,1.62,'!python evaluate_course_corruption.py \\\n  --checkpoint outputs/course_clean/best.pt --output outputs/course_clean_eval\n!python predict.py --checkpoint outputs/course_clean/best.pt --index 0',15)
-    text(s,.88,3.91,6.22,1.93,'Clean：基础任务的独立测试结果。\nMedium-Flip / Loss / Mixed：加分项使用。\n将--index改成其他测试索引，可查看预测概率。\n结合预测图和错误索引分析典型错例。',18)
+    text(s,.88,3.91,6.22,1.93,'Clean：基础任务的独立测试结果。\nMedium-Flip / Loss：加分项使用。\n将--index改成其他测试索引，可查看预测概率。\n结合预测图和错误索引分析典型错例。',18)
     picture(s,ROOT/'assets/example_digit.png',8.51,3.75,2.55,2.18)
     text(s,7.62,6.03,4.37,.4,'真实标签7 ｜ 模型预测7',19,BLUE,True,PP_ALIGN.CENTER)
     # 15. Parameter comparison.
@@ -312,17 +312,14 @@ def main():
     text(s,.9,6.31,11.43,.57,'报告分别列出训练集、验证集和测试集的用途与结果。',17,RED)
     # 18. Bonus corrupted-bitstream task with concrete directions.
     s=d.slide('17 加分项：损坏码流分类','课程提供与干净测试集对应的损坏测试数据，共包含以下两种基本损坏。')
-    rect(s,.77,2.13,3.72,1.50,'F6E5E1',rounded=True)
-    text(s,.96,2.31,3.34,.39,'Bit flip｜比特翻转',21,RED,True,PP_ALIGN.CENTER)
-    text(s,.97,2.86,3.31,.56,'翻转选中字节的1位（长度不变）\n10100110 → 10100010',14,INK,align=PP_ALIGN.CENTER)
-    rect(s,4.79,2.13,3.72,1.50,'F4EAD8',rounded=True)
-    text(s,4.98,2.31,3.34,.39,'Byte loss｜字节丢失',21,'A46A25',True,PP_ALIGN.CENTER)
-    text(s,4.99,2.86,3.31,.56,'删除字节，后续字节前移\nFF D8 A1 3C → FF D8 3C',14,INK,align=PP_ALIGN.CENTER)
-    rect(s,8.81,2.13,3.72,1.50,LIGHT,rounded=True)
-    text(s,9.00,2.31,3.34,.39,'Mixed｜混合损坏',21,BLUE,True,PP_ALIGN.CENTER)
-    text(s,9.01,2.84,3.31,.65,'每个样本随机选择翻转或丢失\n检验模型对未知损坏的适应能力',14,INK,align=PP_ALIGN.CENTER)
+    rect(s,1.05,2.13,5.18,1.50,'F6E5E1',rounded=True)
+    text(s,1.24,2.31,4.80,.39,'Bit flip｜比特翻转',21,RED,True,PP_ALIGN.CENTER)
+    text(s,1.25,2.86,4.78,.56,'翻转选中字节的1位（长度不变）\n10100110 → 10100010',14,INK,align=PP_ALIGN.CENTER)
+    rect(s,7.10,2.13,5.18,1.50,'F4EAD8',rounded=True)
+    text(s,7.29,2.31,4.80,.39,'Byte loss｜字节丢失',21,'A46A25',True,PP_ALIGN.CENTER)
+    text(s,7.30,2.86,4.78,.56,'删除字节，后续字节前移\nFF D8 A1 3C → FF D8 3C',14,INK,align=PP_ALIGN.CENTER)
     text(s,.83,3.93,2.75,.4,'可以尝试的方向',21,BLUE,True)
-    directions=[('① 结果分析','比较Clean、Flip、Loss、Mixed，观察哪类损坏影响更大。'),('② 损坏增强','训练时随机加入bit flip和byte loss样本。'),('③ 一致性约束','让同一图像的干净码流与损坏码流输出接近。')]
+    directions=[('① 结果分析','比较Clean、Flip、Loss，观察哪类损坏影响更大。'),('② 损坏增强','训练时随机加入bit flip和byte loss样本。'),('③ 一致性约束','让同一图像的干净码流与损坏码流输出接近。')]
     for i,(heading,body) in enumerate(directions):
         x=.82+i*4.02
         rect(s,x,4.42,3.72,1.18,LIGHT,rounded=True)
@@ -332,11 +329,11 @@ def main():
     link(s,2.25,5.89,2.55,'CBSU-ALLM','https://doi.org/10.1016/j.patcog.2026.114151',14)
     link(s,4.65,5.89,2.25,'BRACE','https://arxiv.org/abs/2608.15695',14)
     link(s,6.65,5.89,2.25,'BSCV','https://arxiv.org/abs/2309.13890',14)
-    text(s,.87,6.37,11.45,.34,'提交改进方法、训练设置以及四类测试结果；可自行组合其他增强或鲁棒训练方法。',15,GRAY)
+    text(s,.87,6.37,11.45,.34,'提交改进方法、训练设置以及三类测试结果；可自行组合其他增强或鲁棒训练方法。',15,GRAY)
     # 19. References and entry points.
     s=d.slide('18 配套材料与参考文献','实验步骤、命令和数据说明见课程仓库与Notebook。')
     sources=[
-        ('课程仓库：代码、Notebook、数据、PPT和报告模板',REPO),
+        ('课程仓库：代码、Notebook、数据和报告模板',REPO),
         ('ByteFormer：Bytes Are All You Need','https://arxiv.org/abs/2306.00238'),
         ('MEGABYTE：Predicting Million-byte Sequences','https://arxiv.org/abs/2305.07185'),
         ('MambaByte：Token-free Selective State Space Model','https://arxiv.org/abs/2401.13660'),

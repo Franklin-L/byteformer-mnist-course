@@ -19,7 +19,7 @@
 数据文件：
 
 - `data/course_1of10/mnist_clean_balanced.npz`：训练、验证和干净测试；
-- `data/course_1of10/mnist_test_corrupted_medium.npz`：同一批 1,000 张测试样本的三种受损版本；
+- `data/course_1of10/mnist_test_corrupted_medium.npz`：同一批 1,000 张测试样本的两种受损版本；
 - `data/course_1of10/manifest.json`：数据数量、损坏统计、文件大小和 SHA-256。
 
 重新生成：
@@ -43,7 +43,6 @@ bit flip 对被选中的字节随机翻转一个 bit，保持码流长度；byte
 | --- | ---: | ---: | ---: | ---: | ---: |
 | Medium-Flip | 64 | 0.55 | 1.0 | 0.55 | 30.25% |
 | Medium-Loss | 64 | 0.55 | 0.0 | 0.55 | 30.25% |
-| Medium-Mixed | 64 | 0.55 | 0.5 | 0.55 | 30.25% |
 
 当前 1,000 张测试样本的实测统计：
 
@@ -51,7 +50,6 @@ bit flip 对被选中的字节随机翻转一个 bit，保持码流长度；byte
 | --- | ---: | ---: |
 | Medium-Flip | 30.208% | 2/1,000（0.2%） |
 | Medium-Loss | 30.255% | 4/1,000（0.4%） |
-| Medium-Mixed | 30.192% | 2/1,000（0.2%） |
 
 这里的解码率只用于说明标准像素流程受到破坏。ByteFormer 测试直接读取损坏后的字节，不需要 Pillow 成功恢复图像。
 
@@ -63,7 +61,7 @@ bit flip 对被选中的字节随机翻转一个 bit，保持码流长度；byte
 
 ### B. Corruption augmentation
 
-训练时在线产生 weak 或 strong 损坏视图，并保留一部分干净输入。损坏类型在 bit flip、byte loss 和 mixed 之间采样。最佳模型按干净验证与固定 Medium-Mixed 验证准确率的平均值选择。
+训练时在线产生 weak 或 strong 损坏视图，并保留一部分干净输入。损坏类型在 bit flip 和 byte loss 之间采样。最佳模型按干净验证、Medium-Flip 验证和 Medium-Loss 验证的平均值选择。
 
 ### C. Corruption consistency
 
@@ -93,7 +91,7 @@ python train_course_subset.py --method consistency \
   --output outputs/subset_consistency
 ```
 
-分别在干净测试和三种固定 Medium 测试集上评估：
+分别在干净测试和两种固定 Medium 测试集上评估：
 
 ```bash
 python evaluate_course_corruption.py \
@@ -109,8 +107,7 @@ python evaluate_course_corruption.py \
 
 - Clean test accuracy；
 - Medium-Flip accuracy；
-- Medium-Loss accuracy；
-- Medium-Mixed accuracy。
+- Medium-Loss accuracy。
 
 同时记录：
 

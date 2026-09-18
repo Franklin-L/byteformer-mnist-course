@@ -3,7 +3,7 @@
   "checkpoint": "outputs/subset_clean_augviews/best.pt",
   "checkpoint_sha256": "d7c49d8b9a09bffbe686395620257691565a2dc76a84806adc211abfd3bed0c8",
   "clean_data_sha256": "526a1d75f69276de5146a918cdfc3b5208f881ca280b290a88d9a8271e97aeaa",
-  "corrupt_data_sha256": "38b4e1e797ee1888139253a87c771958adfd8745209e9f6fd061bef21f4399ef",
+  "corrupt_data_sha256": "45cb87aaca101481592b7a8a6f736da097fb25fc3efa8bd489b2457c0cc82d77",
   "best_epoch": 15,
   "training_method": "clean",
   "results": {
@@ -23,12 +23,6 @@
       "loss": 4.762729991912842,
       "accuracy": 0.293,
       "correct": 293,
-      "samples": 1000
-    },
-    "Medium-Mixed": {
-      "loss": 3.3830792484283445,
-      "accuracy": 0.436,
-      "correct": 436,
       "samples": 1000
     }
   },

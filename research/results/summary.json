@@ -2,45 +2,41 @@
   "scenarios": [
     "Clean",
     "Medium-Flip",
-    "Medium-Loss",
-    "Medium-Mixed"
+    "Medium-Loss"
   ],
   "methods": [
     {
-      "method": "Clean fine-tuning",
+      "method": "clean_fine-tuning",
       "Clean": 0.956,
       "Medium-Flip": 0.596,
       "Medium-Loss": 0.293,
-      "Medium-Mixed": 0.436,
-      "corrupted_mean": 0.44166666666666665,
-      "mean_drop_from_clean": 0.5143333333333333,
+      "corrupted_mean": 0.4445,
+      "mean_drop_from_clean": 0.5115,
       "checkpoint_sha256": "d7c49d8b9a09bffbe686395620257691565a2dc76a84806adc211abfd3bed0c8",
       "best_epoch": 15,
       "corrupted_gain_vs_first": 0.0
     },
     {
-      "method": "Corruption augmentation",
+      "method": "corruption_augmentation",
       "Clean": 0.945,
       "Medium-Flip": 0.808,
       "Medium-Loss": 0.648,
-      "Medium-Mixed": 0.75,
-      "corrupted_mean": 0.7353333333333333,
-      "mean_drop_from_clean": 0.20966666666666667,
+      "corrupted_mean": 0.728,
+      "mean_drop_from_clean": 0.21699999999999997,
       "checkpoint_sha256": "6cd46395e30137145ac18ea565550d314df79cee8cb41b27b6034b75721460bd",
       "best_epoch": 15,
-      "corrupted_gain_vs_first": 0.29366666666666663
+      "corrupted_gain_vs_first": 0.2835
     },
     {
-      "method": "Corruption consistency",
+      "method": "corruption_consistency",
       "Clean": 0.955,
       "Medium-Flip": 0.854,
       "Medium-Loss": 0.707,
-      "Medium-Mixed": 0.796,
-      "corrupted_mean": 0.7856666666666667,
-      "mean_drop_from_clean": 0.16933333333333322,
+      "corrupted_mean": 0.7805,
+      "mean_drop_from_clean": 0.1745,
       "checkpoint_sha256": "cec33cc4188f2493b4251ea67c3c0a6f8ccb2af8e754a59875e9efc79f34ced4",
       "best_epoch": 14,
-      "corrupted_gain_vs_first": 0.3440000000000001
+      "corrupted_gain_vs_first": 0.33599999999999997
     }
   ]
 }

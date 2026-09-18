@@ -35,7 +35,6 @@ class CorruptionParams:
 MEDIUM_SCENARIOS = {
     'Medium-Flip': CorruptionParams(64, 0.55, 1.0, 0.55),
     'Medium-Loss': CorruptionParams(64, 0.55, 0.0, 0.55),
-    'Medium-Mixed': CorruptionParams(64, 0.55, 0.5, 0.55),
 }
 
 

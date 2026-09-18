@@ -91,8 +91,10 @@ def save_curves(output, history):
     axes[0].set_ylabel('Loss')
     axes[1].plot(epochs, [100 * row['train_accuracy'] for row in history], 'o-', label='Train')
     axes[1].plot(epochs, [100 * row['val_clean_accuracy'] for row in history], 'o-', label='Clean val')
-    axes[1].plot(epochs, [100 * row['val_medium_mixed_accuracy'] for row in history],
-                 'o-', label='Medium-Mixed val')
+    axes[1].plot(epochs, [100 * row['val_medium_flip_accuracy'] for row in history],
+                 'o-', label='Medium-Flip val')
+    axes[1].plot(epochs, [100 * row['val_medium_loss_accuracy'] for row in history],
+                 'o-', label='Medium-Loss val')
     axes[1].set_ylabel('Accuracy (%)')
     for axis in axes:
         axis.set_xlabel('Epoch')
@@ -180,7 +182,7 @@ def main():
     config.update(train_samples=5000, val_samples=1000, test_samples=1000,
                   encoding=ENCODING, corrected_masks=True,
                   selection=('clean validation accuracy' if args.method == 'clean'
-                             else 'mean of clean and Medium-Mixed validation accuracy'))
+                             else 'mean of clean, Medium-Flip and Medium-Loss validation accuracy'))
     best_score, best_epoch, history = -1.0, 0, []
     start = time.perf_counter()
     for epoch in range(1, args.epochs + 1):
@@ -236,18 +238,23 @@ def main():
             correct += (logits.argmax(1) == labels).sum().item()
             count += len(labels)
         clean_val = evaluate(model, val_loader, device)
-        corrupt_val = evaluate(model, val_loader, device,
-                               MEDIUM_SCENARIOS['Medium-Mixed'], args.seed + 900000)
+        flip_val = evaluate(model, val_loader, device,
+                            MEDIUM_SCENARIOS['Medium-Flip'], args.seed + 900000)
+        loss_val = evaluate(model, val_loader, device,
+                            MEDIUM_SCENARIOS['Medium-Loss'], args.seed + 910000)
         selection = (clean_val['accuracy'] if args.method == 'clean' else
-                     (clean_val['accuracy'] + corrupt_val['accuracy']) / 2)
+                     (clean_val['accuracy'] + flip_val['accuracy'] +
+                      loss_val['accuracy']) / 3)
         row = {
             'epoch': epoch,
             'train_loss': loss_sum / count,
             'train_accuracy': correct / count,
             'val_clean_loss': clean_val['loss'],
             'val_clean_accuracy': clean_val['accuracy'],
-            'val_medium_mixed_loss': corrupt_val['loss'],
-            'val_medium_mixed_accuracy': corrupt_val['accuracy'],
+            'val_medium_flip_loss': flip_val['loss'],
+            'val_medium_flip_accuracy': flip_val['accuracy'],
+            'val_medium_loss_loss': loss_val['loss'],
+            'val_medium_loss_accuracy': loss_val['accuracy'],
             'selection_score': selection,
             'lr': optimizer.param_groups[0]['lr'],
             'seconds': time.perf_counter() - epoch_start,
@@ -263,12 +270,14 @@ def main():
             torch.save({'model': state, 'config': config, 'best_epoch': best_epoch,
                         'best_selection_score': best_score,
                         'best_clean_val_accuracy': clean_val['accuracy'],
-                        'best_corrupt_val_accuracy': corrupt_val['accuracy']},
+                        'best_flip_val_accuracy': flip_val['accuracy'],
+                        'best_loss_val_accuracy': loss_val['accuracy']},
                        args.output / 'best.pt')
         scheduler.step()
         print(f'[{args.method} epoch {epoch:02d}] train={100*row["train_accuracy"]:.2f}% '
               f'clean-val={100*clean_val["accuracy"]:.2f}% '
-              f'medium-mixed-val={100*corrupt_val["accuracy"]:.2f}% '
+              f'medium-flip-val={100*flip_val["accuracy"]:.2f}% '
+              f'medium-loss-val={100*loss_val["accuracy"]:.2f}% '
               f'time={row["seconds"]:.1f}s', flush=True)
     result = {
         'created_utc': datetime.now(timezone.utc).isoformat(),

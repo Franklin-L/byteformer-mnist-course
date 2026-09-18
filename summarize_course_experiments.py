@@ -7,7 +7,7 @@ from pathlib import Path
 import shutil
 
 
-SCENARIOS = ['Clean', 'Medium-Flip', 'Medium-Loss', 'Medium-Mixed']
+SCENARIOS = ['Clean', 'Medium-Flip', 'Medium-Loss']
 
 
 def parse_run(value):
@@ -40,7 +40,10 @@ def main():
         method_dir = args.output / label.lower().replace(' ', '_')
         method_dir.mkdir(parents=True, exist_ok=True)
         for filename in ['evaluation.json', 'accuracy.csv', 'accuracy.png']:
-            shutil.copy2(directory / filename, method_dir / filename)
+            source = directory / filename
+            target = method_dir / filename
+            if source.resolve() != target.resolve():
+                shutil.copy2(source, target)
         training_dir = Path(report['checkpoint']).parent
         for filename in ['metrics.json', 'history.csv', 'curves.png']:
             source = training_dir / filename
@@ -81,30 +84,30 @@ def main():
 
     lines = [
         '# 1/10 MNIST 码流损坏实验结果', '',
-        '以下结果来自固定的 1,000 张平衡测试样本。三个受损测试集与干净测试集使用相同的样本索引。', '',
-        '| 方法 | Clean | Medium-Flip | Medium-Loss | Medium-Mixed | 受损平均 | 相对首行提升 |',
-        '| --- | ---: | ---: | ---: | ---: | ---: | ---: |',
+        '以下结果来自固定的 1,000 张平衡测试样本。两种受损测试集与干净测试集使用相同的样本索引。', '',
+        '| 方法 | Clean | Medium-Flip | Medium-Loss | 受损平均 | 相对首行提升 |',
+        '| --- | ---: | ---: | ---: | ---: | ---: |',
     ]
     for row in rows:
         lines.append(
             f"| {row['method']} | {100*row['Clean']:.1f}% | "
             f"{100*row['Medium-Flip']:.1f}% | {100*row['Medium-Loss']:.1f}% | "
-            f"{100*row['Medium-Mixed']:.1f}% | {100*row['corrupted_mean']:.1f}% | "
+            f"{100*row['corrupted_mean']:.1f}% | "
             f"{100*row['corrupted_gain_vs_first']:+.1f} 个百分点 |")
     strongest = max(rows, key=lambda item: item['corrupted_mean'])
     lines.extend([
         '',
         f"只用正常 JPEG 训练时，干净测试准确率为 {100*rows[0]['Clean']:.1f}%，"
-        f"三种 Medium 损坏的平均准确率降到 {100*rows[0]['corrupted_mean']:.1f}%，"
+        f"两种 Medium 损坏的平均准确率降到 {100*rows[0]['corrupted_mean']:.1f}%，"
         f"下降 {100*rows[0]['mean_drop_from_clean']:.1f} 个百分点。",
         '',
         f"{strongest['method']} 的受损平均准确率为 "
         f"{100*strongest['corrupted_mean']:.1f}%，相对纯干净训练提高 "
         f"{100*strongest['corrupted_gain_vs_first']:.1f} 个百分点；"
         f"干净测试准确率为 {100*strongest['Clean']:.1f}%。"
-        '三种损坏中 byte loss 最困难，因为删除字节会改变后续序列位置。',
+        '两种损坏中 byte loss 通常更困难，因为删除字节会改变后续序列位置。',
         '', '![准确率对比](results/summary.png)', '',
-                  '每种方法的训练曲线、训练配置、评估 JSON 和逐场景 CSV 保存在对应子目录。', ''])
+                  '每种方法的最终测试评估 JSON、逐场景 CSV 和准确率图保存在对应子目录。', ''])
     (args.output.parent / 'experiment_results.md').write_text(
         '\n'.join(lines), encoding='utf-8')
 

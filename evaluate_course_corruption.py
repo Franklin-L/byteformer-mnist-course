@@ -47,7 +47,6 @@ def main():
             'Clean': clean_tokens,
             'Medium-Flip': corrupt['medium_flip_tokens'],
             'Medium-Loss': corrupt['medium_loss_tokens'],
-            'Medium-Mixed': corrupt['medium_mixed_tokens'],
         }
     args.output.mkdir(parents=True, exist_ok=True)
     results, predictions = {}, {}
@@ -90,7 +89,7 @@ def main():
     names = list(results)
     values = [100 * results[name]['accuracy'] for name in names]
     fig, axis = plt.subplots(figsize=(8, 4.4), constrained_layout=True)
-    bars = axis.bar(names, values, color=['#176BA0', '#D9895B', '#C85A54', '#8F6CB3'])
+    bars = axis.bar(names, values, color=['#176BA0', '#D9895B', '#C85A54'])
     axis.set_ylim(0, 100)
     axis.set_ylabel('Top-1 accuracy (%)')
     axis.set_title('Balanced MNIST test: clean and medium byte corruption')

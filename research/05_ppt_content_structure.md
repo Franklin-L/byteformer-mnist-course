@@ -15,7 +15,7 @@
 
 ## 加分项页面
 
-1. 课程提供的 bit flip、byte loss 和 mixed 损坏测试集。
+1. 课程提供的 bit flip 和 byte loss 损坏测试集。
 2. 干净训练模型在受损测试上的准确率下降。
 3. 损坏增强、预测一致性和特征对齐等可选改进。
 4. CBSU-ALLM、BRACE、BSCV、ByteAction、Cibic、VUB 作为辅助参考资料。
