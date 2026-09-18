@@ -18,7 +18,7 @@ python evaluate_course_corruption.py --checkpoint outputs/course_clean/best.pt -
 python predict.py --checkpoint outputs/course_clean/best.pt --index 0
 ```
 
-训练、验证、独立测试、单图预测、损坏增强和一致性训练流程均已完成验证。基础干净训练的测试准确率达到 95% 以上；损坏训练的详细对比见 [实验结果](../research/experiment_results.md)。
+训练、验证、独立测试、单图预测和损坏增强流程均已完成验证。基础干净训练的测试准确率达到 95% 以上；损坏训练的详细对比见 [实验结果](../research/experiment_results.md)。
 
 ## 输出
 

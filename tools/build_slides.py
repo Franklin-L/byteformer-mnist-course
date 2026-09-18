@@ -289,17 +289,23 @@ def main():
     rect(s,7.02,4.31,5.18,1.72,LIGHT,rounded=True)
     text(s,7.24,4.47,4.74,1.38,'比较内容\n· 验证集准确率与训练时间\n· 损失曲线和收敛速度\n· 参数变化带来的收益与代价',17)
     text(s,.9,6.30,11.35,.4,'报告中列出两次设置及结果，并说明比较结论。',16,GRAY)
-    # 16. AutoDL and common problems combined.
-    s=d.slide('15 AutoDL运行与常见问题')
-    codebox(s,.78,1.94,6.13,3.55,f'cd /root/autodl-tmp\ngit clone {REPO}.git\ncd byteformer-mnist-course\npython -m pip install -r requirements.txt\npython prepare.py\npython train_course_subset.py --method clean \\\n  --epochs "$EPOCHS" --batch-size "$BATCH_SIZE" \\\n  --clean-augmentations --output outputs/course_clean',12)
-    problems=[('没有使用GPU','检查Kaggle加速器或AutoDL实例'),('缺少Python包','重新安装requirements.txt'),('显存不足','减小batch size并记录实际值'),('输出目录已有文件','改用新的output目录')]
+    # 16. Common environment and runtime problems.
+    s=d.slide('15 运行中的常见问题','下面的问题在环境部署和运行时较常见。')
+    problems=[
+        ('Python 命令找不到','安装 Python 3.9—3.12，\n重新打开终端后再运行。'),
+        ('找不到 torch','先安装 PyTorch，\n再执行 requirements.txt。'),
+        ('依赖安装失败','在项目目录重新运行\npython -m pip install -r requirements.txt'),
+        ('GPU 未被识别','检查 CUDA；没有 GPU 时，\n程序会自动使用 CPU。'),
+        ('权重下载失败','检查网络连接，\n重新运行 python prepare.py。'),
+        ('显存或内存不足','减小 batch size，\n关闭其他占用资源的程序。'),
+    ]
     for i,(heading,body) in enumerate(problems):
-        y=2.0+i*.91
-        rect(s,7.25,y,5.0,.75,LIGHT,rounded=True)
-        text(s,7.43,y+.11,1.78,.3,heading,16,BLUE,True)
-        text(s,9.17,y+.11,2.88,.43,body,15)
-    text(s,.88,5.80,6.05,.79,'运行前在Terminal中设置EPOCHS和BATCH_SIZE；\n实验结束后下载outputs并在控制台关机。',17,GRAY)
-    link(s,7.34,6.00,4.8,'AutoDL官方快速开始','https://www.autodl.com/docs/quick_start/',16)
+        x=.78+(i%2)*6.17; y=2.04+(i//2)*1.04
+        rect(s,x,y,5.78,.83,LIGHT,rounded=True)
+        text(s,x+.20,y+.14,2.03,.28,heading,17,BLUE,True)
+        text(s,x+2.28,y+.12,3.22,.54,body,14)
+    rect(s,.78,5.57,11.78,.83,'DDEBF3',rounded=True)
+    text(s,1.00,5.72,11.34,.46,'环境自检：python --version    /    python -c "import torch; print(torch.__version__); print(torch.cuda.is_available())"\n先完成环境自检，再开始训练；遇到报错时保留完整错误信息。',14,BLUE)
     # 17. Submission requirements.
     s=d.slide('16 实验结果与报告提交')
     text(s,.86,1.98,6.03,3.71,'① 保存训练曲线和测试结果。\n② 完成一次参数对比。\n③ 展示单图预测或典型错例。\n④ 填写实验环境、命令、参数与结果分析。\n⑤ 打包代码、结果图和实验报告。\n\n数据集和Python环境不需要重复提交。',20)
@@ -311,25 +317,29 @@ def main():
         text(s,7.29,y+.05,4.75,.35,item,17)
     text(s,.9,6.31,11.43,.57,'报告分别列出训练集、验证集和测试集的用途与结果。',17,RED)
     # 18. Bonus corrupted-bitstream task with concrete directions.
-    s=d.slide('17 加分项：损坏码流分类','课程提供与干净测试集对应的损坏测试数据，共包含以下两种基本损坏。')
+    s=d.slide('17 加分项：损坏码流分类','以下内容均为加分项；课程提供与干净测试集对应的两种损坏测试数据。')
     rect(s,1.05,2.13,5.18,1.50,'F6E5E1',rounded=True)
     text(s,1.24,2.31,4.80,.39,'Bit flip｜比特翻转',21,RED,True,PP_ALIGN.CENTER)
     text(s,1.25,2.86,4.78,.56,'翻转选中字节的1位（长度不变）\n10100110 → 10100010',14,INK,align=PP_ALIGN.CENTER)
     rect(s,7.10,2.13,5.18,1.50,'F4EAD8',rounded=True)
     text(s,7.29,2.31,4.80,.39,'Byte loss｜字节丢失',21,'A46A25',True,PP_ALIGN.CENTER)
     text(s,7.30,2.86,4.78,.56,'删除字节，后续字节前移\nFF D8 A1 3C → FF D8 3C',14,INK,align=PP_ALIGN.CENTER)
-    text(s,.83,3.93,2.75,.4,'可以尝试的方向',21,BLUE,True)
-    directions=[('① 结果分析','比较Clean、Flip、Loss，观察哪类损坏影响更大。'),('② 损坏增强','训练时随机加入bit flip和byte loss样本。'),('③ 一致性约束','让同一图像的干净码流与损坏码流输出接近。')]
+    text(s,.88,3.78,2.65,.28,'加分评估',15,BLUE,True)
+    codebox(s,.82,4.02,5.73,.92,'python evaluate_course_corruption.py \\\n+  --checkpoint outputs/course_clean/best.pt \\\n+  --output outputs/course_clean_eval',10)
+    text(s,6.83,3.78,2.65,.28,'加分：损坏增强训练',15,BLUE,True)
+    codebox(s,6.77,4.02,5.73,.92,'BONUS_EPOCHS=你的轮数; BONUS_BATCH_SIZE=你的batch大小\npython train_course_subset.py --method augmentation \\\n  --epochs "$BONUS_EPOCHS" --batch-size "$BONUS_BATCH_SIZE" \\\n  --clean-augmentations --output outputs/course_corruption_aug',9)
+    text(s,.83,5.12,2.75,.3,'加分内容',19,BLUE,True)
+    directions=[('① 损坏增强','训练时随机加入 bit flip 和 byte loss 样本。'),('② 损坏测试','评估脚本自动输出 Clean、Medium-Flip、Medium-Loss。')]
     for i,(heading,body) in enumerate(directions):
-        x=.82+i*4.02
-        rect(s,x,4.42,3.72,1.18,LIGHT,rounded=True)
-        text(s,x+.14,4.57,3.44,.33,heading,17,BLUE,True)
-        text(s,x+.14,4.96,3.44,.52,body,14)
-    text(s,.86,5.91,2.22,.35,'参考资料：',15,GRAY,True)
-    link(s,2.25,5.89,2.55,'CBSU-ALLM','https://doi.org/10.1016/j.patcog.2026.114151',14)
-    link(s,4.65,5.89,2.25,'BRACE','https://arxiv.org/abs/2608.15695',14)
-    link(s,6.65,5.89,2.25,'BSCV','https://arxiv.org/abs/2309.13890',14)
-    text(s,.87,6.37,11.45,.34,'提交改进方法、训练设置以及三类测试结果；可自行组合其他增强或鲁棒训练方法。',15,GRAY)
+        x=.82+i*6.02
+        rect(s,x,5.48,5.72,.95,LIGHT,rounded=True)
+        text(s,x+.14,5.61,5.42,.27,heading,16,BLUE,True)
+        text(s,x+.14,5.93,5.42,.41,body,12.5)
+    text(s,.86,6.55,1.82,.3,'参考资料：',13,GRAY,True)
+    link(s,1.95,6.53,1.95,'CBSU-ALLM','https://doi.org/10.1016/j.patcog.2026.114151',13)
+    link(s,4.02,6.53,1.40,'BRACE','https://arxiv.org/abs/2608.15695',13)
+    link(s,5.58,6.53,1.40,'BSCV','https://arxiv.org/abs/2309.13890',13)
+    text(s,7.15,6.54,5.2,.3,'提交训练设置和三类测试结果。',13,GRAY)
     # 19. References and entry points.
     s=d.slide('18 配套材料与参考文献','实验步骤、命令和数据说明见课程仓库与Notebook。')
     sources=[

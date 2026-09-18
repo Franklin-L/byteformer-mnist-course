@@ -7,8 +7,7 @@
 1. 使用课程提供的 Medium-Flip、Medium-Loss 测试集评估干净模型。
 2. 比较两种损坏下的准确率，说明 bit flip 与 byte loss 的区别。
 3. 在训练阶段加入随机码流损坏增强。
-4. 对同一样本的轻度和重度损坏视图加入预测一致性或特征对齐约束。
-5. 与干净训练基线比较干净准确率、受损平均准确率和提升幅度。
+4. 与干净训练基线比较干净准确率、受损平均准确率和提升幅度。
 
 ## 2. 主要参考工作
 
@@ -17,7 +16,7 @@
 | CBSU-ALLM | 受损图像码流语义理解 | 图像码流受损后绕过传统解码流程进行语义分析 | *Corrupted bitstream semantic understanding by adaptive-modal large language models*，[DOI](https://doi.org/10.1016/j.patcog.2026.114151) |
 | BRACE | 受损图像码流动作识别 | RBCS 四参数损坏模型 `(S, P, p_f, q)`；bit flip、byte loss 与不同强度设置 | *Bitstream Action Recognition is Byte Modeling*，[论文](https://arxiv.org/abs/2608.15695) |
 | BSCV | 受损视频恢复 | 视频码流中的连续片段丢失、损坏位置与长度设置 | *Bitstream-Corrupted Video Recovery: A Novel Benchmark Dataset and Method*，[论文](https://arxiv.org/abs/2309.13890)，[代码](https://github.com/LIUTIGHE/BSCV-Dataset) |
-| ByteAction | 受损图像码流动作识别 | 双损坏视图、码流模式增强、预测一致性训练 | *ByteAction: Byte-space Action Recognition Foundation Model*，[论文](https://arxiv.org/abs/2608.22760) |
+| ByteAction | 受损图像码流动作识别 | 双损坏视图、码流模式增强 | *ByteAction: Byte-space Action Recognition Foundation Model*，[论文](https://arxiv.org/abs/2608.22760) |
 | Cibic | 受损图像码流描述 | 标准解码失败时直接从 JPEG 字节生成语义描述 | *Cibic: Pixel-free foundation model for robust corrupted image bitstream captioning*，[DOI](https://doi.org/10.1016/j.patcog.2026.114238) |
 | VUB | 视频码流内容理解 | 长视频码流分块建模和跨编码格式知识蒸馏 | *Learn to Understand Video from Bitstream Modeling and Distillation*，本地稿件 |
 
@@ -38,4 +37,4 @@
 - Medium-Loss：只执行 byte loss；
 - 固定 `S=64`、`P=0.55`、`q=0.55`，期望受损字节比例约为 30.25%。
 
-课程实测中，只用干净码流训练的 ByteFormer 在干净测试集达到 95.6%，在两种 Medium 损坏上的平均准确率可用于观察模型鲁棒性。加入损坏一致性训练后，再比较干净准确率和两种受损准确率。完整结果见 [experiment_results.md](experiment_results.md)。
+课程实测中，只用干净码流训练的 ByteFormer 在干净测试集达到 95.6%，在两种 Medium 损坏上的平均准确率可用于观察模型鲁棒性。加入损坏增强后，再比较干净准确率和两种受损准确率。完整结果见 [experiment_results.md](experiment_results.md)。

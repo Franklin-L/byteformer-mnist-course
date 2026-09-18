@@ -63,19 +63,9 @@ bit flip 对被选中的字节随机翻转一个 bit，保持码流长度；byte
 
 训练时在线产生 weak 或 strong 损坏视图，并保留一部分干净输入。损坏类型在 bit flip 和 byte loss 之间采样。最佳模型按干净验证、Medium-Flip 验证和 Medium-Loss 验证的平均值选择。
 
-### C. Corruption consistency
-
-同一干净样本生成 weak 和 strong 两个损坏视图，同时优化：
-
-- 两个视图各自的分类交叉熵；
-- 两个预测分布之间的双向 KL 散度；
-- 两个全局特征之间的余弦距离。
-
-该方案对应“同一图像即使码流损坏方式不同，类别语义应保持一致”的假设。
-
 ## 4. 训练与评估命令
 
-三个方法使用相同的数据、预训练参数、batch size 和随机种子。训练轮数属于实验设置，可根据验证曲线继续调整，不写成课程固定要求。
+两种方法使用相同的数据、预训练参数、batch size 和随机种子。训练轮数属于实验设置，可根据验证曲线继续调整，不写成课程固定要求。
 
 ```bash
 python train_course_subset.py --method clean \
@@ -85,10 +75,6 @@ python train_course_subset.py --method clean \
 python train_course_subset.py --method augmentation \
   --epochs 12 --batch-size 32 --clean-augmentations \
   --output outputs/subset_augmentation
-
-python train_course_subset.py --method consistency \
-  --epochs 12 --batch-size 32 --clean-augmentations \
-  --output outputs/subset_consistency
 ```
 
 分别在干净测试和两种固定 Medium 测试集上评估：

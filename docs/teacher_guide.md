@@ -68,7 +68,7 @@ python train_course_subset.py --method clean --epochs "$COMPARISON_EPOCHS" --bat
 
 完成 MNIST 规定任务并提交实验报告，即达标及格。报告包含环境、参数、曲线、评估结果、一次参数对比和错例分析。
 
-加分项使用课程提供的损坏测试集。学生比较 bit flip 和 byte loss 的影响，并可尝试损坏增强、预测一致性或特征对齐，提交三类测试结果与分析。
+加分项使用课程提供的损坏测试集。学生比较 bit flip 和 byte loss 的影响，并可尝试损坏增强，提交三类测试结果与简要说明。
 
 ## 课程材料
 

@@ -71,15 +71,6 @@ def evaluate(model, loader, device, corrupt=None, seed=0):
             'correct': correct, 'samples': count}
 
 
-def symmetric_kl(a, b, temperature=2.0):
-    log_a = nn.functional.log_softmax(a / temperature, dim=1)
-    log_b = nn.functional.log_softmax(b / temperature, dim=1)
-    prob_a, prob_b = log_a.exp(), log_b.exp()
-    value = (nn.functional.kl_div(log_a, prob_b, reduction='batchmean') +
-             nn.functional.kl_div(log_b, prob_a, reduction='batchmean')) / 2
-    return value * temperature**2
-
-
 def save_curves(output, history):
     import matplotlib
     matplotlib.use('Agg')
@@ -106,7 +97,7 @@ def save_curves(output, history):
 
 def parser():
     result = argparse.ArgumentParser(description=__doc__)
-    result.add_argument('--method', choices=['clean', 'augmentation', 'consistency'],
+    result.add_argument('--method', choices=['clean', 'augmentation'],
                         default='clean')
     result.add_argument('--epochs', type=int, default=12)
     result.add_argument('--batch-size', type=int, default=32)
@@ -119,8 +110,6 @@ def parser():
     result.add_argument('--freeze-backbone-epochs', type=int, default=0)
     result.add_argument('--clean-augmentations', action='store_true',
                         help='sample valid rotated/shifted JPEG views during training')
-    result.add_argument('--consistency-weight', type=float, default=0.5)
-    result.add_argument('--feature-weight', type=float, default=0.1)
     result.add_argument('--seed', type=int, default=42)
     result.add_argument('--device', default='auto')
     result.add_argument('--threads', type=int, default=4)
@@ -209,26 +198,6 @@ def main():
                 logits = model(damaged.to(device))
                 loss = nn.functional.cross_entropy(
                     logits, labels, label_smoothing=args.label_smoothing)
-            else:
-                weak = corrupt_batch(clean, 'weak',
-                                     args.seed + epoch * 200000 + step * 2)
-                strong = corrupt_batch(clean, 'strong',
-                                       args.seed + epoch * 200000 + step * 2 + 1)
-                weak_features = model.forward_features(weak.to(device))
-                strong_features = model.forward_features(strong.to(device))
-                weak_logits = model.classifier(weak_features)
-                strong_logits = model.classifier(strong_features)
-                classification = (nn.functional.cross_entropy(
-                    weak_logits, labels, label_smoothing=args.label_smoothing) +
-                    nn.functional.cross_entropy(
-                        strong_logits, labels,
-                        label_smoothing=args.label_smoothing)) / 2
-                alignment = (1 - nn.functional.cosine_similarity(
-                    weak_features, strong_features, dim=1)).mean()
-                loss = (classification + args.consistency_weight *
-                        symmetric_kl(weak_logits, strong_logits) +
-                        args.feature_weight * alignment)
-                logits = (weak_logits + strong_logits) / 2
             if not torch.isfinite(loss):
                 raise RuntimeError('Non-finite training loss')
             loss.backward()

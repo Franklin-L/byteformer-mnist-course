@@ -1,4 +1,3 @@
 method,Clean,Medium-Flip,Medium-Loss,corrupted_mean,mean_drop_from_clean,checkpoint_sha256,best_epoch,corrupted_gain_vs_first
 clean_fine-tuning,0.956,0.596,0.293,0.4445,0.5115,d7c49d8b9a09bffbe686395620257691565a2dc76a84806adc211abfd3bed0c8,15,0.0
 corruption_augmentation,0.945,0.808,0.648,0.728,0.21699999999999997,6cd46395e30137145ac18ea565550d314df79cee8cb41b27b6034b75721460bd,15,0.2835
-corruption_consistency,0.955,0.854,0.707,0.7805,0.1745,cec33cc4188f2493b4251ea67c3c0a6f8ccb2af8e754a59875e9efc79f34ced4,14,0.33599999999999997

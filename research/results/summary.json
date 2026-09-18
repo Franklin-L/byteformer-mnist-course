@@ -26,17 +26,6 @@
       "checkpoint_sha256": "6cd46395e30137145ac18ea565550d314df79cee8cb41b27b6034b75721460bd",
       "best_epoch": 15,
       "corrupted_gain_vs_first": 0.2835
-    },
-    {
-      "method": "corruption_consistency",
-      "Clean": 0.955,
-      "Medium-Flip": 0.854,
-      "Medium-Loss": 0.707,
-      "corrupted_mean": 0.7805,
-      "mean_drop_from_clean": 0.1745,
-      "checkpoint_sha256": "cec33cc4188f2493b4251ea67c3c0a6f8ccb2af8e754a59875e9efc79f34ced4",
-      "best_epoch": 14,
-      "corrupted_gain_vs_first": 0.33599999999999997
     }
   ]
 }

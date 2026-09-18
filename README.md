@@ -137,7 +137,7 @@ python train_course_subset.py \
 - `Medium-Flip`：选中一个字节，随机翻转其中一位，码流长度不变。
 - `Medium-Loss`：删除选中的字节，后续字节前移。
 
-评估脚本会自动计算 Clean、Medium-Flip 和 Medium-Loss 三类准确率。基础任务只需完成干净测试集结果；下面两种训练方法属于加分项。
+评估脚本会自动计算 Clean、Medium-Flip 和 Medium-Loss 三类准确率。基础任务只需完成干净测试集结果；损坏增强训练属于加分项。
 
 ### 加分项一：损坏增强训练
 
@@ -158,27 +158,6 @@ python train_course_subset.py \
 python evaluate_course_corruption.py \
   --checkpoint "$AUG_OUTPUT/best.pt" \
   --output "${AUG_OUTPUT}_eval"
-```
-
-### 加分项二：一致性约束训练
-
-训练完成后自动评估三类测试集：
-
-```bash
-read -r -p "请输入训练轮数: " CONSISTENCY_EPOCHS
-read -r -p "请输入 batch size: " CONSISTENCY_BATCH_SIZE
-
-CONSISTENCY_OUTPUT=outputs/bonus_consistency
-
-python train_course_subset.py \
-  --method consistency \
-  --epochs "$CONSISTENCY_EPOCHS" \
-  --batch-size "$CONSISTENCY_BATCH_SIZE" \
-  --clean-augmentations \
-  --output "$CONSISTENCY_OUTPUT" && \
-python evaluate_course_corruption.py \
-  --checkpoint "$CONSISTENCY_OUTPUT/best.pt" \
-  --output "${CONSISTENCY_OUTPUT}_eval"
 ```
 
 背景与方法资料见 [加分项参考资料](research/04_bonus_corrupted_bitstream_references.md)，其中包括 CBSU-ALLM、BRACE、BSCV、ByteAction 等工作。
@@ -210,12 +189,42 @@ python prepare.py
 
 ## 提交内容
 
-1. 实验报告，写明环境、轮数、batch size、命令和数据划分。
-2. 基础训练与参数对比的 `metrics.json`、`history.csv` 和 `curves.png`。
-3. 独立测试结果、单图预测或典型错例。
-4. 对训练曲线、验证结果、测试结果和参数对比的分析。
+### 基础任务（必须提交，完成后即达标）
 
-Notebook 最后一格会把 JSON、CSV、PNG 和预测数组打包为 `byteformer_mnist_results.zip`。大型 checkpoint 不放入压缩包。
+请提交一个压缩包，命名为 `学号_姓名_码流图像分类.zip`，内容如下：
+
+```text
+学号_姓名_码流图像分类/
+├── 实验报告.pdf
+├── course_clean/
+│   ├── metrics.json
+│   ├── history.csv
+│   ├── curves.png
+│   └── prediction_single.png
+├── course_clean_eval/
+│   ├── evaluation.json
+│   ├── accuracy.csv
+│   └── accuracy.png
+├── comparison/
+│   ├── metrics.json
+│   ├── history.csv
+│   └── curves.png
+```
+
+实验报告至少写明：运行环境、训练轮数、batch size、实际命令、训练/验证/测试划分、曲线变化、参数对比、单图预测和一个错例分析。
+
+### 加分项（完成哪一项，就在压缩包中加入对应结果目录）
+
+```text
+bonus_augmentation/
+bonus_augmentation_eval/
+```
+
+报告中填写 Clean、Medium-Flip、Medium-Loss 三类准确率，并写明使用的加分方法。
+
+### 不需要提交
+
+不需要提交整份数据集、`.venv/`、`best.pt` 等大型模型文件、完整 GitHub 仓库或课程 PPT。Notebook 最后一格生成的 `byteformer_mnist_results.zip` 只包含实验结果，仍需与实验报告一起整理到上述压缩包中。
 
 ## 参考文献
 
